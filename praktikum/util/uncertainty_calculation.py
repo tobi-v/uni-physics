@@ -1,12 +1,12 @@
 import numpy as np
-from scipy.misc import derivative
+from scipy.differentiate import derivative
 
 def partial_derivative(func, var=0, point=[]):
     args = point[:]
     def wraps(x):
         args[var] = x
         return func(*args)
-    return derivative(wraps, point[var], dx = 1e-6)
+    return derivative(wraps, point[var])
 
 def GaussianErrorPropagation(fun, point, uncertainties):
   if(len(point) != len(uncertainties)):
@@ -17,7 +17,7 @@ def GaussianErrorPropagation(fun, point, uncertainties):
 
   for ii, uncertainty in enumerate(uncertainties):
     part_dev = partial_derivative(fun, ii, point)
-    quadratic_error_sum += (part_dev*uncertainty)**2
+    quadratic_error_sum += (part_dev.df*uncertainty)**2
 
   return np.sqrt(quadratic_error_sum)
 

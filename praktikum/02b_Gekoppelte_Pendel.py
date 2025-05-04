@@ -80,12 +80,12 @@ print(f"Periodendauer des Pendels: {measured_period} s")
 ### Bestimmung der Federkonstante
 
 # TODO: Die Werte stimmen nicht. Die korrekten Werte müssen noch aus dem Protokoll eingetragen werden
-displacement_left = 4e-3
+displacement_left = 8e-3
 start_right = 4e-2
-displacement_right = 4e-2
-
+displacement_right = 7e-3
+print(f"{error_ruler}\n{delRod2_m}\n{error_scale}\n")
 k, k_uncertainty = feather.FeetherConstantOfCoupledPendulum(displacement_left, start_right, displacement_right, rod2_l, rod2_m, cylinder2_m, True,
-                                                 error_ruler, error_ruler, error_ruler, error_ruler, delRod2_m, error_scale)
+                                                 error_ruler/4, error_ruler/4, error_ruler/4 , error_ruler/4, delRod2_m, error_scale)#error_ruler/4, error_ruler/4, error_ruler/4, error_ruler/40, , )
 
 print(f"1. Die experimentell bestimmte Federkonstante beträgt {k} +/- {k_uncertainty} N/m")
 
