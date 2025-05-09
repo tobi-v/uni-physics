@@ -21,4 +21,4 @@ def DegreeOfCouplingPhase(t_inPhase, t_oppositePhase, uncertainty=False, delT1=0
   return GetResultAndUncertainty(DegreeOfCouplingInner,
                                  [t_inPhase, t_oppositePhase],
                                  uncertainty,
-                                 delT1, delT2)/usr/lib/jvm/java-1.21.0-openjdk-amd64
+                                 delT1, delT2)
