@@ -6,6 +6,12 @@ def Rod(m, l, uncertainty=False, delM=0, delL=0):
   
   return GetResultAndUncertainty(RodInner, [m, l], uncertainty, [delM, delL])
 
+def HollowCylinder(m, r1, r2, uncertainty=False, delM=0, delR1=0, delR2=0):
+  def HollowCylinderInner(m, r1, r2):
+    return 0.5*m*(r1**2 + r2**2)
+    
+  return GetResultAndUncertainty(HollowCylinderInner, [m, r1, r2], uncertainty, [delM, delR1, delR2])
+
 def CylinderXY(m, l, r, uncertainty=False, delM=0, delL=0, delR=0):
   def CylinderXYInner(m, l, r):
     return m*((r**2)/4 + (l**2)/12)

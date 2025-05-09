@@ -26,3 +26,8 @@ def GetResultAndUncertainty(Fun, param, uncertainty=False, delParam=0):
     propagated_uncertainty = GaussianErrorPropagation(Fun, param, delParam)
     return Fun(*param), propagated_uncertainty
   return Fun(*param)
+
+def MeanAndStd(array, axis=0):
+   mean = np.mean(array, axis=axis)
+   std = np.std(array, axis=axis, ddof=1)
+   return mean, std
