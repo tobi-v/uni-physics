@@ -26,6 +26,7 @@ rod1_l = 51.5e-2
 rod1_d = 6.1e-3
 rod1_m, delRod1_m = cylinder.MassFromVolume(rod1_l, (rod1_d/2), rho_rod, uncertainty, error_ruler, error_caliper, error_caliper)
 pendulum1_m = cylinder1_m + mount1_m + screw1_m + rod1_m
+delPendulum1_m = 3*error_scale + delRod1_m
 
 cylinder2_m = 284.92e-3
 cylinder2_h = 5e-2
@@ -40,9 +41,15 @@ screw2_pos = 51e-2
 rod2_l = 51.5e-2
 rod2_d = 6.1e-3
 rod2_m, delRod2_m = cylinder.MassFromVolume(rod2_l, (rod2_d/2), rho_rod, uncertainty, error_ruler, error_caliper, error_caliper)
+pendulum2_m = cylinder2_m + mount2_m + screw2_m + rod2_m
+delPendulum2_m = 3*error_scale + delRod2_m
+
+print(f"Masse der Pendelstäbe:\
+      \n\tStab 1: {rod1_m:1.4f} +/- {delRod1_m:1.4f}; Stab 2: {rod2_m:1.4f} +/- {delRod2_m:1.4f}")
+print(f"Masse der Pendel:\
+      \n\tPendel 1: {pendulum1_m:1.4f} +/- {delPendulum1_m:1.4f}; Pendel 2: {pendulum2_m:1.4f} +/- {delPendulum2_m:1.4f}")
 
 ### Geometric calculation of inertia
-
 cylinder1_J, delCylinder1_J = inertia.CylinderXY(cylinder1_m, cylinder1_pos, cylinder1_r, uncertainty, error_scale, error_ruler, error_caliper)
 cylinder1_J, delCylinder1_J = inertia.Steiner(cylinder1_J, cylinder1_m, cylinder1_pos, uncertainty, delCylinder1_J, error_scale, error_ruler)
 rod1_J, delRod1_J = inertia.Rod(rod1_m, rod1_l, uncertainty, error_scale, error_ruler)
@@ -57,8 +64,6 @@ geometric_inertia_point = [cylinder1_m, cylinder1_pos, cylinder1_r]
 geometric_inertia_uncertainties = [error_scale, error_ruler, error_caliper]
 geometric_inertia_propagadet_error = GaussianErrorPropagation(inertia.CylinderXY, geometric_inertia_point, geometric_inertia_uncertainties)
 
-print(f"Trägheitsmoment aus geometrischen Überlegungen: {J1_total} +/- {delJ1_total} kg*m²")
-
 cylinder2_J, delCylinder2_J = inertia.CylinderXY(cylinder2_m, cylinder2_pos, cylinder2_r, uncertainty, error_scale, error_ruler, error_caliper)
 cylinder2_J, delCylinder2_J = inertia.Steiner(cylinder2_J, cylinder2_m, cylinder2_pos, uncertainty, error_scale, error_ruler)
 rod2_J, delRod2_J = inertia.Rod(rod2_m, rod2_l, uncertainty, error_scale, error_ruler)
@@ -69,7 +74,8 @@ mount2_J, delMount2_J = inertia.Steiner(0, mount2_m, mount2_pos2, uncertainty, e
 J2_total = cylinder2_J + rod2_J + screw2_J + mount2_J
 delJ2_total = delCylinder2_J + delRod2_J + delScrew2_J + delMount2_J
 
-print(f"Trägheitsmoment aus geometrischen Überlegungen: {J2_total} +/- {delJ2_total} kg*m²")
+print(f"Trägheitsmoment aus geometrischen Überlegungen:\
+      \n\tPendel 1: {J1_total} +/- {delJ1_total} kg*m²; Pendel 2: {J2_total} +/- {delJ2_total} kg*m²")
 
 ### Determination of inertia via period
 
