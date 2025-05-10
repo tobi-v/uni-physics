@@ -16,9 +16,7 @@ wire_copper_l = 97.8e-2
 ring_m = array([922.8, 738.1, 606.4, 422.4, 251.8])*10**-3
 ring_d1 = array([25.8, 21.4, 16.8, 12.5, 9])*10**-2
 ring_d2 = array([29.0, 25.3, 20.8, 16.2, 12])*10**-2
-J, delJ = HollowCylinder(ring_m, ring_d1/2, ring_d2/2, True, ones(5)*error_scale, ones(5)*error_ruler/2, ones(5)*error_ruler/2)
-#print(J)
-#print(delJ)
+J, delJ = HollowCylinder(ring_m, ring_d1/2, ring_d2/2, True, error_scale, error_ruler/2, error_ruler/2)
 
 
 ### periods steel
