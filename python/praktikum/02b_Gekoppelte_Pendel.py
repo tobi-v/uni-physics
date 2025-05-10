@@ -55,10 +55,16 @@ cylinder1_J, delCylinder1_J = inertia.Steiner(cylinder1_J, cylinder1_m, cylinder
 rod1_J, delRod1_J = inertia.Rod(rod1_m, rod1_l, uncertainty, error_scale, error_ruler)
 rod1_J, delRod1_J = inertia.Steiner(rod1_J, rod1_m, rod1_l/2, uncertainty, error_scale, error_ruler)
 screw1_J, delScrew1_J = inertia.Steiner(0, screw1_m, screw1_pos, uncertainty, error_scale, error_ruler)
-mount1_J, delMount1_J = inertia.Steiner(0, mount1_m, mount1_pos1, uncertainty, error_scale, error_ruler)
+mount11_J, delMount11_J = inertia.Steiner(0, mount1_m, mount1_pos1, uncertainty, error_scale, error_ruler)
+mount12_J, delMount12_J = inertia.Steiner(0, mount1_m, mount1_pos2, uncertainty, error_scale, error_ruler)
+mount13_J, delMount13_J = inertia.Steiner(0, mount1_m, mount1_pos3, uncertainty, error_scale, error_ruler)
 
-J1_total = cylinder1_J + rod1_J + screw1_J + mount1_J
-delJ1_total = delCylinder1_J + delRod1_J + delScrew1_J + delMount1_J
+J11_total = cylinder1_J + rod1_J + screw1_J + mount11_J
+J12_total = cylinder1_J + rod1_J + screw1_J + mount12_J
+J13_total = cylinder1_J + rod1_J + screw1_J + mount13_J
+delJ11_total = delCylinder1_J + delRod1_J + delScrew1_J + delMount11_J
+delJ12_total = delCylinder1_J + delRod1_J + delScrew1_J + delMount12_J
+delJ13_total = delCylinder1_J + delRod1_J + delScrew1_J + delMount13_J
 
 geometric_inertia_point = [cylinder1_m, cylinder1_pos, cylinder1_r]
 geometric_inertia_uncertainties = [error_scale, error_ruler, error_caliper]
@@ -69,13 +75,21 @@ cylinder2_J, delCylinder2_J = inertia.Steiner(cylinder2_J, cylinder2_m, cylinder
 rod2_J, delRod2_J = inertia.Rod(rod2_m, rod2_l, uncertainty, error_scale, error_ruler)
 rod2_J, delRod2_J = inertia.Steiner(rod2_J, rod2_m, rod2_l/2, uncertainty, error_scale, error_ruler)
 screw2_J, delScrew2_J = inertia.Steiner(0, screw2_m, screw2_pos, uncertainty, error_scale, error_ruler)
-mount2_J, delMount2_J = inertia.Steiner(0, mount2_m, mount2_pos2, uncertainty, error_scale, error_ruler)
+mount21_J, delMount21_J = inertia.Steiner(0, mount2_m, mount2_pos1, uncertainty, error_scale, error_ruler)
+mount22_J, delMount22_J = inertia.Steiner(0, mount2_m, mount2_pos2, uncertainty, error_scale, error_ruler)
+mount23_J, delMount23_J = inertia.Steiner(0, mount2_m, mount2_pos3, uncertainty, error_scale, error_ruler)
 
-J2_total = cylinder2_J + rod2_J + screw2_J + mount2_J
-delJ2_total = delCylinder2_J + delRod2_J + delScrew2_J + delMount2_J
+J21_total = cylinder2_J + rod2_J + screw2_J + mount21_J
+J22_total = cylinder2_J + rod2_J + screw2_J + mount22_J
+J23_total = cylinder2_J + rod2_J + screw2_J + mount23_J
+delJ21_total = delCylinder2_J + delRod2_J + delScrew2_J + delMount21_J
+delJ22_total = delCylinder2_J + delRod2_J + delScrew2_J + delMount22_J
+delJ23_total = delCylinder2_J + delRod2_J + delScrew2_J + delMount23_J
 
 print(f"Trägheitsmoment aus geometrischen Überlegungen:\
-      \n\tPendel 1: {J1_total} +/- {delJ1_total} kg*m²; Pendel 2: {J2_total} +/- {delJ2_total} kg*m²")
+      \n\tMount unten:\tPendel 1: {J11_total:1.5f} +/- {delJ11_total:1.5f} kg*m²;\tPendel 2: {J21_total:1.5f} +/- {delJ21_total:1.5f} kg*m²\
+      \n\tMount mittig:\tPendel 1: {J12_total:1.5f} +/- {delJ12_total:1.5f} kg*m²;\tPendel 2: {J22_total:1.5f} +/- {delJ22_total:1.5f} kg*m²\
+      \n\tMount oben:\tPendel 1: {J13_total:1.5f} +/- {delJ13_total:1.5f} kg*m²;\tPendel 2: {J23_total:1.5f} +/- {delJ23_total:1.5f} kg*m²")
 
 ### Determination of inertia via period
 
