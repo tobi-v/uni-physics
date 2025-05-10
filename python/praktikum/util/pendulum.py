@@ -1,17 +1,27 @@
 from numpy import pi
 from util.uncertainty_calculation import GetResultAndUncertainty
 
+g = 9.81
+
 def SchwerpunktsLaenge(T,
                     uncertainty=False,
                     delT=0):
   def SchwerpunktsLaengeInner(T):
-    g = 9.81
     return g*T**2 / (4*pi**2)
   
   return GetResultAndUncertainty(SchwerpunktsLaengeInner,
                                  [T],
                                  uncertainty,
                                  [delT])
+
+def IfromPeriod(period, mass, length, uncertainty=False, delT=0, delM=0, delL=0):
+  def IfromPeriodInner(period, mass, length):
+    return period**2 *mass*g*length / (4*pi**2)
+  
+  return GetResultAndUncertainty(IfromPeriodInner,
+                                 [period, mass, length],
+                                 uncertainty,
+                                 [delT, delM, delL])
 
 ### Functions for coupled pendulum:
 # Degree of Coupling from in phase and opposite phase periods

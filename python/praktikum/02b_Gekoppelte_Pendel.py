@@ -90,8 +90,8 @@ print(f"1. Die experimentell bestimmte Federkonstante beträgt {k} +/- {k_uncert
 
 ### Bestimmung der Schwerpunktslänge
 
-l_from_period, l_from_period_uncertainty = pendulum.SchwerpunktsLaenge(measured_period, uncertainty, 0.02) #g*measured_period**2 / (4*pi**2)
-print(f"2. Die aus der Periode bestimmte Schwerpunktslänge beträgt {l_from_period} +/- {l_from_period_uncertainty} m")
+l_from_period, delL_from_period = pendulum.SchwerpunktsLaenge(measured_period, uncertainty, 0.02) #g*measured_period**2 / (4*pi**2)
+print(f"2. Die aus der Periode bestimmte Schwerpunktslänge beträgt {l_from_period} +/- {delL_from_period} m")
 
 ### Measurement opposite phase (read from diagram)
 num_oscillations = 10
@@ -134,13 +134,9 @@ Kbeat_low, delKbeat_low = pendulum.DegreeOfCouplingBeat(beatground_low, beatperi
 print("\tKopplungsstärken aus Schwebungsperiode:\n" \
       f"\tOben: K={Kbeat_high} +/- {delKbeat_high}, Mitte: K={Kbeat_mid} +/- {delKbeat_mid}, Unten: K={Kbeat_low} +/- {delKbeat_low}")
 
-### Inertia from period
-def IfromPeriod(period, mass, length):
-  return period**2 *mass*g*length / (4*pi**2)
-
-I_high = IfromPeriod(beatground_high, pendulum1_m, l_from_period)
-I_mid = IfromPeriod(beatground_mid, pendulum1_m, l_from_period)
-I_low = IfromPeriod(beatground_low, pendulum1_m, l_from_period)
+I_high, delI_high = pendulum.IfromPeriod(beatground_high, pendulum1_m, l_from_period, uncertainty, error_time/10, error_scale, delL_from_period)
+I_mid, delI_mid = pendulum.IfromPeriod(beatground_mid, pendulum1_m, l_from_period, uncertainty, error_time/10, error_scale, delL_from_period)
+I_low, delI_low = pendulum.IfromPeriod(beatground_low, pendulum1_m, l_from_period, uncertainty, error_time/10, error_scale, delL_from_period)
 
 print("4. Aus der periode bestimmte Trägheitsmomente:\n" \
-      f"\tOben: I={I_high} kg*m², Mitte: I={I_mid} kg*m², Unten: I={I_low} kg*m²")
+      f"\tOben: I={I_high} +/- {delI_high} kg*m², Mitte: I={I_mid} +/- {delI_mid} kg*m², Unten: I={I_low} +/- {delI_low} kg*m²")
