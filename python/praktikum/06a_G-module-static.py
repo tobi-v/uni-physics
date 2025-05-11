@@ -1,4 +1,4 @@
-from util.linear_regression import linreg
+from util.linear_regression import linreg, plot
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -56,13 +56,8 @@ GMod_Al_error = GModuleError(Al_steigung, r_Al, 0.002, 0.001, np.sqrt(Al_cov[0, 
 
 print(f"\n\nFehler GModule\nEisen: {GMod_Fe_error/10**9}\nKupfer: {GMod_Cu_error/10**9}\nAluminium: {GMod_Al_error/10**9}")
 
-plt.subplot(3,1,1)
-plt.title("Copper")
-plt.plot(m_Cu_Fe , rad_Cu, 'go', m_Cu_Fe, CuFun(m_Cu_Fe), '--k')
-plt.subplot(3,1,2)
-plt.title("Steel")
-plt.plot(m_Cu_Fe , rad_Fe, 'go', m_Cu_Fe, FeFun(m_Cu_Fe), '--k')
-plt.subplot(3,1,3)
-plt.title("Aluminum")
-plt.plot(m_Al , rad_Cu, 'go', m_Al, AlFun(m_Al), '--k')
+fig, axs = plt.subplots(3, 1)
+plot(axs[0], m_Cu_Fe, rad_Cu, CuFun, error_Cu, "Copper")
+plot(axs[1], m_Cu_Fe, rad_Fe, FeFun, error_Fe, "Steel")
+plot(axs[2], m_Al, rad_Cu, AlFun, error_Al, "Aluminum")
 plt.show()
