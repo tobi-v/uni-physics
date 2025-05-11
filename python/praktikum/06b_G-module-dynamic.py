@@ -28,6 +28,8 @@ T_steel = array([[6.04, 6.08, 5.97, 6.06, 6.32],
 T0_steel_mean, T0_steel_std = MeanAndStd(T0_steel)
 T_steel_means, T_steel_stds = MeanAndStd(T_steel, axis=1)
 
+# linreg with J as x-value and T_i^2 - T_0^2 ad y-value
+
 ### periods aluminum
 T0_aluminum = array([7.01, 7.22, 7.02, 7.43, 7.32])
 T_aluminum = array([[13.69, 14.12, 13.91, 13.99, 14.09],
