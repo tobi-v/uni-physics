@@ -1,3 +1,4 @@
+from util.linear_regression import linreg
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -6,10 +7,6 @@ L = 0.945
 r_Cu_Fe = 0.0005
 r_Al = 0.001
 R_disc = 0.08
-
-def linreg(x, y):
-    coeff, cov = np.polyfit(x, y, 1, cov=True)
-    return np.poly1d(coeff), coeff[0], cov
 
 def GModule(steigung, r):
     return 2*g*L*R_disc / (np.pi*steigung*r**4)
@@ -69,4 +66,3 @@ plt.subplot(3,1,3)
 plt.title("Aluminum")
 plt.plot(m_Al , rad_Cu, 'go', m_Al, AlFun(m_Al), '--k')
 plt.show()
-
