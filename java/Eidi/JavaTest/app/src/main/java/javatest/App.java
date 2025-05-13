@@ -3,29 +3,66 @@
  */
 package javatest;
 
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 public class App {
-    public String getGreeting() {
-        return "Hello w0rld!";
-    }
-
-    public static void sort(int[] unsortedArray) {
-        int biggest = 0, biggestIdx = 0;
-        int[] sortedArray = new int[unsortedArray.length];
-
-        for (int jj = 0; jj < unsortedArray.length; jj++) {
-            for (int ii = 0; ii < unsortedArray.length; ii++) {
-                if (unsortedArray[ii] > biggest) {
-                    biggest = Math.max(unsortedArray[ii], biggest);
-                    biggestIdx = ii;
-                }
-            }
-            sortedArray[biggestIdx] = 0;
-            sortedArray[jj] = biggest;
-            biggest = 0;
-        }
-    }
 
     public static void main(String[] args) {
-        System.out.println(new App().getGreeting());
+        JFrame frame = new JFrame("Frame title");
+        frame.getContentPane().setLayout(new FlowLayout());
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        JLabel label = new JLabel("Some label");
+        frame.getContentPane().add(label);
+        JTextField textField = new JTextField("huehue");
+        frame.getContentPane().add(textField);
+
+        JButton button1 = new JButton("button1");
+        frame.getContentPane().add(button1, FlowLayout.LEFT);
+
+        JPanel subPanel = new JPanel(new BorderLayout());
+        subPanel.setPreferredSize(new Dimension(400, 400)); // Default is (0, 0)
+
+        ActionListener listener = new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent ae){
+                switch(ae.getActionCommand()){
+                    case "RED":
+                        subPanel.setBackground(Color.RED);
+                        break;
+                    case "BLUE":
+                        subPanel.setBackground(Color.blue);
+                        break;
+                }
+            }
+        };
+
+        PropertyChangeListener propertyChangeListener = new PropertyChangeListener() {
+            @Override
+            public void propertyChange(PropertyChangeEvent pce){
+                System.out.println("Property changed: " + pce.getPropertyName());
+            }
+        };
+
+        JButton buttonRed = new JButton("RED");
+        buttonRed.setActionCommand("RED");
+        buttonRed.addActionListener(listener);
+        JButton buttonBlue = new JButton("BLUE");
+        buttonBlue.setActionCommand("BLUE");
+        buttonBlue.addActionListener(listener);
+        subPanel.addPropertyChangeListener(propertyChangeListener);
+
+        frame.getContentPane().add(buttonRed, FlowLayout.RIGHT);
+        frame.getContentPane().add(buttonBlue, FlowLayout.RIGHT);
+        frame.getContentPane().add(subPanel, FlowLayout.CENTER);
+
+        frame.pack(); // Dimensionierung
+        frame.setResizable(true);
+        frame.setVisible(true);
+
     }
 }
