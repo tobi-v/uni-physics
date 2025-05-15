@@ -32,7 +32,7 @@ public class Tests {
 		Assert.assertEquals(array.size(), 5);	
 		
 		array.resize(10);
-		Assert.assertEquals(array.size(), 5);		
+		Assert.assertEquals(array.size(), 10);		
 	}	
 	
 	@Test

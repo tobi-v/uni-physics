@@ -2,24 +2,36 @@ package eidi2.sose21.nachname.vorname.sheet01.ex03;
 
 public abstract class Array{
     protected int[] array;
+    protected int firstFreeIdx;
+
+    public Array(int length){
+        array = new int[length];
+        firstFreeIdx = 0;
+    }
     
     public void add(int val) {
-        // TODO b)
+        if(firstFreeIdx >= array.length)
+            throw new ArrayIndexOutOfBoundsException();
+        array[firstFreeIdx++] = val;
     }
 
     public int size() {
-        // TODO c)
-        return 0;
+        return array.length;
     }
 
     public int get(int index) {
-        // TODO d)
-        return 0;
+        if(index >= firstFreeIdx)
+            throw new IndexOutOfBoundsException();
+        return array[index];
     }
 
     public void remove(int index) {
-        // TODO e)
-        
+        if(index >= firstFreeIdx)
+            throw new IndexOutOfBoundsException();
+
+        for(int ii = index; ii < firstFreeIdx-1; ii++)
+            array[ii] = array[ii+1];
+        array[--firstFreeIdx] = 0;        
     }
     
     @Override

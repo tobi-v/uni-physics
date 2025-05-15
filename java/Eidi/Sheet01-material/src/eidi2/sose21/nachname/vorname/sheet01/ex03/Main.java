@@ -8,15 +8,15 @@ public class Main {
    
    private static void wissenAnwenden() {
 //     Array a = new Array(); //<- Fehler da Array eine Abstrakte Klasse ist und somit nicht erzeugt werden kann.
-     Array b = new SimpleArray();
+     //Array b = new SimpleArray();
      Array c = new DynamicArray();
      DynamicArray d = new DynamicArray();
-     System.out.println(b.size());
+     //System.out.println(b.size());
      System.out.println(c.size());
 //     c.resize(100); //<- Fehler c ist vom Typ Array
      d.resize(100);
      ((DynamicArray) c).resize(100);//<- geht nachdem c zu DynamicArray gecastet wurde
-     ((DynamicArray) b).resize(100);//<- ClassCastException, da b SimpleArray ist
+     //((DynamicArray) b).resize(100);//<- ClassCastException, da b SimpleArray ist
    }
 
 }
