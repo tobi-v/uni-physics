@@ -4,14 +4,40 @@
 package blatt01;
 
 import org.junit.jupiter.api.Test;
+
+import static blatt01.App.randomArray;
 import static org.junit.jupiter.api.Assertions.*;
+import java.util.Arrays;
 
 class AppTest {
-    @Test void sortGetsNull(){
+    @Test void SortGetsNull(){
         assertThrows(NullPointerException.class, () -> App.sort(null));
     }
-    /*@Test void appHasAGreeting() {
-        App classUnderTest = new App();
-        assertNotNull(classUnderTest.getGreeting(), "app should have a greeting");
-    }*/
+
+    @Test void EmptyArray(){
+        int[] emptyArr = {};
+
+        assertThrows(IllegalArgumentException.class, () -> App.sort(emptyArr));
+    }
+
+    @Test void SortSmall(){
+        int[] inputArr = {7, 3, 5, 8, 1, 7, 5, 3, 1, 0};
+        int[] expectedArr = {0, 1, 1, 3, 3, 5, 5, 7, 7, 8};
+
+        int[] outputArr = App.sort(inputArr);
+
+        assertArrayEquals(expectedArr, outputArr);
+    }
+
+    @Test void SortLarge(){
+        int size = 1000;
+        for(int ii = 0; ii < size; ii++){
+            int[] inputArr = randomArray(size, 0, (int)Math.pow(2, 31));
+            int[] inputArrCopy = inputArr.clone();
+            int[] outputArr = App.sort(inputArr);
+            Arrays.sort(inputArrCopy);
+            assertArrayEquals(outputArr, inputArrCopy);
+        }
+
+    }
 }

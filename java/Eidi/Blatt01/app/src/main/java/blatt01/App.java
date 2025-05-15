@@ -7,11 +7,11 @@ import java.util.Random;
 
 public class App {
 
-    public static int[] randomArray(int size, int upper) {
+    public static int[] randomArray(int size, int lower, int upper) {
         Random rd = new Random();
         int[] arr = new int[size];
         for (int ii = 0; ii < size; ii++) {
-            arr[ii] = rd.nextInt(upper);
+            arr[ii] = rd.nextInt(upper-lower) + lower;
         }
         return arr;
     }
@@ -19,6 +19,9 @@ public class App {
     public static int[] sort(int[] unsortedArray) {
         if (unsortedArray == null) {
             throw new NullPointerException("Array should not be null!");
+        }
+        if (unsortedArray.length == 0) {
+            throw new IllegalArgumentException("Array should not be empty!");
         }
 
         int biggest = 0, biggestIdx = 0;
@@ -42,7 +45,7 @@ public class App {
     public static void main(String[] args) {
         int size = 1000;
 
-        int[] arr = randomArray(size, 100);
+        int[] arr = randomArray(size, 0, 100);
         int[] sortedArr = sort(arr);
 
         for (int ii = 0; ii < size; ii += 10)
