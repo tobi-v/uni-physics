@@ -1,7 +1,14 @@
-from numpy import array, pi
+from matplotlib import pyplot as plt
+from numpy import array, empty, ones_like, pi
 from util.inertia import HollowCylinder
-from util.uncertainty_calculation import MeanAndStd
-from util.linear_regression import linreg
+from util.uncertainty_calculation import GetResultAndUncertainty, MeanAndStd
+from util.linear_regression import linreg, plotWithErrorBars
+
+def T_i_sq_minus_T_0_sq(T_i, T_0, delT_i, delT_0):
+  def T_i_sq_minus_T_0_sqInner(T_i, T_0):
+    return T_i**2 - T_0**2
+  return GetResultAndUncertainty(T_i_sq_minus_T_0_sqInner, [T_i, T_0], True, [delT_i, delT_0])
+  
 
 error_ruler = 2e-3
 error_caliper = 0.01e-3
@@ -18,6 +25,7 @@ ring_m = array([922.8, 738.1, 606.4, 422.4, 251.8])*10**-3
 ring_d1 = array([25.8, 21.4, 16.8, 12.5, 9])*10**-2
 ring_d2 = array([29.0, 25.3, 20.8, 16.2, 12])*10**-2
 J, delJ = HollowCylinder(ring_m, ring_d1/2, ring_d2/2, True, error_scale, error_ruler/2, error_ruler/2)
+print(f"J {J}, delJ {delJ}")
 
 T0_steel = array([3.33, 3.02, 3.09, 2.98, 3.12])/3
 T_steel = array([[6.04, 6.08, 5.97, 6.06, 6.32],
@@ -28,9 +36,14 @@ T_steel = array([[6.04, 6.08, 5.97, 6.06, 6.32],
 
 T0_steel_mean, T0_steel_std = MeanAndStd(T0_steel)
 T_steel_means, T_steel_stds = MeanAndStd(T_steel, axis=1)
+Y_steel = empty(5)
+delY_steel = empty(5)
+for ii, T in enumerate(T_steel_means): # Need to loop because we have different std for each point TODO: Adjust GetResultAndUncertainty accordingly
+  Y_steel[ii], delY_steel[ii]= T_i_sq_minus_T_0_sq(T, T0_steel_mean, T_steel_stds[ii], T0_steel_std)
 
-linreg(J, T_steel_means)
-# linreg with J as x-value and T_i^2 - T_0^2 ad y-value
+C_steel_linreg_fun, C_steel_inclination, C_steel_covariance = linreg(J, Y_steel)
+fig, axs = plt.subplots(nrows=3,ncols=1, figsize=(9,9))
+plotWithErrorBars(axs[0], J, Y_steel, C_steel_linreg_fun, x_absErr=delJ, y_absErr=delY_steel, title="Steel", xlabel=r'$J_i$', ylabel=r'$T_{i,steel}^2-T_{0,steel}^2$')
 
 ### periods aluminum
 T0_aluminum = array([7.01, 7.22, 7.02, 7.43, 7.32])/3
@@ -42,6 +55,13 @@ T_aluminum = array([[13.69, 14.12, 13.91, 13.99, 14.09],
 
 T0_aluminum_mean, T0_aluminum_std = MeanAndStd(T0_aluminum)
 T_aluminum_means, T_aluminum_stds = MeanAndStd(T_aluminum, axis=1)
+Y_aluminum = empty(5)
+delY_aluminum = empty(5)
+for ii, T in enumerate(T_aluminum_means):
+  Y_aluminum[ii], delY_aluminum[ii]= T_i_sq_minus_T_0_sq(T, T0_aluminum_mean, T_aluminum_stds[ii], T0_aluminum_std)
+
+C_aluminum_linreg_fun, C_aluminum_inclination, C_aluminum_covariance = linreg(J, Y_aluminum)
+plotWithErrorBars(axs[1], J, Y_aluminum, C_aluminum_linreg_fun, x_absErr=delJ, y_absErr=delY_aluminum, title="aluminum", xlabel=r'$J_i$', ylabel=r'$T_{i,aluminum}^2-T_{0,aluminum}^2$')
 
 ### periods copper
 T0_copper = array([16.23, 16.09, 16.39, 16.33, 16.25])/3
@@ -53,6 +73,16 @@ T_copper = array([[31.77, 31.96, 31.85, 32.06, 32.04],
 
 T0_copper_mean, T0_copper_std = MeanAndStd(T0_copper)
 T_copper_means, T_copper_stds = MeanAndStd(T_copper, axis=1)
+Y_copper = empty(5)
+delY_copper = empty(5)
+for ii, T in enumerate(T_copper_means):
+  Y_copper[ii], delY_copper[ii]= T_i_sq_minus_T_0_sq(T, T0_copper_mean, T_copper_stds[ii], T0_copper_std)
+
+C_copper_linreg_fun, C_copper_inclination, C_copper_covariance = linreg(J, Y_copper)
+plotWithErrorBars(axs[2], J, Y_copper, C_copper_linreg_fun, x_absErr=delJ, y_absErr=delY_copper, title="copper", xlabel=r'$J_i$', ylabel=r'$T_{i,copper}^2-T_{0,copper}^2$')
 
 def C(l, G_dyn, r):
   return 8*pi*l/(G_dyn*r**4)
+
+plt.tight_layout()
+plt.show()
