@@ -100,17 +100,15 @@ measured_period = total_time / num_oscillations
 print(f"Periodendauer des Pendels: {measured_period} s")
 
 ### Bestimmung der Federkonstante
-displacement_left = 8e-3
-start_right = 4e-2
+displacement_left = 8e-2
 displacement_right = 7e-3
-k, k_uncertainty = feather.FeetherConstantOfCoupledPendulum(displacement_left, start_right, displacement_right, rod2_l, rod2_m, cylinder2_m, uncertainty,
-                                                 error_ruler/4, error_ruler/4, error_ruler/4 , error_ruler/4, delRod2_m, error_scale)#error_ruler/4, error_ruler/4, error_ruler/4, error_ruler/40, , )
+k, k_uncertainty = feather.FeatherConstantOfCoupledPendulum(displacement_left, displacement_right, rod2_l, pendulum2_m, uncertainty,
+                                                 error_ruler/4, error_ruler/4 , error_ruler/4, delPendulum2_m)
 
 print(f"1. Die experimentell bestimmte Federkonstante beträgt {k} +/- {k_uncertainty} N/m")
 
 ### Bestimmung der Schwerpunktslänge
-
-l_from_period, delL_from_period = pendulum.SchwerpunktsLaenge(measured_period, uncertainty, 0.02) #g*measured_period**2 / (4*pi**2)
+l_from_period, delL_from_period = pendulum.SchwerpunktsLaenge(measured_period, uncertainty, 0.02)
 print(f"2. Die aus der Periode bestimmte Schwerpunktslänge beträgt {l_from_period} +/- {delL_from_period} m")
 
 ### Measurement opposite phase (read from diagram)
