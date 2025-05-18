@@ -1,14 +1,20 @@
 from matplotlib import pyplot as plt
-from numpy import array, empty, ones_like, pi
+from numpy import array, empty, pi, sqrt
 from util.inertia import HollowCylinder
 from util.uncertainty_calculation import GetResultAndUncertainty, MeanAndStd
 from util.linear_regression import linreg, plotWithErrorBars
 
-def T_i_sq_minus_T_0_sq(T_i, T_0, delT_i, delT_0):
+def T_i_sq_minus_T_0_sq(T_i, T_0, uncertainty=False, delT_i=0, delT_0=0):
   def T_i_sq_minus_T_0_sqInner(T_i, T_0):
     return T_i**2 - T_0**2
-  return GetResultAndUncertainty(T_i_sq_minus_T_0_sqInner, [T_i, T_0], True, [delT_i, delT_0])
+  return GetResultAndUncertainty(T_i_sq_minus_T_0_sqInner, [T_i, T_0], uncertainty, [delT_i, delT_0])
+
+def GfromC(C, l, r, uncertainty=False, delC=0, delL=0, delR=0):
+  def GfromCInner(C, l, r):
+    return 8*pi*l/(C*r**4)
+  return GetResultAndUncertainty(GfromCInner, [C, l, r], uncertainty, [delC, delL, delR])
   
+uncertainty=True
 
 error_ruler = 2e-3
 error_caliper = 0.01e-3
@@ -39,11 +45,14 @@ T_steel_means, T_steel_stds = MeanAndStd(T_steel, axis=1)
 Y_steel = empty(5)
 delY_steel = empty(5)
 for ii, T in enumerate(T_steel_means): # Need to loop because we have different std for each point TODO: Adjust GetResultAndUncertainty accordingly
-  Y_steel[ii], delY_steel[ii]= T_i_sq_minus_T_0_sq(T, T0_steel_mean, T_steel_stds[ii], T0_steel_std)
+  Y_steel[ii], delY_steel[ii]= T_i_sq_minus_T_0_sq(T, T0_steel_mean, uncertainty, T_steel_stds[ii], T0_steel_std)
 
 C_steel_linreg_fun, C_steel_inclination, C_steel_covariance = linreg(J, Y_steel)
 fig, axs = plt.subplots(nrows=3,ncols=1, figsize=(9,9))
-plotWithErrorBars(axs[0], J, Y_steel, C_steel_linreg_fun, x_absErr=delJ, y_absErr=delY_steel, title="Steel", xlabel=r'$J_i$', ylabel=r'$T_{i,steel}^2-T_{0,steel}^2$')
+plotWithErrorBars(axs[0], J, Y_steel, C_steel_linreg_fun, x_absErr=delJ, y_absErr=delY_steel, title="Stahl", xlabel=r'$J_i$', ylabel=r'$T_{i,steel}^2-T_{0,steel}^2$')
+
+Gdyn_steel, delGdyn_steel = GfromC(C_steel_inclination, wire_steel_l, wire_steel_d/2, uncertainty, sqrt(C_steel_covariance[0, 0]), error_ruler, error_caliper/2)
+print(f"\nG Modul Stahl: \t\t{Gdyn_steel/10**9} +/- {delGdyn_steel/10**9} GPa")
 
 ### periods aluminum
 T0_aluminum = array([7.01, 7.22, 7.02, 7.43, 7.32])/3
@@ -58,10 +67,13 @@ T_aluminum_means, T_aluminum_stds = MeanAndStd(T_aluminum, axis=1)
 Y_aluminum = empty(5)
 delY_aluminum = empty(5)
 for ii, T in enumerate(T_aluminum_means):
-  Y_aluminum[ii], delY_aluminum[ii]= T_i_sq_minus_T_0_sq(T, T0_aluminum_mean, T_aluminum_stds[ii], T0_aluminum_std)
+  Y_aluminum[ii], delY_aluminum[ii]= T_i_sq_minus_T_0_sq(T, T0_aluminum_mean, uncertainty, T_aluminum_stds[ii], T0_aluminum_std)
 
 C_aluminum_linreg_fun, C_aluminum_inclination, C_aluminum_covariance = linreg(J, Y_aluminum)
-plotWithErrorBars(axs[1], J, Y_aluminum, C_aluminum_linreg_fun, x_absErr=delJ, y_absErr=delY_aluminum, title="aluminum", xlabel=r'$J_i$', ylabel=r'$T_{i,aluminum}^2-T_{0,aluminum}^2$')
+plotWithErrorBars(axs[1], J, Y_aluminum, C_aluminum_linreg_fun, x_absErr=delJ, y_absErr=delY_aluminum, title="Aluminium", xlabel=r'$J_i$', ylabel=r'$T_{i,aluminum}^2-T_{0,aluminum}^2$')
+
+Gdyn_aluminum, delGdyn_aluminum = GfromC(C_aluminum_inclination, wire_aluminum_l, wire_aluminum_d/2, uncertainty, sqrt(C_aluminum_covariance[0, 0]), error_ruler, error_caliper/2)
+print(f"\nG Modul Aluminium: \t{Gdyn_aluminum/10**9} +/- {delGdyn_aluminum/10**9} GPa")
 
 ### periods copper
 T0_copper = array([16.23, 16.09, 16.39, 16.33, 16.25])/3
@@ -76,13 +88,14 @@ T_copper_means, T_copper_stds = MeanAndStd(T_copper, axis=1)
 Y_copper = empty(5)
 delY_copper = empty(5)
 for ii, T in enumerate(T_copper_means):
-  Y_copper[ii], delY_copper[ii]= T_i_sq_minus_T_0_sq(T, T0_copper_mean, T_copper_stds[ii], T0_copper_std)
+  Y_copper[ii], delY_copper[ii]= T_i_sq_minus_T_0_sq(T, T0_copper_mean, uncertainty, T_copper_stds[ii], T0_copper_std)
 
 C_copper_linreg_fun, C_copper_inclination, C_copper_covariance = linreg(J, Y_copper)
-plotWithErrorBars(axs[2], J, Y_copper, C_copper_linreg_fun, x_absErr=delJ, y_absErr=delY_copper, title="copper", xlabel=r'$J_i$', ylabel=r'$T_{i,copper}^2-T_{0,copper}^2$')
+plotWithErrorBars(axs[2], J, Y_copper, C_copper_linreg_fun, x_absErr=delJ, y_absErr=delY_copper, title="kupfer", xlabel=r'$J_i$', ylabel=r'$T_{i,copper}^2-T_{0,copper}^2$')
 
-def C(l, G_dyn, r):
-  return 8*pi*l/(G_dyn*r**4)
+Gdyn_copper, delGdyn_copper = GfromC(C_copper_inclination, wire_copper_l, wire_copper_d/2, uncertainty, sqrt(C_copper_covariance[0, 0]), error_ruler, error_caliper/2)
+print(f"\nG Modul Kupfer: \t{Gdyn_copper/10**9} +/- {delGdyn_copper/10**9} GPa")
+
 
 plt.tight_layout()
 plt.show()
