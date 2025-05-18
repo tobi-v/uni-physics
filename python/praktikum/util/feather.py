@@ -11,7 +11,7 @@ def FeatherConstantOfCoupledPendulum(displacement_left,
                     delPendulum2_m=0):
   def FeetherConstantInner(displacement_left, displacement_right, rod2_l, pendulum2_m):
     g = 9.81
-    return pendulum2_m*g*(displacement_right) / (rod2_l*displacement_left)
+    return pendulum2_m*g*(displacement_right) / (rod2_l*(displacement_left - displacement_right))
   
   return GetResultAndUncertainty(FeetherConstantInner,
                                  [displacement_left, displacement_right, rod2_l, pendulum2_m],
