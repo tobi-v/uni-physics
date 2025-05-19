@@ -26,6 +26,12 @@ public class DynamicArray extends Array{
         super.add(val);
     }
 
+    @Override
+    public void remove(int idx){
+        super.remove(idx);        
+        resize(size()-1);
+    }
+
     public void resize(int newLength) {
         if(newLength < 0)
             throw new IllegalArgumentException();
@@ -38,8 +44,12 @@ public class DynamicArray extends Array{
                 array[ii] = oldArray[ii];
             for(int ii = oldLength; ii < newLength; ii++)
                 array[ii] = 0;
-        } else
+        } else{
             for(int ii = 0; ii < newLength; ii++)
                 array[ii] = oldArray[ii];
+            if (firstFreeIdx > newLength){
+                firstFreeIdx = newLength;
+            }
+        }
     }
 }

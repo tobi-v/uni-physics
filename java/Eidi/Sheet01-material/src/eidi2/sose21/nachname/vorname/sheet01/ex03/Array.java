@@ -21,17 +21,17 @@ public abstract class Array{
 
     public int get(int index) {
         if(index >= firstFreeIdx)
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
         return array[index];
     }
 
     public void remove(int index) {
         if(index >= firstFreeIdx)
-            throw new IndexOutOfBoundsException();
+            throw new ArrayIndexOutOfBoundsException();
 
         for(int ii = index; ii < firstFreeIdx-1; ii++)
             array[ii] = array[ii+1];
-        array[--firstFreeIdx] = 0;        
+        array[--firstFreeIdx] = 0;
     }
     
     @Override
