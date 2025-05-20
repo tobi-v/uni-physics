@@ -48,19 +48,19 @@ public class Calculator {
 
         //Replace all code from here
         // Create Button with functionality
-        JButton btn1 = new JButton("Click Me");// Create Button with text
-        btn1.addActionListener(ctrl);// Add ActionListener (see @CalculatorCtrl for functionality)
-        btn1.setActionCommand("btn1");// Set Action command of button. This will be retrievable in the action Event (actionEvent.getActionCommand())
-        // add btn1 to buttons panel
-        panel.add(btn1);
-        
-        // Same as btn1
-        JButton btn2 = new JButton("Click Me harder");
-        btn2.addActionListener(ctrl);
-        btn2.setActionCommand("btn2");
-        
-        panel.add(btn2);
-        //Replace all code until here.
+        String[] buttonNames = {
+            "{", "}", "Undo", "Clear",
+            "7", "8", "9", "/",
+            "4", "5", "6", "*",
+            "1", "2", "3", "-",
+            "0", ".", "=", "*",
+        };
+        for(int ii = 0; ii < buttonNames.length; ii++){
+            JButton button = new JButton(buttonNames[ii]);
+            button.addActionListener(ctrl);
+            button.setActionCommand(buttonNames[ii]);
+            panel.add(button);
+        }
         
         // Add button area to BorderPane of window
         frame.getContentPane().add(panel);
