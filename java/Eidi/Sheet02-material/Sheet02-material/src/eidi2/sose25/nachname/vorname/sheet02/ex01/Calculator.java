@@ -82,4 +82,8 @@ public class Calculator {
     public static void setContent(String value){
         output.setText(value);
     }
+
+    public static String getContent(){
+        return output.getText();
+    }
 }
