@@ -23,6 +23,7 @@ vars = [B1, A2, B2, A3]
 
 result1 = solve(EQ_system1, vars, dict=True)
 print(f"B1 for E>V: {simplify(result1[0][B1])}")
+print(f"A3 for E>V: {simplify(result1[0][A3])}")
 
 EQ5 = A2 + B2 - (1 + B1)
 EQ6 = A2*exp(-k2t*a) + B2*exp(k2t*a) - A3*exp(I*k1*a)
