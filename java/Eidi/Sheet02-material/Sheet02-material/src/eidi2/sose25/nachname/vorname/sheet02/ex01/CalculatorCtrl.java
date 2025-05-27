@@ -19,7 +19,7 @@ public class CalculatorCtrl implements ActionListener {
                                     "4", "5", "6",
                                     "1", "2", "3",
                                     "0", "."};
-    private final String[] operations = {"/", "*", "-", "*",};
+    private final String[] operations = {"/", "*", "-", "+",};
 
     private void evaluate() {
         operand2 = Double.parseDouble(Calculator.getContent());
@@ -44,6 +44,7 @@ public class CalculatorCtrl implements ActionListener {
             if(Arrays.asList(appendable).contains(cmd)){
                 if(waitingForNextNumber){
                     Calculator.setContent("");
+                    System.out.println("Set waitingfornextnumber to false");
                     waitingForNextNumber = false;
                 }
                 if(cmd.equals("."))
@@ -56,6 +57,7 @@ public class CalculatorCtrl implements ActionListener {
 
                 }
                 waitingForNextNumber = true;
+                System.out.println("Set watingfornumber true");
                 operand1 = Double.parseDouble(Calculator.getContent());
                 currentNumberHasDot = false;
                 currentOperation = cmd;
