@@ -2,12 +2,12 @@ package eidi2.sose25.nachname.vorname.sheet04.ex01;
 
 import java.util.Iterator;
 
-public class DynamicArrayIterator implements Iterator<Integer> {
+public class DynamicArrayIterator<T> implements Iterator<T> {
 
-    private DynamicArray da;
+    private DynamicArray<T> da;
     int index = 0;
 
-    public DynamicArrayIterator(DynamicArray da) {
+    public DynamicArrayIterator(DynamicArray<T> da) {
         this.da = da;
     }
 
@@ -17,7 +17,7 @@ public class DynamicArrayIterator implements Iterator<Integer> {
     }
 
     @Override
-    public Integer next() {
+    public T next() {
         return da.get(index++);
     }
 }

@@ -225,7 +225,7 @@ public class DynamicArrayTestsSolution {
 	public void testIterator(){
 		int[] test = {1,5,7,3};
 
-		DynamicArray da = new DynamicArray(1,5,7,3);
+		DynamicArray<Integer> da = new DynamicArray<Integer>(1,5,7,3);
 
 		int i = 0;
 		for(int n : da){
