@@ -53,7 +53,7 @@ public class Calculator {
             "7", "8", "9", "/",
             "4", "5", "6", "*",
             "1", "2", "3", "-",
-            "0", ".", "=", "*",
+            "0", ".", "=", "+",
         };
         for(int ii = 0; ii < buttonNames.length; ii++){
             JButton button = new JButton(buttonNames[ii]);
