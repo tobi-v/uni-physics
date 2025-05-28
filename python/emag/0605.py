@@ -24,6 +24,11 @@ def BElectricLoop(I, loop: array, pos: array) -> array:
 
     return B
 
+def BElectricLoopMesh(I, loop: array, x, y, z) -> array:    
+    pos = array([x, y, z])
+
+    return BElectricLoop(I, loop, pos)
+
 def GetBFromOneLoopList(I, loop: array, positions: array):
     return array([BElectricLoop(I, loop, pos) for pos in positions])
 
