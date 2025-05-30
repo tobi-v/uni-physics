@@ -14,24 +14,13 @@ N       = 10
 radius  = 5e-3  # [m]
 current = 0.1   # [A]
 
-def BElectricLoop(current, loop: array, pos: array) -> array:    
-    loop = append(loop, [loop[0]], axis=0)
-    B = 0
-    
-    for elem, nextElem in zip(loop, loop[1:]):
-        dv = nextElem - elem
-        delta_r = (elem + nextElem)/2 - pos
-        B += BiotSavart(current, dv, delta_r)
-
-    return B
-
 def BElectricLoopMesh(current, loop: array, x, y, z) -> array:    
     pos = array([x, y, z])
 
     return BElectricLoop(current, loop, pos)
 import numpy as np
 
-def BElectricLoop2(I, loop: np.ndarray, pos_grid: np.ndarray) -> np.ndarray:
+def BElectricLoop(I, loop: np.ndarray, pos_grid: np.ndarray) -> np.ndarray:
     """
     Calculate magnetic field B on a 3D grid due to a current loop.
 
@@ -53,16 +42,6 @@ def BElectricLoop2(I, loop: np.ndarray, pos_grid: np.ndarray) -> np.ndarray:
         B += BiotSavart(I, dv, delta_r)  # BiotSavart must support broadcasting
 
     return B# Define grid pointsimport numpy as np
-
-x2 = np.linspace(-1, 1, 20)
-y2 = np.linspace(-1, 1, 20)
-z2 = np.linspace(-1, 1, 20)
-
-# Generate meshgrid (3D)
-X2, Y2, Z2 = np.meshgrid(x2, y2, z2, indexing='ij')  # shape = (20, 20, 20)
-
-# Stack into single array of shape (20, 20, 20, 3)
-pos_grid = np.stack((X2, Y2, Z2), axis=-1)
 
 #B = BElectricLoop(I, loop2, pos_grid)  # B.shape = (20, 20, 20, 3)
 
@@ -93,7 +72,7 @@ positions = np.stack((X, Y, Z), axis=-1)
 #plot_positions = transpose(positions)
 
 #B_field = transpose(GetBFromOneLoopList(I, loop, positions))
-B_field = BElectricLoop2(I, loop, positions)
+B_field = BElectricLoop(I, loop, positions)
 
 BX = B_field[:, 0, :, 0]
 BZ = B_field[:, 0, :, 1]
