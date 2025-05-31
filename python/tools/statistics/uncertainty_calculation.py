@@ -47,7 +47,10 @@ def GetResultAndUncertainty(fun, point, uncertainty=False, uncertainty_params=0)
     else:
       return fun(point), abs(derivative(fun, point).df*uncertainty)
   
-  return fun(*point)
+  if isinstance(point, list) or isinstance(point, ndarray):
+    return fun(*point)
+  else:
+    return fun(point)
     
 
 def MeanAndStd(array, axis=0):
