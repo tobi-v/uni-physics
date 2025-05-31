@@ -27,7 +27,7 @@ U_to_p, U_to_p_coeffs, U_to_p_cov = linreg(U_cal, p_cal)
 
 plotWithErrorBars(axs[0], U_cal, p_cal,  U_to_p,
                   x_absErr=uncertainty_osci, y_absErr=uncertainty_caliper,
-                  title="Kalibrierung des Messgerätes", xlabel=r'Spannung $[\frac{1}{V}]$', ylabel=r'Druck $[Pa]$')
+                  title="Kalibrierung des Messgerätes", xlabel=r'Spannung $[V]$', ylabel=r'Druckdifferenz $[Pa]$')
 measurement_device_textbox = r'$p \propto %.1f\cdot U$' % U_to_p_coeffs[0]
 axs[0].text(0.05, 0.95, measurement_device_textbox, transform=axs[0].transAxes, fontsize=14, verticalalignment='top', bbox=textbox_props)
 
@@ -44,12 +44,12 @@ def ProcessResultsFromVoltage(U: array, substance: str, ax):
     fun, sigma, sigma_deviation = GetSigmaFromPressure(d/2, p)
     plotWithErrorBars(ax, 2/d, p, fun,
                       x_absErr=0, y_absErr=sigma_deviation,
-                      title=f"Messung für {substance}", xlabel=r'1/r $[\frac{1}{m}]$', ylabel=r'Druck $[Pa]$')
+                      title=f"Messung für {substance}", xlabel=r'1/r $[\frac{1}{m}]$', ylabel=r'Druckdifferenz $[Pa]$')
     print(f"\nFür {substance}: \tsigma = ({sigma/2:1.5f} +/- {sigma_deviation:1.5f}) N/m")
 
 print(f"Literaturwert destilliertes Wasser: sigma = {72.75e-3} N/m")
 U = array([2.42, 1, 0.49, 0.424]) # [V] Measured voltages for distilled water
-ProcessResultsFromVoltage(U, "destilliertes Wasser", axs[1])
+ProcessResultsFromVoltage(U, "demineralisiertes Wasser", axs[1])
 
 ### 3. Saltwater
 
