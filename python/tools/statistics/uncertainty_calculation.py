@@ -33,12 +33,13 @@ def GaussianErrorPropagation(fun, point, uncertainties):
 
   return np.sqrt(quadratic_error_sum)
 
-def GetResultAndUncertainty(Fun, point, uncertainty=False, delParam=0):
+def GetResultAndUncertainty(fun, point, uncertainty=False, uncertainty_params=0):
   if uncertainty:
-    propagated_uncertainty = GaussianErrorPropagation(Fun, point, delParam)
-    return Fun(*point), propagated_uncertainty
+    propagated_uncertainty = GaussianErrorPropagation(fun, point, uncertainty_params)
+    return fun(*point), propagated_uncertainty
   
-  return Fun(*point)
+  return fun(*point)
+    
 
 def MeanAndStd(array, axis=0):
    mean = np.mean(array, axis=axis)
