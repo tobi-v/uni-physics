@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from numpy import append, array, dot, linspace, log, meshgrid, mgrid, pi, transpose, vstack, zeros_like
+from numpy import append, array, dot, mgrid, pi, transpose, vstack, zeros_like
 from numpy.linalg import norm
 
 from tools.electricity.magnetic_field import BiotSavart, mu_0

@@ -4,7 +4,6 @@ from numpy import linalg as npLin,\
     dot as npDot,\
     linspace as npLinspace,\
     meshgrid as npMeshgrid,\
-    abs as npAbs,\
     cos as npCos,\
     pi,\
     sin as npSin
@@ -28,9 +27,9 @@ print(str(phi_end/pi) + " pi")
 R = .9/(1 - npCos(phi_end))
 print(R)
 
-def Cycloid(R, phi):
-    x = R*(phi - npSin(phi))
-    z = R*(1 - npCos(phi))
+#def Cycloid(R, phi):
+#    x = R*(phi - npSin(phi))
+#    z = R*(1 - npCos(phi))
 
 phi = npLinspace(0, phi_end, 100)
 
@@ -65,14 +64,14 @@ x = npLinspace(-10, 10, 1000)
 y = npLinspace(-10, 10, 1000)
 grid = npMeshgrid(x,y)
 
-def wave(x0, y0, x, y, t):
-    A = 1
-    omega = 2*pi
-    k = omega
-
-    distance = npAbs()
-    amplitude = A
-    return amplitude
+#def wave(x0, y0, x, y, t):
+#    A = 1
+#    omega = 2*pi
+#    k = omega
+#
+#    distance = npAbs()
+#    amplitude = A
+#    return amplitude
 
 # 3
 
