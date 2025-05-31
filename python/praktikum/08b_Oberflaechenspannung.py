@@ -1,44 +1,76 @@
-from numpy import array, linspace
-from tools.hydrodyn.static_properties import GravitationalPressure
-from tools.statistics.linear_regression import linreg
+from numpy import array, linspace, sqrt
+from tools.hydrodyn.static_properties import GravitationalPressure, RhoFromGravitationalPresure
+from tools.statistics.linear_regression import linreg, plotWithErrorBars
+from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 import matplotlib.pyplot as plt
 
-g = 9.81
-rho = 1
-h = 10
-uncertainty = True
+fig, axs = plt.subplots(3, 1)
+textbox_props = dict(boxstyle='round', facecolor='wheat', alpha=0.5)
 
-print(GravitationalPressure(rho, g, h, uncertainty))
+g   = 9.81  # [m/s^2]
+rho = 997   # [kg/m^3]
 
-# 1
+uncertainty         = True
+uncertainty_caliper = 0.05e-3   # [m]
+uncertainty_osci    = 2e-3      # [m]
+ 
+d = array([1, 1.7, 2.95, 4.85])*1e-3 # [m] Diameter capillaries
 
-h_cal = linspace(0, 15, 7)*1e-3
-U_cal = array([240, 312, 408, 592, 752, 928, 1110])*1e-3 # V
+### 1. Calibration of measurement device
 
-p_params = linreg(U_cal, h_cal)
+h_cal = linspace(0, 15, 7)*1e-3                             # [m]
+U_cal = array([240, 312, 408, 592, 752, 928, 1110])*1e-3    # [V]
+p_cal = GravitationalPressure(rho, g, h_cal)                # [Pa]
 
-fig, ax = plt.subplots(3, 1)
-ax[0].plot(h_cal, U_cal)
+U_to_p, U_to_p_coeffs, U_to_p_cov = linreg(U_cal, p_cal)
 
-# Diameter kapillaren
-uncertainty_caliper = 0.05e-3
-d = array([1, 1.7, 2.95, 4.85])*1e-3
+plotWithErrorBars(axs[0], U_cal, p_cal,  U_to_p,
+                  x_absErr=uncertainty_osci, y_absErr=uncertainty_caliper,
+                  title="Kalibrierung des Messgerätes", xlabel=r'Spannung $[\frac{1}{V}]$', ylabel=r'Druck $[Pa]$')
+measurement_device_textbox = r'$p \propto %.1f\cdot U$' % U_to_p_coeffs[0]
+axs[0].text(0.05, 0.95, measurement_device_textbox, transform=axs[0].transAxes, fontsize=14, verticalalignment='top', bbox=textbox_props)
 
-# Destilliertes Wasser
+### 2. Distilled Wasser
 
-U_dest = array([2.42, 1, 0.49, 0.424]) # V
-ax[1].plot(2/d, U_dest)
+def GetSigmaFromPressure(r: array, p: array):
+    fun, coeffs, cov = linreg(1/r, p)
+    sigma = coeffs[0]/2
+    sigma_deviation = sqrt(cov[0,0])
+    return fun, sigma, sigma_deviation
+
+def ProcessResultsFromVoltage(U: array, substance: str, ax):
+    p = U_to_p(U)   # TODO: also get error for p
+    fun, sigma, sigma_deviation = GetSigmaFromPressure(d/2, p)
+    plotWithErrorBars(ax, 2/d, p, fun,
+                      x_absErr=0, y_absErr=sigma_deviation,
+                      title=f"Messung für {substance}", xlabel=r'1/r $[\frac{1}{m}]$', ylabel=r'Druck $[Pa]$')
+    print(f"\nFür {substance}: \tsigma = ({sigma/2:1.5f} +/- {sigma_deviation:1.5f}) N/m")
+
+print(f"Literaturwert destilliertes Wasser: sigma = {72.75e-3} N/m")
+U = array([2.42, 1, 0.49, 0.424]) # [V] Measured voltages for distilled water
+ProcessResultsFromVoltage(U, "destilliertes Wasser", axs[1])
+
+### 3. Saltwater
+
+U_sal = array([2.32, 1.08, 0.616, 0.528]) # [V] Measured voltages for saltwater
+ProcessResultsFromVoltage(U_sal, "Salzwasser", axs[2])
+
+
+### 4. Density
+
+h_diff = 1.5e-2 # [m]
+U_salt = 1.18   # [V]
+U_desti = 0.6   # [V]
+
+p_salt = U_to_p(U_salt)
+p_desti = U_to_p(U_desti)
+
+rho_salt = RhoFromGravitationalPresure(p_salt, g, h_diff)
+rho_desti = RhoFromGravitationalPresure(p_desti, g, h_diff)
+
+print(f"Dichte von destilliertem Wasser: rho = {rho_desti} kg/m^3")
+print(f"Dichte von Salzwasser: rho = {rho_salt} kg/m^3")
+
+plt.tight_layout()
 plt.show()
-
-# Salzwasser
-
-U_sal = array([2.32, 1.08, 0.616, 0.528])
-ax[2].plot(2/d, U_dest)
-plt.show()
-
-# Dichtebestimmung
-
-h_diff = 1.5e-2
-U_salt = 1.18 # V
-U_desti = 0.6
