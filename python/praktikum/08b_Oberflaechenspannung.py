@@ -1,4 +1,4 @@
-from numpy import array, linspace, sqrt
+from numpy import array, empty, linspace, sqrt
 from tools.hydrodyn.static_properties import GravitationalPressure, RhoFromGravitationalPresure
 from tools.statistics.linear_regression import linreg, plotWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
@@ -36,11 +36,11 @@ axs[0].text(0.05, 0.95, measurement_device_textbox, transform=axs[0].transAxes, 
 def GetSigmaFromPressure(r: array, p: array):
     fun, coeffs, cov = linreg(1/r, p)
     sigma = coeffs[0]/2
-    sigma_deviation = sqrt(cov[0,0])
+    sigma_deviation = sqrt(cov[0,0])/2
     return fun, sigma, sigma_deviation
 
 def ProcessResultsFromVoltage(U: array, substance: str, ax):
-    p = U_to_p(U)   # TODO: also get error for p
+    p = U_to_p(U)
     fun, sigma, sigma_deviation = GetSigmaFromPressure(d/2, p)
     plotWithErrorBars(ax, 2/d, p, fun,
                       x_absErr=0, y_absErr=sigma_deviation,
