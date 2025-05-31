@@ -60,17 +60,17 @@ ProcessResultsFromVoltage(U_sal, "Salzwasser", axs[2])
 ### 4. Density
 
 h_diff = 1.5e-2 # [m]
-U_salt = 1.18   # [V]
 U_desti = 0.6   # [V]
+U_salt = 1.18   # [V]
 
-p_salt = U_to_p(U_salt)
-p_desti = U_to_p(U_desti)
+p_desti, p_desti_uncertainty = GetResultAndUncertainty(U_to_p, U_desti, uncertainty, uncertainty_params=uncertainty_osci)
+p_salt, p_salt_uncertainty = GetResultAndUncertainty(U_to_p, U_salt, uncertainty, uncertainty_params=uncertainty_osci)
 
-rho_salt = RhoFromGravitationalPresure(p_salt, g, h_diff)
-rho_desti = RhoFromGravitationalPresure(p_desti, g, h_diff)
+rho_desti, rho_desti_deviation = RhoFromGravitationalPresure(p_desti, g, h_diff, uncertainty, delP=p_desti_uncertainty, delG=0, delH=uncertainty_caliper)
+rho_salt, rho_salt_deviation = RhoFromGravitationalPresure(p_salt, g, h_diff, uncertainty, delP=p_salt_uncertainty, delG=0, delH=uncertainty_caliper)
 
-print(f"Dichte von destilliertem Wasser: rho = {rho_desti} kg/m^3")
-print(f"Dichte von Salzwasser: rho = {rho_salt} kg/m^3")
+print(f"Dichte von destilliertem Wasser: rho = ({rho_desti:1.1f} +/- {rho_desti_deviation}) kg/m^3")
+print(f"Dichte von Salzwasser: rho = ({rho_salt:1.1f} +/- {rho_salt_deviation}) kg/m^3")
 
 plt.tight_layout()
 plt.show()
