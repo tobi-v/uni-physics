@@ -1,19 +1,27 @@
-from util.uncertainty_calculation import GetResultAndUncertainty
+from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
-def FeatherConstantOfCoupledPendulum(displacement_left,
-                    displacement_right,
+def FeatherConstantOfCoupledPendulum(displ_left,
+                    displ_right,
                     rod2_l,
                     pendulum2_m,
                     uncertainty=False,
-                    delDisplacement_left=0,
-                    delDisplacement_right=0,
+                    delDispl_left=0,
+                    delDispl_right=0,
                     delRod2_l=0,
                     delPendulum2_m=0):
-  def FeetherConstantInner(displacement_left, displacement_right, rod2_l, pendulum2_m):
+  '''
+  displ_left: displacement of the left pendulum
+  displ_right: displacement of the right pendulum
+  
+  Returns: Feather constant'''
+  def FeetherConstantInner(displ_left, displ_right, rod2_l, pendulum2_m):
     g = 9.81
-    return pendulum2_m*g*(displacement_right) / (rod2_l*(displacement_left - displacement_right))
+    return pendulum2_m*g*(displ_right) / (rod2_l*(displ_left - displ_right))
   
   return GetResultAndUncertainty(FeetherConstantInner,
-                                 [displacement_left, displacement_right, rod2_l, pendulum2_m],
+                                 [displ_left, displ_right, rod2_l, pendulum2_m],
                                  uncertainty,
-                                 [delDisplacement_left, delDisplacement_right, delRod2_l, delPendulum2_m])
+                                 [delDispl_left,
+                                  delDispl_right,
+                                  delRod2_l,
+                                  delPendulum2_m])

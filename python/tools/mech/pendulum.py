@@ -1,5 +1,5 @@
 from numpy import pi
-from util.uncertainty_calculation import GetResultAndUncertainty
+from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 g = 9.81
 
@@ -34,7 +34,8 @@ def DegreeOfCouplingPhase(t_inPhase, t_oppositePhase, uncertainty=False, delT=0)
                                  uncertainty,
                                  [delT, delT])
 
-def DegreeOfCouplingBeat(period, beat_period, uncertainty=False, delTperiod=0, delTbeat=0):
+def DegreeOfCouplingBeat(period, beat_period,
+                         uncertainty=False, delTperiod=0, delTbeat=0):
   def DegreeOfCouplingBeatInner(period, beat_period):
     return 2*period*beat_period/(period**2 + beat_period**2)
   
