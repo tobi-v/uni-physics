@@ -23,7 +23,8 @@ def partial_derivative(func, var=0, point=[]):
 
 def GaussianErrorPropagationMultivariate(fun, point, uncertainties):
   if(len(point) != len(uncertainties)):
-     print(f"Error: point is of length {len(point)}, but uncertainties is of length {len(uncertainties)}")
+     print(f"Error: point is of length {len(point)},"\
+           f"but uncertainties is of length {len(uncertainties)}")
      return
   
   quadratic_error_sum = 0
@@ -42,7 +43,9 @@ def GaussianErrorPropagation(fun, point, uncertainty):
 def GetResultAndUncertainty(fun, point, uncertainty=False, uncertainty_params=0):
   if uncertainty:
     if isinstance(point, list) or isinstance(point, ndarray):
-      propagated_uncertainty = GaussianErrorPropagationMultivariate(fun, point, uncertainty_params)
+      propagated_uncertainty = GaussianErrorPropagationMultivariate(fun,
+                                                                    point,
+                                                                    uncertainty_params)
       return fun(*point), propagated_uncertainty
     else:
       return fun(point), abs(derivative(fun, point).df*uncertainty)
@@ -50,10 +53,9 @@ def GetResultAndUncertainty(fun, point, uncertainty=False, uncertainty_params=0)
   if isinstance(point, list) or isinstance(point, ndarray):
     return fun(*point)
   else:
-    return fun(point)
-    
+    return fun(point)    
 
-def MeanAndStd(array, axis=0):
-   mean = np.mean(array, axis=axis)
-   std = np.std(array, axis=axis, ddof=1)
+def MeanAndStd(arr: ndarray, axis=0):
+   mean = np.mean(arr, axis=axis)
+   std = np.std(arr, axis=axis, ddof=1)
    return mean, std
