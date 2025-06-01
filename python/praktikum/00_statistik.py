@@ -19,14 +19,14 @@ def kurtosis(distr):
 def gauss_dist(x, mean, sigma):
     return 1/(np.sqrt(2*np.pi) * sigma) * np.exp(-0.5*((x-mean)/sigma)**2)
 
-def wurf(p, x_0, theta):
-    g = 9.81
-    m = 1
-    v = p/m
-    v_y = v*np.sin(theta)
-    v_x = v*np.cos(theta)
-    t_E = (v_y + np.sqrt(v_y**2 + 2*g*y_0)) / g
-    x_E = ...
+#def wurf(p, x_0, theta):
+#    g = 9.81
+#    m = 1
+#    v = p/m
+#    v_y = v*np.sin(theta)
+#    v_x = v*np.cos(theta)
+#    t_E = (v_y + np.sqrt(v_y**2 + 2*g*y_0)) / g
+#    x_E = ...
 
 
 np.random.seed(13)
