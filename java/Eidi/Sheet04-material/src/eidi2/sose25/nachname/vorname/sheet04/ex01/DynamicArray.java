@@ -16,7 +16,7 @@ public class DynamicArray<T> implements UniList<T> {
         array = (T[]) new Object[n];
     }
 
-    public DynamicArray(int... values) {
+    public DynamicArray(T... values) {
         array = (T[]) new Object[values.length];
 
         System.arraycopy(values, 0, array, 0, values.length);
