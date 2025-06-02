@@ -1,6 +1,7 @@
 package eidi2.sose25.nachname.vorname.sheet04.ex01;
 
 import java.util.Iterator;
+import java.util.function.UnaryOperator;
 
 public class DynamicArray<T> implements UniList<T> {
 
@@ -199,5 +200,11 @@ public class DynamicArray<T> implements UniList<T> {
         sb.append("]");
 
         return new String(sb);
+    }
+
+    public void mutate(UnaryOperator<T> mutator){
+        for (int ii=0; ii<size(); ii++){
+            array[ii] = mutator.apply(array[ii]);
+        }
     }
 }

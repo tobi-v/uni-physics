@@ -309,4 +309,14 @@ public class DynamicArrayTestsSolution {
 		DynamicArray da = new DynamicArray(42, 3, 27);
 		da.remove(5);
 	}
+
+	@Test(timeout = 1000)
+	public void testMutate(){
+		DynamicArray<Integer> da = new DynamicArray<>(42, 3, 27);
+		DynamicArray<Integer> expected =  new DynamicArray<>(84, 6, 54);
+		da.mutate(x -> (x*2));
+		Assert.assertEquals(expected.get(0), da.get(0));
+		Assert.assertEquals(expected.get(1), da.get(1));
+		Assert.assertEquals(expected.get(2), da.get(2));
+	}
 }
