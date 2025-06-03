@@ -319,4 +319,35 @@ public class DynamicArrayTestsSolution {
 		Assert.assertEquals(expected.get(1), da.get(1));
 		Assert.assertEquals(expected.get(2), da.get(2));
 	}
+
+	@Test(timeout=1000)
+	public void testListCTor(){
+		List<Integer> SUT = new List<>(2, 5, 7);
+		Assert.assertEquals("2, 5, 7", SUT.toString());
+	}
+
+	@Test(timeout = 1000)
+	public void testListPrepend(){
+		List<Integer> SUT = new List<>(5, 7);
+
+		SUT.Prepend(2);
+
+		Assert.assertEquals("2, 5, 7", SUT.toString());
+	}
+
+	@Test(timeout = 1000)
+	public void testListAppend(){
+		List<Integer> SUT = new List<>(2, 5);
+
+		SUT.Append(7);
+
+		Assert.assertEquals("2, 5, 7", SUT.toString());
+	}
+
+	@Test(timeout = 1000)
+	public void testListSize(){
+		List<Integer> SUT = new List<>(2, 5, 7);
+
+		Assert.assertEquals(3, SUT.Size());
+	}
 }
