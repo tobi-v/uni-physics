@@ -377,4 +377,12 @@ public class DynamicArrayTestsSolution {
 
 		Assert.assertEquals("2, 5, 7, 0", SUT.toString());
 	}
+
+	@Test(timeout = 1000)
+	public void testListGet(){
+		List<Integer> SUT = new List<>(2, 5, 7);
+		Integer expected = 5;
+
+		Assert.assertEquals(expected, SUT.Get(1));
+	}
 }
