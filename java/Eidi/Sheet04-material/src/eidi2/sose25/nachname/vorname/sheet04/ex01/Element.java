@@ -13,6 +13,10 @@ public class Element<T> {
     _next = next;
   }
 
+  public T GetValue(){
+    return _val;
+  }
+
   @Override
   public String toString() {
     return _val.toString();

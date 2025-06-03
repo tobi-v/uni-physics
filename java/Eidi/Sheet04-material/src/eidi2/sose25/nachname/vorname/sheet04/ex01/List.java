@@ -55,6 +55,14 @@ public class List<T> {
     }
   }
 
+  public T Get(int idx){
+    Element<T> current = first;
+    for(int ii = 0; ii < idx; ii++){
+      current = current._next;
+    }
+    return current.GetValue();
+  }
+
   @Override
   public String toString(){
     Element<T> tmp = first;
