@@ -40,6 +40,21 @@ public class List<T> {
     return size;
   }
 
+  public void Insert(int idx, T val){
+    if(idx < 1){
+      Prepend(val);
+    } else if(idx > size){
+      Append(val);
+    } else{
+      Element<T> current = first;
+      for(int ii = 0; ii < idx-1 ; ii++){
+        current = current._next;
+      }
+      Element<T> tmp = current._next;
+      current._next = new Element<>(val, tmp);
+    }
+  }
+
   @Override
   public String toString(){
     Element<T> tmp = first;

@@ -350,4 +350,31 @@ public class DynamicArrayTestsSolution {
 
 		Assert.assertEquals(3, SUT.Size());
 	}
+
+	@Test(timeout = 1000)
+	public void testListInsertFront(){
+		List<Integer> SUT = new List<>(2, 5, 7);
+
+		SUT.Insert(-3, 0);
+
+		Assert.assertEquals("0, 2, 5, 7", SUT.toString());
+	}
+
+	@Test(timeout = 1000)
+	public void testListInsertMiddle(){
+		List<Integer> SUT = new List<>(2, 5, 7);
+
+		SUT.Insert(1, 0);
+
+		Assert.assertEquals("2, 0, 5, 7", SUT.toString());
+	}
+
+	@Test(timeout = 1000)
+	public void testListInsertBack(){
+		List<Integer> SUT = new List<>(2, 5, 7);
+
+		SUT.Insert(12, 0);
+
+		Assert.assertEquals("2, 5, 7, 0", SUT.toString());
+	}
 }
