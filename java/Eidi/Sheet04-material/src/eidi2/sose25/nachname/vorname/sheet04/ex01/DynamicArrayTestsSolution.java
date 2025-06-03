@@ -385,4 +385,20 @@ public class DynamicArrayTestsSolution {
 
 		Assert.assertEquals(expected, SUT.Get(1));
 	}
+
+	@Test(timeout = 1000)
+	public void testListContains(){
+		List<Integer> SUT = new List<>(2, 5, 7);
+		Integer val = 5;
+
+		Assert.assertEquals(true, SUT.Contains(val));
+	}
+
+	@Test(timeout = 1000)
+	public void testListContainsNot(){
+		List<Integer> SUT = new List<>(2, 5, 7);
+		Integer val = 9;
+
+		Assert.assertEquals(false, SUT.Contains(val));
+	}
 }
