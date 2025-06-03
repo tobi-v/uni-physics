@@ -389,9 +389,11 @@ public class DynamicArrayTestsSolution {
 	@Test(timeout = 1000)
 	public void testListContains(){
 		List<Integer> SUT = new List<>(2, 5, 7);
-		Integer val = 5;
+		Integer val1= 2;
+		Integer val2 = 7;
 
-		Assert.assertEquals(true, SUT.Contains(val));
+		Assert.assertEquals(true, SUT.Contains(val1));
+		Assert.assertEquals(true, SUT.Contains(val2));
 	}
 
 	@Test(timeout = 1000)

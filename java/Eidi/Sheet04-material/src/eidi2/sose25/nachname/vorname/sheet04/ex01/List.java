@@ -63,6 +63,20 @@ public class List<T> {
     return current.GetValue();
   }
 
+  public Boolean Contains(T val){
+    Element<T> current = first;
+    while(current != null){
+      System.out.println(current.GetValue());
+      if(current.GetValue() == val){
+        return true;
+      }
+      current = current._next;
+
+    }
+    return false;
+
+  }
+
   @Override
   public String toString(){
     Element<T> tmp = first;
