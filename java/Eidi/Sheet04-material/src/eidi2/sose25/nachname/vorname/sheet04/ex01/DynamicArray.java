@@ -9,14 +9,17 @@ public class DynamicArray<T> implements UniList<T> {
     private T[] array;
 
     //constructors
+    // Laufzeit: O(1)
     public DynamicArray() {
         array = (T[]) new Object[10];
     }
 
+    // Laufzeit: O(1)
     public DynamicArray(int n) {
         array = (T[]) new Object[n];
     }
 
+    // Laufzeit: O(1)
     public DynamicArray(T... values) {
         array = (T[]) new Object[values.length];
 
@@ -25,6 +28,7 @@ public class DynamicArray<T> implements UniList<T> {
     }
 
     //implementation of methods from UniList<T>
+    // Laufzeit: worst case O(resize) + 1
     @Override
     public boolean add(T value) {
 
@@ -37,6 +41,7 @@ public class DynamicArray<T> implements UniList<T> {
         return true;
     }
 
+    // Laufzeit: worst case: O(n)
     @Override
     public void add(int index, T value) {
         if (index < 0 || index > size()) {
@@ -56,7 +61,7 @@ public class DynamicArray<T> implements UniList<T> {
         }
     }
 
-
+    // Laufzeit: O(1)
     @Override
     public T set(int index, T value) {
         if (index < 0 || index >= size()) {
@@ -69,6 +74,7 @@ public class DynamicArray<T> implements UniList<T> {
         return old;
     }
 
+    // Laufzeit: O(1)
     @Override
     public T get(int index) {
         if (index < 0 || index >= size()) {
@@ -78,6 +84,7 @@ public class DynamicArray<T> implements UniList<T> {
         return array[index];
     }
 
+    // Laufzeit: O(n)
     @Override
     public int indexOf(T value) {
         for (int i = 0; i < array.length; i++) {
@@ -89,6 +96,7 @@ public class DynamicArray<T> implements UniList<T> {
         return -1;
     }
 
+    // Laufzeit: O(n)
     @Override
     public int lastIndexOf(T value) {
         int index = -1;
@@ -102,6 +110,7 @@ public class DynamicArray<T> implements UniList<T> {
         return index;
     }
 
+    // Lauzeit: O(n)
     @Override
     public boolean contains(T value) {
         for (T x : array) {
@@ -113,22 +122,26 @@ public class DynamicArray<T> implements UniList<T> {
         return false;
     }
 
+    // Laufzeit: O(1)
     @Override
     public int size() {
         return nextFree;
     }
 
+    // Laufzet: O(1)
     @Override
     public boolean isEmpty() {
         return nextFree == 0;
     }
 
 
+    // Laufzeit: O(1)
     @Override
     public void clear() {
         nextFree = 0;
     }
 
+    // Laufzeit: O(n)
     @Override
     public T remove(int index) {
         if (index < 0 || index >= nextFree) {
@@ -147,6 +160,7 @@ public class DynamicArray<T> implements UniList<T> {
         return old;
     }
 
+    // Laufzeit: O(n)
     @Override
     public boolean remove(T value) {
         for (int i = 0; i < array.length; i++) {
@@ -159,12 +173,14 @@ public class DynamicArray<T> implements UniList<T> {
         return false;
     }
 
+    // Laufzeit: O(1)
     @Override
     public Iterator<T> iterator() {
         return new DynamicArrayIterator<T>(this);
     }
 
     //helper methods
+    // Laufzeit: O(n)
     public void resize(int newLength) {
 
         if (newLength < 0) {
@@ -182,6 +198,7 @@ public class DynamicArray<T> implements UniList<T> {
     }
 
     //Object method overrides
+    // Laufzeit: O(n)
     @Override
     public String toString() {
 
@@ -202,6 +219,7 @@ public class DynamicArray<T> implements UniList<T> {
         return new String(sb);
     }
 
+    // Laufzeit: O(n)
     public void mutate(UnaryOperator<T> mutator){
         for (int ii=0; ii<size(); ii++){
             array[ii] = mutator.apply(array[ii]);
