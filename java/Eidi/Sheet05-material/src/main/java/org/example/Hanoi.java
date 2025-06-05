@@ -1,6 +1,13 @@
 package org.example;
 
 public class Hanoi {
+
+  public static void printTowers(Tower[] towers){
+    for(Tower tower : towers){
+      System.out.println("Tower 1: " + tower.toString());
+    }
+  }
+
   public static void main(String[] args) {
     Integer n_discs = 7;
 
