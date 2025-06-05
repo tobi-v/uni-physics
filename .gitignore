@@ -264,3 +264,4 @@ nb-configuration.xml
 ## Miscellaneous
 ##############################
 *.log
+sandbox.*
