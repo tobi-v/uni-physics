@@ -1,8 +1,8 @@
-coverage-badge~=1.1.0
 matplotlib==3.10.0
 numpy==2.2.5
 pytest==8.3.5
 pytest-cov==4.0.0
+pytest-local-badge==1.0.3
 ruff==v0.0.260
 scipy==1.15.2
 sympy==1.14.0
