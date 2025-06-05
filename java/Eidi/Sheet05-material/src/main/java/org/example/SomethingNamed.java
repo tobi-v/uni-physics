@@ -1,4 +1,4 @@
-package eidi2_ex05;
+package org.example;
 
 public class SomethingNamed extends Something{
 	
