@@ -13,7 +13,8 @@ z = linspace(-25e-2, 25e-2, 1000)
 
 def plot_helmholtz(ax, dist: float):
     B = HelmholtzAlongZ(z, current, radius, dist, turns)
-    print(f"\nDistance: {dist} \t B(0) = {HelmholtzAlongZ(0, current, radius, dist, turns)}")
+    print(f"\nDistance: {dist} \t"
+          f"B(0) = {HelmholtzAlongZ(0, current, radius, dist, turns)}")
     ax.plot(z, B)
     ax.grid()
     ax.set_title(f"Distance: {dist}")

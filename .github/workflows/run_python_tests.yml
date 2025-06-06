@@ -21,8 +21,8 @@ jobs:
           if [ -f python/requirements.txt ]; then pip install -r python/requirements.txt; fi  
       - name: Lint with Ruff  
         run: |  
-          pip install ruff  
-          ruff --format=github --target-version=py310 .  
+          pip install ruff
+          ruff --format=github --target-version=py310 .
         continue-on-error: true  
       - name: Test with pytest  
         run: |  

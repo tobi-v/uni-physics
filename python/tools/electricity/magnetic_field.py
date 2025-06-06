@@ -22,8 +22,13 @@ def BOfCoilAlongZ(z: ndarray, current: float, radius: float, turns=1) -> ndarray
     """
     return turns*mu_0 *current*radius**2 / (2*(z**2 + radius**2)**(3/2))
 
-def HelmholtzAlongZ(z: ndarray, current: float, radius: float, distance: float, turns=1) -> ndarray:
-    """B_z field along the z-axis from two identical coaxial current loops (Helmholtz pair).
+def HelmholtzAlongZ(z: ndarray,
+                    current: float,
+                    radius: float,
+                    distance: float,
+                    turns=1) -> ndarray:
+    """B_z field along the z-axis
+    from two identical coaxial current loops (Helmholtz pair).
 
     Returns: B_z field (T) at position(s) z
     """
