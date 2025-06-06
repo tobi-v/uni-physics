@@ -16,16 +16,16 @@ def BiotSavart(current,
         distance = distance + 1e-3
     return (mu_0*current/(4*pi)) * cross(wire_segment, delta_r) / (distance)**3
 
-def BOfLoopAlongZ(z: ndarray, current: float, radius: float) -> ndarray:
+def BOfCoilAlongZ(z: ndarray, current: float, radius: float, turns=1) -> ndarray:
     """Magnetic field B_z along the z-axis from a single circular current loop.
     Returns: B_z field (T) at position(s) z
     """
-    return mu_0 *current*radius**2 / (2*(z**2 + radius**2)**(3/2))
+    return turns*mu_0 *current*radius**2 / (2*(z**2 + radius**2)**(3/2))
 
-def HelmholtzAlongZ(z: ndarray, current: float, radius: float, distance: float) -> ndarray:
+def HelmholtzAlongZ(z: ndarray, current: float, radius: float, distance: float, turns=1) -> ndarray:
     """B_z field along the z-axis from two identical coaxial current loops (Helmholtz pair).
 
     Returns: B_z field (T) at position(s) z
     """
-    return BOfLoopAlongZ(z+distance/2, current, radius) \
-            + BOfLoopAlongZ(z-distance/2, current, radius)
+    return BOfCoilAlongZ(z+distance/2, current, radius, turns) \
+            + BOfCoilAlongZ(z-distance/2, current, radius, turns)
