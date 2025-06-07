@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from numpy import array, mgrid
 import numpy as np
 
-from tools.electricity.magnetic_field import BiotSavart, mu_0
+from tools.electricity.magnetic_field import BOfLoopCenter, BOfLoopNumeric
 from tools.geometry.shapes_1d import CreateLoopXYParallel
 
 ### 1. See tools.electricity.magnetic_field -> biot-savart
@@ -13,33 +13,10 @@ N       = 10
 radius  = 5e-3  # [m]
 current = 0.1   # [A]
 
-def BElectricLoopMesh(current, loop: array, x, y, z) -> array:    
-    pos = array([x, y, z])
-
-    return BElectricLoop(current, loop, pos)
-
-def BElectricLoop(current, loop: np.ndarray, pos_grid: np.ndarray) -> np.ndarray:
-    """
-    Calculate magnetic field B on a 3D grid due to a current loop.
-
-    Parameters:
-    - I: current through the loop
-    - loop: (N, 3) array of loop vertices
-    - pos_grid: (..., 3) array of observation positions (e.g., meshgrid)
-
-    Returns:
-    - B: (..., 3) array of magnetic field vectors at each grid point
-    """
-    loop = np.append(loop, [loop[0]], axis=0)
-    B = np.zeros_like(pos_grid)  # same shape as pos_grid, (..., 3)
-
-    for elem, nextElem in zip(loop, loop[1:]):
-        dv = nextElem - elem  # (3,)
-        r_mid = (elem + nextElem) / 2  # (3,)
-        delta_r = r_mid - pos_grid  # (..., 3)
-        B += BiotSavart(current, dv, delta_r)  # BiotSavart must support broadcasting
-
-    return B# Define grid pointsimport numpy as np
+#def BElectricLoopMesh(current, loop: array, x, y, z) -> array:
+#    pos = array([x, y, z])
+#
+#    return BOfLoopNumeric(current, loop, pos)
 
 #B = BElectricLoop(I, loop2, pos_grid)  # B.shape = (20, 20, 20, 3)
 
@@ -50,13 +27,10 @@ def BElectricLoop(current, loop: np.ndarray, pos_grid: np.ndarray) -> np.ndarray
 
 ### 3. Analytic solution for magnetic field inside loop
 
-def BElectricLoopCenter(current, radius):
-    return mu_0*current/(2*radius)
-
 r0 = array([0, 0, 0])
 loop = CreateLoopXYParallel(radius, 0, N)
-numeric_solution = BElectricLoop(current, loop, r0)
-analyitc_solution = BElectricLoopCenter(current, radius)
+numeric_solution = BOfLoopNumeric(current, loop, r0)
+analyitc_solution = BOfLoopCenter(current, radius)
 relative_error = abs((numeric_solution[2] - analyitc_solution)/analyitc_solution)
 
 print(f"Numeric value:\t{numeric_solution[2]:.3g}\nAnalytic Value:" \
@@ -70,7 +44,7 @@ positions = np.stack((X, Y, Z), axis=-1)
 #plot_positions = transpose(positions)
 
 #B_field = transpose(GetBFromOneLoopList(I, loop, positions))
-B_field = BElectricLoop(current, loop, positions)
+B_field = BOfLoopNumeric(current, loop, positions)
 
 BX = B_field[:, 0, :, 0]
 BZ = B_field[:, 0, :, 1]
