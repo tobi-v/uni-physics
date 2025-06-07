@@ -1,47 +1,37 @@
 import matplotlib.pyplot as plt
-from numpy import array, mgrid
-import numpy as np
+from numpy import array, mgrid, stack
+import sys
 
 from tools.electricity.magnetic_field import BOfLoopCenter, BOfLoopNumeric
 from tools.geometry.shapes_1d import CreateLoopXYParallel
 
 ### 1. See tools.electricity.magnetic_field -> biot-savart
 
-### 2. Magnetic field for single loop
+### 2. See tools.electricity.magnetic_field -> BOfLoopNumeric
 
-N       = 10
-radius  = 5e-3  # [m]
-current = 0.1   # [A]
+### 3.1 Compare analytic and numeric solution at loop center
 
-#def BElectricLoopMesh(current, loop: array, x, y, z) -> array:
-#    pos = array([x, y, z])
-#
-#    return BOfLoopNumeric(current, loop, pos)
+loop_points = 100
+radius      = 5e-3  # [m]
+current     = 0.1   # [A]
 
-#B = BElectricLoop(I, loop2, pos_grid)  # B.shape = (20, 20, 20, 3)
+r0 = array([0.0, 0.0, 0.0])
+loop = CreateLoopXYParallel(radius, 0, loop_points)
+B_numeric = BOfLoopNumeric(current, loop, r0)
+B_analytic = BOfLoopCenter(current, radius)
+relative_error = abs((B_numeric[2] - B_analytic)/B_analytic)
 
+print(f"Numeric value:\t{B_numeric[2]:.3g}\nAnalytic Value:" \
+      f"\t{B_analytic:.3g}\nRelative error:\t{relative_error*100:.2f} %")
 
+### 3.2 Magnetic Field Lines
 
-#def GetBFromOneLoopList(I, loop: array, positions: array):
-#    return array([BElectricLoop(I, loop, pos) for pos in positions])
-
-### 3. Analytic solution for magnetic field inside loop
-
-r0 = array([0, 0, 0])
-loop = CreateLoopXYParallel(radius, 0, N)
-numeric_solution = BOfLoopNumeric(current, loop, r0)
-analyitc_solution = BOfLoopCenter(current, radius)
-relative_error = abs((numeric_solution[2] - analyitc_solution)/analyitc_solution)
-
-print(f"Numeric value:\t{numeric_solution[2]:.3g}\nAnalytic Value:" \
-      "\t{analyitc_solution:.3g}\nRelative error:\t{relative_error*100:.2f} %")
-
-min=-10
-max=10
-num_elements=50j
+min=-10/radius
+max=10/radius
+num_elements=10j
 X, Y, Z = mgrid[min:max:num_elements, 0:0:1j, min:max:num_elements]*radius
-positions = np.stack((X, Y, Z), axis=-1)
-#plot_positions = transpose(positions)
+positions = stack((X, Y, Z), axis=-1)
+sys.exit()
 
 #B_field = transpose(GetBFromOneLoopList(I, loop, positions))
 B_field = BOfLoopNumeric(current, loop, positions)
