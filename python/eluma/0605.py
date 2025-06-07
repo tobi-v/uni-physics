@@ -1,6 +1,5 @@
 import matplotlib.pyplot as plt
-from numpy import append, array, dot, mgrid, pi, transpose, vstack, zeros_like
-from numpy.linalg import norm
+from numpy import array, mgrid
 import numpy as np
 
 from tools.electricity.magnetic_field import BiotSavart, mu_0
@@ -18,9 +17,8 @@ def BElectricLoopMesh(current, loop: array, x, y, z) -> array:
     pos = array([x, y, z])
 
     return BElectricLoop(current, loop, pos)
-import numpy as np
 
-def BElectricLoop(I, loop: np.ndarray, pos_grid: np.ndarray) -> np.ndarray:
+def BElectricLoop(current, loop: np.ndarray, pos_grid: np.ndarray) -> np.ndarray:
     """
     Calculate magnetic field B on a 3D grid due to a current loop.
 
@@ -39,7 +37,7 @@ def BElectricLoop(I, loop: np.ndarray, pos_grid: np.ndarray) -> np.ndarray:
         dv = nextElem - elem  # (3,)
         r_mid = (elem + nextElem) / 2  # (3,)
         delta_r = r_mid - pos_grid  # (..., 3)
-        B += BiotSavart(I, dv, delta_r)  # BiotSavart must support broadcasting
+        B += BiotSavart(current, dv, delta_r)  # BiotSavart must support broadcasting
 
     return B# Define grid pointsimport numpy as np
 
@@ -72,7 +70,7 @@ positions = np.stack((X, Y, Z), axis=-1)
 #plot_positions = transpose(positions)
 
 #B_field = transpose(GetBFromOneLoopList(I, loop, positions))
-B_field = BElectricLoop(I, loop, positions)
+B_field = BElectricLoop(current, loop, positions)
 
 BX = B_field[:, 0, :, 0]
 BZ = B_field[:, 0, :, 1]
@@ -88,7 +86,10 @@ plt.show()
 
 ### 4.
 
-#def GetBFromPointDPole(M: array, pos: array, exclude_singularities=True, singularity_limit=1e-3) -> array:    
+#def GetBFromPointDPole(M: array,
+#                       pos: array,
+#                       exclude_singularities=True,
+#                       singularity_limit=1e-3) -> array:    
 #    distance = norm(pos)
 #    if(exclude_singularities and (distance < singularity_limit)):
 #        distance = distance + 1e-3#return array([0, 0, 0])
