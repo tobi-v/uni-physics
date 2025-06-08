@@ -1,21 +1,19 @@
-from numpy import append, cross, ndarray, pi, zeros_like
+from numpy import append, cross, ndarray, pi, where, zeros_like
 from numpy.linalg import norm
 from scipy.constants import mu_0
 
 def BiotSavart(current: float,
                wire_segment: ndarray,
                delta_r: ndarray,
-               exclude_singularities=True,
-               singularity_limit = 1e-3) -> ndarray:
+               eps: float = 1e-10) -> ndarray:
     """
     Parameters:
-    - delta_r: distance from wire vector
+    - delta_r: (..., 3) displacement vectors from source
     
-    Returns: magnetic field vector"""
-    distance = norm(delta_r)
-    if(exclude_singularities and (distance < singularity_limit)):
-        distance = distance + 1e-3
-    return (mu_0*current/(4*pi)) * cross(wire_segment, delta_r) / (distance)**3
+    Returns: (..., 3) magnetic field vectors"""
+    distance = norm(delta_r, axis=-1, keepdims=True)
+    distance_safe = where(distance < eps, eps, distance)
+    return (mu_0*current/(4*pi)) * cross(wire_segment, delta_r) / distance_safe**3
 
 def BOfCoilAlongZ(z: ndarray, current: float, radius: float, turns=1) -> ndarray:
     """Magnetic field B_z along the z-axis from a single circular current loop.
@@ -33,13 +31,13 @@ def BOfLoopNumeric(current: float, loop: ndarray, pos_grid: ndarray) -> ndarray:
     Returns:
     - B: (..., 3) array of magnetic field vectors at each grid point
     """
-    loop = append(loop, [loop[0]], axis=0)
+    closed_loop = append(loop, [loop[0]], axis=0)
     B = zeros_like(pos_grid)
 
-    for elem, nextElem in zip(loop, loop[1:]):
+    for elem, nextElem in zip(closed_loop, closed_loop[1:]):
         dv = nextElem - elem
-        r_mid = (elem + nextElem) / 2
-        delta_r = r_mid - pos_grid
+        r_mid = (elem + nextElem) *.5
+        delta_r = pos_grid - r_mid
         B += BiotSavart(current, dv, delta_r)
 
     return B
