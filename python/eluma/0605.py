@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
-from numpy import array, mgrid, stack
-import sys
+from numpy import array, log, mgrid, stack, zeros_like
+from numpy.linalg import norm
 
 from tools.electricity.magnetic_field import BOfLoopCenter, BOfLoopNumeric
 from tools.geometry.shapes_1d import CreateLoopXYParallel
@@ -16,7 +16,7 @@ radius      = 5e-3  # [m]
 current     = 0.1   # [A]
 
 r0 = array([0.0, 0.0, 0.0])
-loop = CreateLoopXYParallel(radius, 0, loop_points)
+loop = CreateLoopXYParallel(radius, loop_points)
 B_numeric = BOfLoopNumeric(current, loop, r0)
 B_analytic = BOfLoopCenter(current, radius)
 relative_error = abs((B_numeric[2] - B_analytic)/B_analytic)
@@ -26,26 +26,21 @@ print(f"Numeric value:\t{B_numeric[2]:.3g}\nAnalytic Value:" \
 
 ### 3.2 Magnetic Field Lines
 
-min=-10/radius
-max=10/radius
-num_elements=10j
-X, Y, Z = mgrid[min:max:num_elements, 0:0:1j, min:max:num_elements]*radius
+min = -100*radius
+max = 100*radius
+sample_positions = 100
+Z, X = mgrid[min:max:sample_positions*1j, min:max:sample_positions*1j]
+Y = zeros_like(X)
 positions = stack((X, Y, Z), axis=-1)
-sys.exit()
 
-#B_field = transpose(GetBFromOneLoopList(I, loop, positions))
 B_field = BOfLoopNumeric(current, loop, positions)
+BX = B_field[:, :, 0]
+BZ = B_field[:, :, 2]
 
-BX = B_field[:, 0, :, 0]
-BZ = B_field[:, 0, :, 1]
-X2D = X[:, 0, :]
-Z2D = Z[:, 0, :]
-
-fig = plt.figure()
-ax = fig.add_subplot(3,1,1)
-ax.set_title("Numeric B field")
-ax.quiver(X2D, Z2D, BX, BZ, width=0.002, scale=1e-6)
-plt.show()
+fig, axs = plt.subplots(figsize=(3,9), nrows=3, ncols=1)
+axs[0].set_title("Numeric B field")
+magnitude = norm(B_field, axis=-1)
+axs[0].streamplot(X, Z, BX, BZ, density=1.5, color=log(magnitude), cmap='plasma')
 
 
 ### 4.
@@ -78,7 +73,6 @@ plt.show()
 #ax = fig.add_subplot(3,1,3)
 #ax.set_title("B from dipole")
 #ax.contour(plot_positions[0], plot_positions[2], B_error)
-#plt.grid()
-#
-#plt.tight_layout()
-#plt.show()
+plt.grid()
+plt.tight_layout()
+plt.show()
