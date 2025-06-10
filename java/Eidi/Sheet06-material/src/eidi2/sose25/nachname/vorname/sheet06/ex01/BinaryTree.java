@@ -12,13 +12,13 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 	private boolean addNode(Node<T> node, T value){
 		if (value.compareTo(node.value) < 0){
 			if (node.left == null){
-				node.left = new Node<T>(value);
+				node.left = new Node<T>(value); return true;
 			}
 			return addNode(node.left, value);
 		}
 		if (value.compareTo(node.value) > 0){
 			if (node.right == null){
-				node.right = new Node<T>(value);
+				node.right = new Node<T>(value); return true;
 			}
 			return addNode(node.right, value);
 		}
@@ -27,7 +27,24 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 
 	@Override
 	public boolean addIt(T value){
-		return false;
+		Node<T> node = root;
+		if (node == null){ node = new Node<T>(value); return true;}
+		while(true){
+			if (value.compareTo(node.value) < 0){
+				if (node.left == null){
+					node.left = new Node<T>(value); return true;
+				}
+				node = node.left; continue;
+			}
+			if (value.compareTo(node.value) > 0){
+				if (node.right == null){
+					node.right = new Node<T>(value); return true;
+				}
+				node = node.right; continue;
+			}
+			return false;
+
+		}
 	}
 
 	@Override
