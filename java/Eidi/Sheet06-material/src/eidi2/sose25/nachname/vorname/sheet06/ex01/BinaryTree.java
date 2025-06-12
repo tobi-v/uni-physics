@@ -6,20 +6,20 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 
 	@Override
 	public boolean add(T value){
-		if (root == null){ root = new Node<T>(value); return true;}
+		if (root == null){ root = new Node<T>(value); size++; return true;}
 		return addNode(root, value);
 	}
 
 	private boolean addNode(Node<T> node, T value){
 		if (value.compareTo(node.value) < 0){
 			if (node.left == null){
-				node.left = new Node<T>(value); return true;
+				node.left = new Node<T>(value); size++; return true;
 			}
 			return addNode(node.left, value);
 		}
 		if (value.compareTo(node.value) > 0){
 			if (node.right == null){
-				node.right = new Node<T>(value); return true;
+				node.right = new Node<T>(value); size++; return true;
 			}
 			return addNode(node.right, value);
 		}
@@ -28,18 +28,18 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 
 	@Override
 	public boolean addIt(T value){
+		if (root == null){ root = new Node<T>(value); size++; return true;}
 		Node<T> node = root;
-		if (node == null){ node = new Node<T>(value); return true;}
 		for(int ii = 0; ii < size; ii++){
 			if (value.compareTo(node.value) < 0){
 				if (node.left == null){
-					node.left = new Node<T>(value); return true;
+					node.left = new Node<T>(value); size++; return true;
 				}
 				node = node.left; continue;
 			}
 			if (value.compareTo(node.value) > 0){
 				if (node.right == null){
-					node.right = new Node<T>(value); return true;
+					node.right = new Node<T>(value); size++; return true;
 				}
 				node = node.right; continue;
 			}
@@ -49,6 +49,7 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 
 	@Override
 	public String preorder(){
+		if(root == null) return "";
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		printSubTreePreorder(sb, root);
@@ -66,6 +67,7 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 
 	@Override
 	public String inorder(){
+		if(root == null) return "";
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		printSubTreeInorder(sb, root);
@@ -73,15 +75,17 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 		sb.append("]");
 		return sb.toString();
 	}
+
 	private void printSubTreeInorder(StringBuilder sb, Node<T> node){
 		if(node.left != null){ printSubTreeInorder(sb, node.left);}
 		sb.append(node.value.toString());
 		sb.append(", ");
 		if(node.right != null){ printSubTreeInorder(sb, node.right);}
-		}
+	}
 
 	@Override
 	public String postorder(){
+		if(root == null) return "";
 		StringBuilder sb = new StringBuilder();
 		sb.append("[");
 		printSubTreePostorder(sb, root);
@@ -91,18 +95,18 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 	}
 
 	private void printSubTreePostorder(StringBuilder sb, Node<T> node){
-			if (node.left != null) {
-				printSubTreePostorder(sb, node.left);
-			}
-			if (node.right != null) {
-				printSubTreePostorder(sb, node.right);
-			}
-			sb.append(node.value.toString());
-			sb.append(", ");
+		if (node.left != null) {
+			printSubTreePostorder(sb, node.left);
 		}
+		if (node.right != null) {
+			printSubTreePostorder(sb, node.right);
+		}
+		sb.append(node.value.toString());
+		sb.append(", ");
+	}
 
 	@Override
-	public int size(){return 0;}
+	public int size(){return size;}
 
 	@Override
 	public boolean remove(T value){
