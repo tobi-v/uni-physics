@@ -2,6 +2,7 @@ package eidi2.sose25.nachname.vorname.sheet06.ex01;
 
 public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 	private Node<T> root;
+	private int size;
 
 	@Override
 	public boolean add(T value){
@@ -29,7 +30,7 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 	public boolean addIt(T value){
 		Node<T> node = root;
 		if (node == null){ node = new Node<T>(value); return true;}
-		while(true){
+		for(int ii = 0; ii < size; ii++){
 			if (value.compareTo(node.value) < 0){
 				if (node.left == null){
 					node.left = new Node<T>(value); return true;
@@ -42,19 +43,63 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 				}
 				node = node.right; continue;
 			}
-			return false;
-
 		}
+		return false;
 	}
 
 	@Override
-	public String preorder(){return "";}
+	public String preorder(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		printSubTreePreorder(sb, root);
+		sb.delete(sb.lastIndexOf(","), sb.length());
+		sb.append("]");
+		return sb.toString();
+	}
+
+	private void printSubTreePreorder(StringBuilder sb, Node<T> node){
+		sb.append(node.value.toString());
+		sb.append(", ");
+		if(node.left != null){ printSubTreePreorder(sb, node.left);}
+		if(node.right != null){ printSubTreePreorder(sb, node.right);}
+	}
 
 	@Override
-	public String inorder(){return "";}
+	public String inorder(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		printSubTreeInorder(sb, root);
+		sb.delete(sb.lastIndexOf(","), sb.length());
+		sb.append("]");
+		return sb.toString();
+	}
+	private void printSubTreeInorder(StringBuilder sb, Node<T> node){
+		if(node.left != null){ printSubTreeInorder(sb, node.left);}
+		sb.append(node.value.toString());
+		sb.append(", ");
+		if(node.right != null){ printSubTreeInorder(sb, node.right);}
+		}
 
 	@Override
-	public String postorder(){return "";}
+	public String postorder(){
+		StringBuilder sb = new StringBuilder();
+		sb.append("[");
+		printSubTreePostorder(sb, root);
+		sb.delete(sb.lastIndexOf(","), sb.length());
+		sb.append("]");
+		return sb.toString();
+	}
+
+	private void printSubTreePostorder(StringBuilder sb, Node<T> node){
+			if (node.left != null) {
+				printSubTreePostorder(sb, node.left);
+			}
+			if (node.right != null) {
+				printSubTreePostorder(sb, node.right);
+			}
+			sb.append(node.value.toString());
+			sb.append(", ");
+		}
 
 	@Override
 	public int size(){return 0;}
