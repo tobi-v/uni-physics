@@ -110,6 +110,25 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 
 	@Override
 	public boolean remove(T value){
+		if(root == null) return false;
+
+		if(root.value.equals(value)){
+			if(root.left == null && root.right == null){root = null; size--; return true;}
+			if(root.left != null){root = root.left;}
+			else {root = root.right;}
+
+			root.left = null; root.right = null; size = 0;
+			for(int ii = 0; ii < size-1; ii++){
+
+			}
+		}
+
+		Node<T> node = root;
+		for(int ii = 0; ii < size; ii++){
+			if(node.left != null){}
+			if(node.right != null){}
+		}
+
 		return false;
 	}
 }
