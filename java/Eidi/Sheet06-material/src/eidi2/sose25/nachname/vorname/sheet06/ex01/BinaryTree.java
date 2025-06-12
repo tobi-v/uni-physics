@@ -95,12 +95,8 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 	}
 
 	private void printSubTreePostorder(StringBuilder sb, Node<T> node){
-		if (node.left != null) {
-			printSubTreePostorder(sb, node.left);
-		}
-		if (node.right != null) {
-			printSubTreePostorder(sb, node.right);
-		}
+		if (node.left != null) printSubTreePostorder(sb, node.left);
+		if (node.right != null) printSubTreePostorder(sb, node.right);
 		sb.append(node.value.toString());
 		sb.append(", ");
 	}
@@ -108,27 +104,22 @@ public class BinaryTree <T extends Comparable<T>> implements Tree<T> {
 	@Override
 	public int size(){return size;}
 
+	private void AddCurrentAndChildrenIfNotVal(BinaryTree<T> tree, Node<T> node, T val){
+		if(!node.value.equals(val)) tree.add(node.value);
+		if(node.left != null)	AddCurrentAndChildrenIfNotVal(tree, node.left, val);
+		if(node.right != null) AddCurrentAndChildrenIfNotVal(tree, node.right, val);
+	}
+
 	@Override
 	public boolean remove(T value){
 		if(root == null) return false;
-
-		if(root.value.equals(value)){
-			if(root.left == null && root.right == null){root = null; size--; return true;}
-			if(root.left != null){root = root.left;}
-			else {root = root.right;}
-
-			root.left = null; root.right = null; size = 0;
-			for(int ii = 0; ii < size-1; ii++){
-
-			}
+		BinaryTree<T> newTree = new BinaryTree<>();
+		AddCurrentAndChildrenIfNotVal(newTree, root, value);
+		if(size == newTree.size) return false;
+		else{
+			root = newTree.root;
+			size = newTree.size;
+			return true;
 		}
-
-		Node<T> node = root;
-		for(int ii = 0; ii < size; ii++){
-			if(node.left != null){}
-			if(node.right != null){}
-		}
-
-		return false;
 	}
 }
