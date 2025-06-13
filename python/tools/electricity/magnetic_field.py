@@ -58,3 +58,23 @@ def HelmholtzAlongZ(z: ndarray,
     """
     return BOfCoilAlongZ(z+distance/2, current, radius, turns) \
             + BOfCoilAlongZ(z-distance/2, current, radius, turns)
+
+def BOfPointDipole(M: ndarray, r: ndarray) -> ndarray:
+    """
+    Compute the magnetic field B_dip from a magnetic dipole M at positions r.
+
+    Parameters:
+    - M: ndarray of shape (3,), the magnetic dipole vector
+    - r: ndarray of shape (..., 3), observation points
+
+    Returns:
+    - B: ndarray of shape (..., 3), magnetic field vectors
+    """
+    r_squared = sum(r**2, axis=-1, keepdims=True)         # (..., 1)
+    M_dot_r = sum(M * r, axis=-1, keepdims=True)          # (..., 1)
+
+    B = (mu_0 / (4 * pi)) * (
+        (3 * M_dot_r * r - r_squared * M) / (r_squared**(2.5))
+    )  # (..., 3)
+
+    return B
