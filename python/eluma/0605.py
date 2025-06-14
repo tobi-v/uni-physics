@@ -2,7 +2,8 @@ import matplotlib.pyplot as plt
 from numpy import array, log, mgrid, stack, zeros_like
 from numpy.linalg import norm
 
-from tools.electricity.magnetic_field import BOfLoopCenter, BOfLoopNumeric
+from tools.electricity.magnetic_field import BOfLoopCenter, BOfLoopNumeric,\
+      BOfPointDipole, MagneticMomentZ
 from tools.geometry.shapes_1d import CreateLoopXYParallel
 
 ### 1. See tools.electricity.magnetic_field -> biot-savart
@@ -45,25 +46,15 @@ axs[0].streamplot(X, Z, BX, BZ, density=1.5, color=log(magnitude), cmap='plasma'
 
 ### 4.
 
-#def GetBFromPointDPole(M: array,
-#                       pos: array,
-#                       exclude_singularities=True,
-#                       singularity_limit=1e-3) -> array:    
-#    distance = norm(pos)
-#    if(exclude_singularities and (distance < singularity_limit)):
-#        distance = distance + 1e-3#return array([0, 0, 0])
-#    return mu_0*(3*dot(M, pos)*pos - M*distance**2)/(4*pi*distance**5)
-#
-#def GetBFromPointDPoleList(M:array, positions: array) -> array:
-#    return array([GetBFromPointDPole(M, pos) for pos in positions])
-#
-#M_loop = array([0, 0, pi*(radius**2)*I])
-#B_dipole = transpose(GetBFromPointDPoleList(M_loop, positions))
-#
-#ax = fig.add_subplot(3,1,2)
-#ax.set_title("B from dipole")
-#ax.quiver(plot_positions[0], plot_positions[2], B_dipole[0], B_dipole[2], width=0.002)
-#plt.grid()
+mag_mom = MagneticMomentZ(radius, current)
+B_dipole = BOfPointDipole(mag_mom, positions)
+B_dipoleX = B_dipole[:, :, 0]
+B_dipoleZ = B_dipole[:, :, 2]
+
+axs[1].set_title("B field of magnetic dipole")
+magnitude = norm(B_dipole, axis=-1)
+axs[1].streamplot(X, Z, B_dipoleX, B_dipoleZ, density=1.5, color=log(magnitude), cmap='plasma')
+
 #
 #B_diff_arr = array([norm(elem) for elem in (transpose(B_field) - transpose(B_dipole))])
 #B_field_norm = array([norm(elem) for elem in transpose(B_field)])
