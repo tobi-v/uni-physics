@@ -1,4 +1,4 @@
-from numpy import append, asarray, cross, linalg, ndarray, pi, where, zeros_like
+from numpy import append, asarray, cross, linalg, ndarray, pi, sum, where, zeros_like
 from numpy.linalg import norm
 from scipy.constants import mu_0
 
