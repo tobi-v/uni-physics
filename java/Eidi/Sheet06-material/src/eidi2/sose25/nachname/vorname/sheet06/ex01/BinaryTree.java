@@ -211,4 +211,8 @@ public class BinaryTree<T extends Comparable<T>> implements Tree<T>, Functional<
 	public <R> R flat(BiFunction<T, R, R> f, R initial) {
 		return traverseInOrder(f, root, initial);
 	}
+
+	public boolean contains(T val){
+		return flat((x, y) -> x == val || y, false);
+	}
 }
