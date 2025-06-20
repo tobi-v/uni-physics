@@ -30,6 +30,7 @@ plotWithErrorBars(axs[0], U_cal, p_cal,  U_to_p,
                   title="Kalibrierung des Messgerätes", xlabel=r'Spannung $[V]$', ylabel=r'Druckdifferenz $[Pa]$')
 measurement_device_textbox = r'$p \propto %.1f\cdot U$' % U_to_p_coeffs[0]
 axs[0].text(0.05, 0.95, measurement_device_textbox, transform=axs[0].transAxes, fontsize=14, verticalalignment='top', bbox=textbox_props)
+print(f"Unsicherheit Proportionalitätskonstante: {sqrt(U_to_p_cov[0][0])}")
 
 ### 2. Distilled Wasser
 
