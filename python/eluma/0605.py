@@ -38,10 +38,10 @@ B_numeric = BOfLoopNumeric(current, loop, positions)
 BX = B_numeric[:, :, 0]
 BZ = B_numeric[:, :, 2]
 
-fig, axs = plt.subplots(figsize=(3,9), nrows=3, ncols=1)
-axs[0].set_title("Numeric B field")
+fig, axs = plt.subplots(figsize=(15,10), nrows=2, ncols=2)
+axs[0][0].set_title("Numeric B field")
 magnitude = norm(B_numeric, axis=-1)
-axs[0].streamplot(X, Z, BX, BZ, density=1.5, color=log(magnitude), cmap='plasma')
+axs[0][0].streamplot(X, Z, BX, BZ, density=1.5, color=log(magnitude), cmap='plasma')
 
 
 ### 4.
@@ -51,15 +51,17 @@ B_dipole = BOfPointDipole(mag_mom, positions)
 B_dipoleX = B_dipole[:, :, 0]
 B_dipoleZ = B_dipole[:, :, 2]
 
-axs[1].set_title("B field of magnetic dipole")
+axs[1][0].set_title("B field of magnetic dipole")
 magnitude = norm(B_dipole, axis=-1)
-axs[1].streamplot(X, Z, B_dipoleX, B_dipoleZ, density=1.5, color=log(magnitude),
+axs[1][0].streamplot(X, Z, B_dipoleX, B_dipoleZ, density=1.5, color=log(magnitude),
                   cmap='plasma')
 
 logarithmic_error = log(norm(B_numeric - B_dipole, axis=-1)/norm(B_numeric, axis=-1))
-heatmap = axs[2].pcolormesh(X, Z, logarithmic_error, shading='auto', cmap='plasma')
-axs[2].set_title("Log-Relative Error Heatmap")
+heatmap = axs[0][1].pcolormesh(X, Z, logarithmic_error, shading='auto', cmap='plasma')
+axs[0][1].set_title("Log-Relative Error Heatmap")
 fig.colorbar(heatmap, label="log(|B_num - B_ref| / |B_num|)")
+
+axs[1][1].set_title(r'$r_{1\%}$')
 
 #
 #B_diff_arr = array([norm(elem) for elem in (transpose(B_field) - transpose(B_dipole))])
