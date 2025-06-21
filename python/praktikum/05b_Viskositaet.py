@@ -1,4 +1,4 @@
-import matplotlib.pyplot as plt
+from matplotlib import pyplot as plt
 from numpy import array, log
 from tools.statistics.linear_regression import linreg, plotWithErrorBars
 
