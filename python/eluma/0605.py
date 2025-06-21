@@ -1,10 +1,12 @@
-import matplotlib.pyplot as plt
-from numpy import array, log, mgrid, stack, zeros_like
+from matplotlib import cm, pyplot
+from numpy import array, log10, mgrid, stack, sqrt, zeros_like
 from numpy.linalg import norm
 
 from tools.electricity.magnetic_field import BOfLoopCenter, BOfLoopNumeric,\
       BOfPointDipole, MagneticMomentZ
 from tools.geometry.shapes_1d import CreateLoopXYParallel
+
+fig, axs = pyplot.subplots(figsize=(15,10), nrows=2, ncols=2)
 
 ### 1. See tools.electricity.magnetic_field -> biot-savart
 
@@ -38,10 +40,9 @@ B_numeric = BOfLoopNumeric(current, loop, positions)
 BX = B_numeric[:, :, 0]
 BZ = B_numeric[:, :, 2]
 
-fig, axs = plt.subplots(figsize=(15,10), nrows=2, ncols=2)
 axs[0][0].set_title("Numeric B field")
 magnitude = norm(B_numeric, axis=-1)
-axs[0][0].streamplot(X, Z, BX, BZ, density=1.5, color=log(magnitude), cmap='plasma')
+axs[0][0].streamplot(X, Z, BX, BZ, density=1.5, color=log10(magnitude), cmap='plasma')
 
 
 ### 4.
@@ -53,25 +54,32 @@ B_dipoleZ = B_dipole[:, :, 2]
 
 axs[1][0].set_title("B field of magnetic dipole")
 magnitude = norm(B_dipole, axis=-1)
-axs[1][0].streamplot(X, Z, B_dipoleX, B_dipoleZ, density=1.5, color=log(magnitude),
+axs[1][0].streamplot(X, Z, B_dipoleX, B_dipoleZ, density=1.5, color=log10(magnitude),
                   cmap='plasma')
 
-logarithmic_error = log(norm(B_numeric - B_dipole, axis=-1)/norm(B_numeric, axis=-1))
+error = norm(B_numeric - B_dipole, axis=-1) / norm(B_numeric, axis=-1)
+logarithmic_error = log10(error)
 heatmap = axs[0][1].pcolormesh(X, Z, logarithmic_error, shading='auto', cmap='plasma')
 axs[0][1].set_title("Log-Relative Error Heatmap")
 fig.colorbar(heatmap, label="log(|B_num - B_ref| / |B_num|)")
 
 axs[1][1].set_title(r'$r_{1\%}$')
+contour = axs[1][1].contour(X, Z, error, levels=[0.01], colors='white', linewidths=2)
+axs[1][1].clabel(contour, fmt={0.01: '1% Error'}, fontsize=10)
+im = axs[1][1].pcolormesh(X, Z, log10(error), shading='auto', cmap=cm.viridis)
+fig.colorbar(im, ax=axs[1][1], label=r'$\log_{10}(\epsilon)$')
+axs[1][1].set_title(r'$\epsilon = 1\%$ Contour')
+axs[1][1].set_xlabel("x [m]")
+axs[1][1].set_ylabel("z [m]")
 
-#
-#B_diff_arr = array([norm(elem) for elem in (transpose(B_field) - transpose(B_dipole))])
-#B_field_norm = array([norm(elem) for elem in transpose(B_field)])
-#
-#print(B_diff_arr)
-#B_error = B_diff_arr/B_field_norm
-#ax = fig.add_subplot(3,1,3)
-#ax.set_title("B from dipole")
-#ax.contour(plot_positions[0], plot_positions[2], B_error)
-plt.grid()
-plt.tight_layout()
-plt.show()
+R = sqrt(X**2 + Z**2)
+mask = error < 0.01
+if mask.any():
+    r_1_percent = R[mask].min()
+    print(f"All points inside of r = {r_1_percent/radius:.2f} * Rc have a relative error of more than 1%.")
+else:
+    print("All points have relative error > 1%.")
+
+pyplot.grid()
+pyplot.tight_layout()
+pyplot.show()
