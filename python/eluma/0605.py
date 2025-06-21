@@ -6,7 +6,7 @@ from tools.electricity.magnetic_field import BOfLoopCenter, BOfLoopNumeric,\
       BOfPointDipole, MagneticMomentZ
 from tools.geometry.shapes_1d import CreateLoopXYParallel
 
-fig, axs = pyplot.subplots(figsize=(15,10), nrows=2, ncols=2)
+fig, axs = pyplot.subplots(figsize=(15,10), nrows=3, ncols=2)
 
 ### 1. See tools.electricity.magnetic_field -> biot-savart
 
@@ -44,8 +44,7 @@ axs[0][0].set_title("Numeric B field")
 magnitude = norm(B_numeric, axis=-1)
 axs[0][0].streamplot(X, Z, BX, BZ, density=1.5, color=log10(magnitude), cmap='plasma')
 
-
-### 4.
+### 4. Comparison of numeric biot-savart and point-dipole model
 
 mag_mom = MagneticMomentZ(radius, current)
 B_dipole = BOfPointDipole(mag_mom, positions)
@@ -79,6 +78,8 @@ if mask.any():
     print(f"All points inside of r = {r_1_percent/radius:.2f} * Rc have a relative error of more than 1%.")
 else:
     print("All points have relative error > 1%.")
+
+# 5. Coil    
 
 pyplot.grid()
 pyplot.tight_layout()
