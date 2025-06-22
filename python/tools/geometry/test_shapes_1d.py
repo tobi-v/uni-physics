@@ -8,7 +8,7 @@ def test_CreateLoopXYParallel_centered():
     assert allclose(loop, expected, atol=1e-6)
 
 def test_CreateCoilXYParallel_centered():
-    coil = CreateCoilXYParallel(radius=1.0, sample_points=4, z0=0.0, length=1.0, turns=3)
+    coil = CreateCoilXYParallel(radius=1.0, sample_points=4, length=1.0, turns=3)
     assert coil.shape == (12, 3)  # 3 turns × 4 points
 
     zs = coil[:, 2].reshape(3, 4)

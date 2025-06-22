@@ -8,7 +8,7 @@ def CreateLoopXYParallel(radius: float, sample_points: ndarray, z: float = 0,) -
     z_vec = ones_like(x)*z
     return stack((x, y, z_vec), axis=-1)
 
-def CreateCoilXYParallel(radius: float, sample_points: int, z0: float, length: float, turns: int) -> ndarray:
+def CreateCoilXYParallel(radius: float, sample_points: int, length: float, turns: int, z0: float = 0) -> ndarray:
     """
     Creates a coil made of circular loops in the xy-plane, centered around z0.
 
