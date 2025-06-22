@@ -1,5 +1,5 @@
 from matplotlib import cm, pyplot
-from numpy import array, log10, mgrid, stack, sqrt, zeros_like
+from numpy import array, empty, log10, mgrid, stack, sqrt, zeros_like
 from numpy.linalg import norm
 
 from tools.electricity.magnetic_field import BOfLoopCenter, BOfLoopNumeric,\
@@ -80,6 +80,10 @@ else:
     print("All points have relative error > 1%.")
 
 # 5. Coil    
+
+length = 2*radius
+turns = 10
+coil = empty()
 
 pyplot.grid()
 pyplot.tight_layout()
