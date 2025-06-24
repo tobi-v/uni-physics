@@ -215,4 +215,8 @@ public class BinaryTree<T extends Comparable<T>> implements Tree<T>, Functional<
 	public boolean contains(T val){
 		return flat((x, y) -> x.equals(val) || y, false);
 	}
+
+	public T max(){
+		return flat((x, y) -> {if (x.compareTo(y) > 0) return x;}, 0);
+	}
 }
