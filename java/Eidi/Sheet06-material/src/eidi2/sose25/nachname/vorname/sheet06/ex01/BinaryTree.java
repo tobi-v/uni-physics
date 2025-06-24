@@ -213,6 +213,6 @@ public class BinaryTree<T extends Comparable<T>> implements Tree<T>, Functional<
 	}
 
 	public boolean contains(T val){
-		return flat((x, y) -> x == val || y, false);
+		return flat((x, y) -> x.equals(val) || y, false);
 	}
 }
