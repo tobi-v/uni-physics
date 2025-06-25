@@ -4,7 +4,7 @@ from numpy.linalg import norm
 
 from tools.electricity.magnetic_field import BOfLoopCenter, BOfLoopNumeric,\
       BOfPointDipole, MagneticMomentZ
-from tools.geometry.shapes_1d import CreateLoopXYParallel
+from tools.geometry.shapes_1d import CreateCoilXYParallel, CreateLoopXYParallel
 
 fig, axs = pyplot.subplots(figsize=(15,10), nrows=3, ncols=2)
 
@@ -83,7 +83,15 @@ else:
 
 length = 2*radius
 turns = 10
-coil = empty()
+coil = CreateCoilXYParallel(radius, loop_points, length, turns)
+
+B_coil = BOfLoopNumeric(current, loop, positions)
+B_coilX = B_coil[:, :, 0]
+B_coilZ = B_coil[:, :, 2]
+
+axs[2][0].set_title("Numeric B field of coil")
+magnitude = norm(B_coil, axis=-1)
+axs[2][0].streamplot(X, Z, B_coilX, B_coilZ, density=1.5, color=log10(magnitude), cmap='plasma')
 
 pyplot.grid()
 pyplot.tight_layout()
