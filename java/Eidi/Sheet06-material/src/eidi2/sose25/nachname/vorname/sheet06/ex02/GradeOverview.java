@@ -18,8 +18,7 @@ public class GradeOverview {
 	}
 	
 	public Optional<Pair<Double, Integer>> getExamResult(String lectureName) {
-		// ToDo c)
-		return Optional.empty();
+		return Optional.ofNullable(GRADEOVERVIEW.get(lectureName));
 	}
 	
 	public double totalGradeAverage() {
