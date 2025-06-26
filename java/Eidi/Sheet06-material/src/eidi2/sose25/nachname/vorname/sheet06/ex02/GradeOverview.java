@@ -7,7 +7,7 @@ public class GradeOverview {
 	private final HashMap<String, Pair<Double, Integer>> GRADEOVERVIEW = new HashMap<>();
 	
 	public void addTestResult(String lectureName, Pair<Double, Integer> gradeAndECTS) {
-		// ToDo a)
+		GRADEOVERVIEW.put(lectureName, gradeAndECTS);
 	}
 	
 	public int currentECTS() {
