@@ -14,8 +14,8 @@ public class Main {
 	public static void main(String[] args) {
 		// TODO: Use this to test your implementation
 		testAddStorableToVault();
-		//testAddVaultForBank();
-		//testAddStoreableForBank();
+		testAddVaultForBank();
+		testAddStoreableForBank();
 	}
 	
 	public static void testAddStorableToVault() {
