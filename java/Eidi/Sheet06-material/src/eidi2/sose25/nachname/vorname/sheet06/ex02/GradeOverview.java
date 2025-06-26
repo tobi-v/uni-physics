@@ -11,8 +11,10 @@ public class GradeOverview {
 	}
 	
 	public int currentECTS() {
-		// ToDo b)
-		return 0;
+		int accumulatedECTS = 0;
+		for(Pair<Double, Integer> p : GRADEOVERVIEW.values())
+			accumulatedECTS += p.second;
+		return accumulatedECTS;
 	}
 	
 	public Optional<Pair<Double, Integer>> getExamResult(String lectureName) {
