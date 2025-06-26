@@ -31,7 +31,7 @@ public class VaultingManager {
 		}
 		for(Tuple<Bank, List<Vault<IStoreable>>> t : banksAndVaults) {
 			if(t.first == bank) {
-				t.first.addVault(vaultToAdd);
+				t.second.add(vaultToAdd);
 				break;
 			}
 		}
@@ -47,7 +47,14 @@ public class VaultingManager {
 	}
 	
 	public boolean addStoreableToBankVault(long vaultID, IStoreable storeableToAdd) {
-		//TODO
+		for(Tuple<Bank, List<Vault<IStoreable>>> t : banksAndVaults){
+			for(Vault<IStoreable> v : t.second){
+				if(v.getID() == vaultID){
+					v.addStoreableToVault(storeableToAdd);
+					return true;
+				}
+			}
+		}
 		return false;
 	}
 }
