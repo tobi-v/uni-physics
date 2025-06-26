@@ -5,12 +5,14 @@ import java.util.function.BiFunction;
 
 public class BinaryTree<T extends Comparable<T>> implements Tree<T>, Functional<T> {
 	private Node<T> root;
+	private T max;
 	private int size;
 
 	@Override
 	public boolean add(T value) {
 		if (root == null) {
 			root = new Node<T>(value);
+			max = value;
 			size++;
 			return true;
 		}
@@ -27,6 +29,7 @@ public class BinaryTree<T extends Comparable<T>> implements Tree<T>, Functional<
 			return addNode(node.left, value);
 		}
 		if (value.compareTo(node.value) > 0) {
+			if (value.compareTo(max)>0) max = value;
 			if (node.right == null) {
 				node.right = new Node<T>(value);
 				size++;
@@ -217,6 +220,6 @@ public class BinaryTree<T extends Comparable<T>> implements Tree<T>, Functional<
 	}
 
 	public T max(){
-		return flat((x, y) -> {if (x.compareTo(y) > 0) return x;}, 0);
+		return max;
 	}
 }
