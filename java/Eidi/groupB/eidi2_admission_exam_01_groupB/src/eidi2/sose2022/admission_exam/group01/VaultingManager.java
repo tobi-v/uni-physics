@@ -20,7 +20,21 @@ public class VaultingManager {
 	}
 	
 	public void addVaultForBank(Bank bank, Vault<IStoreable> vaultToAdd) {
-		//TODO
+		if(bank == null || vaultToAdd == null) throw new IllegalArgumentException();
+		boolean contains = false;
+		for(Tuple<Bank, List<Vault<IStoreable>>> tuple : banksAndVaults) {
+			if(tuple.first == bank) contains = true;
+		}
+
+		if(!contains) {
+			banksAndVaults.add(new Tuple<>(bank, new LinkedList<>()));
+		}
+		for(Tuple<Bank, List<Vault<IStoreable>>> t : banksAndVaults) {
+			if(t.first == bank) {
+				t.first.addVault(vaultToAdd);
+				break;
+			}
+		}
 	}
 	
 	/**

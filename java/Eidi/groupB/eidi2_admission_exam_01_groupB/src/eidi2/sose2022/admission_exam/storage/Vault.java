@@ -25,8 +25,10 @@ public class Vault<T extends IStoreable> {
 	}
 	
 	public boolean addStoreableToVault(T value) {
-		//TODO
-		return false;
+		if(value == null) return false;
+		if(value.value() <= 0) return false;
+		contents.add(value);
+		return true;
 	}
 	
 }
