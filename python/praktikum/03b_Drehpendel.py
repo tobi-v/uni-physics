@@ -1,4 +1,6 @@
-from numpy import argmax, array, log, mean, pi
+import matplotlib.pyplot as plt
+from numpy import argmax, array, exp, linspace, log, mean, pi
+from scipy.optimize import curve_fit
 from scipy.signal import find_peaks
 from scipy.stats import linregress
 
@@ -9,10 +11,10 @@ T396 = 1.575
 T200 = 1.6875
 T9   = 1.989
 
-t396 = array([1.97, 1.21, 1.761, 0.47, 0.291])
-t200 = array([2.71, 2.35, 1.99, 1.72, 1.48, 1.28, 1.10, 0,94, 0.828, 0.716, 0.604])
+t396 = array([1.97, 1.21, 0.761, 0.47, 0.291])
+t200 = array([2.71, 2.35, 1.99, 1.72, 1.48, 1.28, 1.10, 0.94, 0.828, 0.716, 0.604])
 t9   = array([1.57, 1.53, 1.46, 1.39, 1.35, 1.30, 1.23, 1.21, 1.16, 1.09, 1.07])
-
+# TODO Get damping constants from estimate_damping_constant
 def log_dekrement(amplituden):
     return mean(log(amplituden[:-1] / amplituden[1:]))
 
@@ -26,18 +28,46 @@ def log_dekrement(amplituden):
 δ9   = Λ9 / T9
 
 # Ausgabe
-print(f"Dämpfungskonstante δ für 396 mA: {δ396:.4f} 1/s")
-print(f"Dämpfungskonstante δ für 200 mA: {δ200:.4f} 1/s")
-print(f"Dämpfungskonstante δ für   9 mA: {δ9:.4f} 1/s")
+print("\n### Versuchsteil 1: Gedämpfte Schwingungen ###\n")
+print(f"Für 396 mA: Dämpfungskonstante δ = {δ396:.4f} 1/s \t\tLogarithmisches Dekrement Λ = {Λ396:.4f}")
+print(f"Für 200 mA: Dämpfungskonstante δ = {δ200:.4f} 1/s \t\tLogarithmisches Dekrement Λ = {Λ200:.4f}")
+print(f"Für   9 mA: Dämpfungskonstante δ = {δ9:.4f}   1/s   \tLogarithmisches Dekrement Λ = {Λ9  :.4f}")
+
+# Plot mit exp fit
+x396 = T396 * array(range(len(t396)))
+x200 = T200 * array(range(len(t200)))
+x9   = T9   * array(range(len(t9)))
+def exp_decay(t, A0, δ):
+    return A0 * exp(-δ * t)
+
+fig, ax = plt.subplots(1, 1, figsize=(8, 5))
+
+for label, t, x, δ, color in [
+    ("396 mA", t396, x396, δ396, "C0"),
+    ("200 mA", t200, x200, δ200, "C1"),
+    ("9 mA",   t9,   x9,   δ9,   "C2")
+]:
+    # Fit A0 only, fix δ
+    popt, _ = curve_fit(lambda t, A0: exp_decay(t, A0, δ), x, t, p0=(t[0],))
+    t_fit = linspace(0, max(x), 300)
+    ax.plot(x, t, 'o', label=f"{label} data", color=color)
+    ax.plot(t_fit, exp_decay(t_fit, *popt, δ), '-', label=f"{label} fit", color=color)
+
+ax.set_xlabel("Zeit [s]")
+ax.set_ylabel("Amplitude [V]")
+ax.set_title("Exponentieller Abfall der gedämpften Oszillation")
+ax.legend()
+ax.grid(True)
 
 ### 2. Erzwungene Schwingungen
+print("\n### Versuchsteil 2: Erzwungene Schwingungen ###\n")
 
 def daempfung(current, omega, phi):
   slope, _, _, _, _ = linregress(omega, phi)
   beta = -1/slope
   print(f"Dämpfung für {current} mA: beta = {beta} 1/s")
 
-def resonance(current, omega, amplitude):
+def resonance(current, omega, amplitude):# TODO: Replace with find_resonance_frequency
   peaks, _ = find_peaks(omega, amplitude)
   print(f"Peak für Dämpfung von {current} mA at amplitude of omega = {omega[argmax(amplitude)]} Hz")
 
@@ -71,3 +101,7 @@ phi = array([ # [radian]
 
 daempfung(current, omega, phi)
 resonance(current, omega, ampl)
+
+# Ahoq rhw plots
+plt.tight_layout()
+plt.show()
