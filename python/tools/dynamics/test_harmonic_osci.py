@@ -1,5 +1,21 @@
-from numpy import array
-from tools.dynamics.harmonic_osci import find_resonance_frequency  # Replace 'your_module' with your actual module name
+from numpy import array, exp, linspace, isclose
+from tools.dynamics.harmonic_osci import estimate_damping_constant, find_resonance_frequency
+
+def test_estimate_damping_constant():
+    # Known parameters
+    δ_true = 0.75  # true damping constant [1/s]
+    A0 = 1.0       # initial amplitude
+
+    # Simulated time and amplitudes
+    t = linspace(0, 5, 50)
+    amplitudes = A0 * exp(-δ_true * t)
+
+    # Estimate from the function
+    δ_estimated = estimate_damping_constant(t, amplitudes)
+
+    # Assert close to true value
+    assert isclose(δ_estimated, δ_true, rtol=1e-3), \
+        f"Expected δ ≈ {δ_true}, got {δ_estimated}"
 
 def test_find_resonance_frequency():
     # Simulated data with a peak at ω ≈ 3.0
