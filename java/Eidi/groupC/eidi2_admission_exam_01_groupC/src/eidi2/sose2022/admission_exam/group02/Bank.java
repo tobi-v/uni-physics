@@ -67,7 +67,12 @@ public class Bank implements PropertyChangeListener {
 	}
 	
 	public boolean addStoreableToBankVault(long vaultID, IStoreable storeableToAdd) {
-		//TODO
+		for(Vault<IStoreable> v : getAllVaults()){
+			if(v.getID() == vaultID){
+				v.addStoreableToVault(storeableToAdd);
+				return true;
+			}
+		}
 		return false;
 	}
 	
