@@ -22,7 +22,13 @@ public class GradeOverview {
 	}
 	
 	public double totalGradeAverage() {
-		// ToDo d)
-		return 0;
+		int totalECTS = 0;
+		double weightedGradeSum = 0;
+		for(Pair<Double, Integer> p : GRADEOVERVIEW.values()){
+				weightedGradeSum += p.first*p.second;
+				totalECTS += p.second;
+		}
+
+		return weightedGradeSum/totalECTS;
 	}
 }
