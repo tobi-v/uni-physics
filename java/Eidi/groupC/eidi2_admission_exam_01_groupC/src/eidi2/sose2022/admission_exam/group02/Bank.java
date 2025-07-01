@@ -77,7 +77,12 @@ public class Bank implements PropertyChangeListener {
 	}
 	
 	public boolean removeValue(long vaultID, int valueToRemove) {
-		//TODO
+		for(Vault<IStoreable> v : knownVaults){
+			if (v.getID() == vaultID){
+				v.removeValue(valueToRemove);
+				return true;
+			}
+		}
 		return false;
 	}
 }
