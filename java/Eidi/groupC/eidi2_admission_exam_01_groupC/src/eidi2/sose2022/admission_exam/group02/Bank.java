@@ -25,7 +25,9 @@ public class Bank implements PropertyChangeListener {
 	
 	@Override
 	public void propertyChange(PropertyChangeEvent evt) {
-		//TODO
+		if (!evt.getSource().equals(this)){
+			foreignVaults.add((Vault<IStoreable>)evt.getNewValue());
+		}
 	}
 	
 	public void addVault(Vault<IStoreable> vaultToAdd) {
