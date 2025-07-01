@@ -31,7 +31,12 @@ public class Bank implements PropertyChangeListener {
 	}
 	
 	public void addVault(Vault<IStoreable> vaultToAdd) {
-		//TODO
+		if(vaultToAdd == null){
+			throw new IllegalArgumentException();
+		}
+
+		knownVaults.add(vaultToAdd);
+		support.firePropertyChange("knownVaults", null, vaultToAdd);
 	}
 	
 	/**
