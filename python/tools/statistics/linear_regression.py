@@ -1,6 +1,8 @@
-from numpy import polyfit, poly1d
+from numpy import float64, polyfit, poly1d
+from numpy.typing import NDArray
+from typing import Tuple
 
-def linreg(x, y):
+def linreg(x: NDArray, y: NDArray) -> Tuple[poly1d, NDArray[float64], NDArray[float64]]:
     coeff, cov = polyfit(x, y, 1, cov=True)
     return poly1d(coeff), coeff, cov
 
