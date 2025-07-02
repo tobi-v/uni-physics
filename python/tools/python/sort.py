@@ -51,7 +51,7 @@ def sort_by_x(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
     y_sorted = y[sorted_indices]
     return x_sorted, y_sorted
 
-def sort_and_filter_unique_x(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
+def sort_by_x_and_filter_unique(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
     """
     Removes duplicate values from `x`, keeping only the first occurrence,
     and sorts the resulting unique values in increasing order. Applies the

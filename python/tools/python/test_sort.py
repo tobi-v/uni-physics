@@ -1,6 +1,6 @@
 from numpy import allclose, array, array_equal
 import pytest
-from tools.python.sort import filter_unique_x, sort_and_filter_unique_x, sort_by_x
+from tools.python.sort import filter_unique_x, sort_by_x_and_filter_unique, sort_by_x
 
 ### Tests for filter_unique_x
 
@@ -73,41 +73,41 @@ def test_sort_by_x_basic():
 def test_basic_unique_sort():
     x = array([3, 1, 2, 3, 2, 1])
     y = array([30, 10, 20, 300, 200, 100])
-    x_unique, y_filtered = sort_and_filter_unique_x(x, y)
+    x_unique, y_filtered = sort_by_x_and_filter_unique(x, y)
     assert array_equal(x_unique, array([1, 2, 3]))
     assert array_equal(y_filtered, array([10, 20, 30]))
 
 def test_already_sorted_input():
     x = array([1, 2, 3, 4])
     y = array([10, 20, 30, 40])
-    x_unique, y_filtered = sort_and_filter_unique_x(x, y)
+    x_unique, y_filtered = sort_by_x_and_filter_unique(x, y)
     assert array_equal(x_unique, x)
     assert array_equal(y_filtered, y)
 
 def test_all_duplicates():
     x = array([5, 5, 5, 5])
     y = array([50, 500, 5000, 50000])
-    x_unique, y_filtered = sort_and_filter_unique_x(x, y)
+    x_unique, y_filtered = sort_by_x_and_filter_unique(x, y)
     assert array_equal(x_unique, array([5]))
     assert array_equal(y_filtered, array([50]))
 
 def test_empty_arrays():
     x = array([])
     y = array([])
-    x_unique, y_filtered = sort_and_filter_unique_x(x, y)
+    x_unique, y_filtered = sort_by_x_and_filter_unique(x, y)
     assert x_unique.size == 0
     assert y_filtered.size == 0
 
 def test_non_integer_values():
     x = array([2.5, 3.1, 2.5, 4.0])
     y = array([100, 200, 300, 400])
-    x_unique, y_filtered = sort_and_filter_unique_x(x, y)
+    x_unique, y_filtered = sort_by_x_and_filter_unique(x, y)
     assert allclose(x_unique, array([2.5, 3.1, 4.0]))
     assert array_equal(y_filtered, array([100, 200, 400]))
 
 def test_negative_values():
     x = array([-1, -2, -1, 0])
     y = array([10, 20, 30, 40])
-    x_unique, y_filtered = sort_and_filter_unique_x(x, y)
+    x_unique, y_filtered = sort_by_x_and_filter_unique(x, y)
     assert array_equal(x_unique, array([-2, -1, 0]))
     assert array_equal(y_filtered, array([20, 10, 40]))
