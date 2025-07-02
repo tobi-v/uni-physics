@@ -1,5 +1,6 @@
 from numpy import array, exp, linspace, isclose
-from tools.dynamics.harmonic_osci import estimate_damping_constant, find_resonance_frequency
+from tools.dynamics.harmonic_osci import estimate_damping_constant,\
+    find_resonance_frequency
 
 def test_estimate_damping_constant():
     # Known parameters
@@ -25,4 +26,5 @@ def test_find_resonance_frequency():
     resonance = find_resonance_frequency(omega, amplitude)
     
     assert isinstance(resonance, float), "The result should be a float"
-    assert 2.8 < resonance < 3.2, f"Resonance frequency {resonance} not in expected range"
+    assert 2.8 < resonance < 3.2, \
+        f"Resonance frequency {resonance} not in expected range"

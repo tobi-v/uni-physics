@@ -3,7 +3,8 @@ from numpy.typing import NDArray
 from scipy.interpolate import UnivariateSpline
 from scipy.stats import linregress
 
-def estimate_damping_constant(t: NDArray[float64], amplitudes: NDArray[float64]) -> float:
+def estimate_damping_constant(t: NDArray[float64], amplitudes: NDArray[float64])\
+      -> float:
     """
     Estimate damping constant δ from exponential decay A(t) ≈ A0 * exp(-δ t)
 
