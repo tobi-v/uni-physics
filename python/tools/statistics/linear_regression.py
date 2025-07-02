@@ -3,7 +3,11 @@ from numpy.typing import NDArray
 from typing import Tuple
 
 def linreg(x: NDArray, y: NDArray) -> Tuple[poly1d, NDArray[float64], NDArray[float64]]:
-    coeff, cov = polyfit(x, y, 1, cov=True)
+    return polyreg(x, y, 1)
+
+def polyreg(x: NDArray, y: NDArray, order: int) \
+    -> Tuple[poly1d, NDArray[float64], NDArray[float64]]:
+    coeff, cov = polyfit(x, y, deg=order, cov=True)
     return poly1d(coeff), coeff, cov
 
 def plotWithErrorBars(ax, x, y, linregFunc,
