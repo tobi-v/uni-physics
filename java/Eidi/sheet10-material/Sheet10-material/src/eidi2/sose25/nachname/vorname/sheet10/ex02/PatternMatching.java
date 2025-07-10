@@ -8,7 +8,14 @@ public abstract class PatternMatching {
     ///////////////
 
     public static int[] bruteForce(String pattern, String text) {
-        //TODO: a)
+        int comparisons = 0;
+
+        for(char tc : text.toCharArray()) {
+            for (char pc : pattern.toCharArray()) {
+
+            }
+        }
+
         return null;
     }
 
