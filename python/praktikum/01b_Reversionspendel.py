@@ -10,7 +10,7 @@ T_uncertainty = sqrt(std(T))
 
 # 2.
 length = array([74.6, 75, 75.6, 76, 76.8, 77.7, 78.3])*10**-2
-T_heavy_bottom  = array([T_mean, 86.671, 86.966, 87.204, 87.646, 88.226, 0])
+T_heavy_bottom  = array([T_mean, 86.671, 86.966, 87.204, 87.646, 88.226, 88.45])
 T_heavy_top     = array([86.737, 84.809, 86.979, 88.685, 87.548, 87.910, 87.99])
 
 # linreg
