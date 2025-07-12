@@ -1,8 +1,9 @@
 import matplotlib.pyplot as plt
-from numpy import arange, array, exp, linspace, log, mean, pi
+from numpy import arange, array, exp, linspace, log, mean, pi, sqrt, std
 from scipy.optimize import curve_fit
 from scipy.stats import linregress
 from tools.dynamics.harmonic_osci import estimate_damping_constant, find_resonance_frequency
+from tools.maths.functions import gaussian
 from tools.python.sort import sort_by_x_and_filter_unique
 from tools.statistics.linear_regression import linreg, polyreg
 
@@ -111,10 +112,11 @@ phi401 = array([ # [radian]
 print_damping_and_resonance(current401, omega401, phi401, ampl401)
 
 fig2, ax2 = plt.subplots(1, 1, figsize=(8, 5))
+fig3, ax3 = plt.subplots(1, 1, figsize=(8, 5))
 
-for label, omega, phi, color in [
-    ("251 mA", omega251, phi251, "C0"),
-    ("401 mA", omega401, phi401, "C1")
+for label, omega, ampl, phi, color in [
+    ("251 mA", omega251, ampl251, phi251, "C0"),
+    ("401 mA", omega401, ampl401, phi401, "C1")
 ]:
     phi_deg = -phi*180/pi
     fit, _, _ = linreg(omega, phi_deg)
@@ -124,11 +126,26 @@ for label, omega, phi, color in [
     omega_fit = linspace(min(omega), max(omega), 300)
     ax2.plot(omega_fit, cubic_fit(omega_fit), '-', label=f"{label} cubic fit", color=color)
 
+    initial_guess = [max(omega), mean(omega), std(omega)]
+    popt, pcov = curve_fit(gaussian, omega, ampl, p0=initial_guess)
+    _, gaussmean, stddev = popt
+    halbwertsbreite = 2 * sqrt(2 * log(2)) * stddev
+    ax3.scatter(omega, ampl, label=f"{label} data")
+    ax3.plot(omega_fit, gaussian(omega_fit, *popt), label=f"{label} gaussian fit", color=color)
+    plt.axvline(gaussmean - halbwertsbreite/2, color=color, linestyle='--', label=f"{label} Halbwertsbreite")
+    plt.axvline(gaussmean + halbwertsbreite/2, color=color, linestyle='--')
+    print(f"Halbwertsbreite bei {label}: {halbwertsbreite} [Hz]")
+
 ax2.set_xlabel("Frequenz [1/s]")
 ax2.set_ylabel("Phasenverschiebung [deg]")
 ax2.set_title("Phasenverschiebung in Abhängigkeit von der Anregungsfrequenz")
 ax2.legend()
 ax2.grid(True)
+ax3.set_xlabel("Frequenz [1/s]")
+ax3.set_ylabel("Amplitude [V]")
+ax3.set_title("Amplitude in Abhängigkeit von der Anregungsfrequenz")
+ax3.legend()
+ax3.grid(True)
 
 # Show the plots
 plt.tight_layout()
