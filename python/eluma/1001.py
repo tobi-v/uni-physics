@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from sympy import collect, expand, I, im, latex, re, simplify, symbols
+from sympy import I, im, latex, re, simplify, symbols
 
 # Ensure LaTeX is used for text rendering
 plt.rcParams.update({
