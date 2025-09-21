@@ -2,6 +2,7 @@ from numpy import argsort, unique
 from numpy.typing import NDArray
 from typing import Tuple
 
+
 def filter_unique_x(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
     """
     Removes duplicate values in `x` and the corresponding values in `y`.
@@ -27,9 +28,10 @@ def filter_unique_x(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
     y_filtered = y[unique_indices]
     return x_unique, y_filtered
 
+
 def sort_by_x(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
     """
-    Sorts the array `x` in increasing order and reorders `y` 
+    Sorts the array `x` in increasing order and reorders `y`
     to match the sorted order of `x`.
 
     Parameters:
@@ -50,6 +52,7 @@ def sort_by_x(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
     x_sorted = x[sorted_indices]
     y_sorted = y[sorted_indices]
     return x_sorted, y_sorted
+
 
 def sort_by_x_and_filter_unique(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArray]:
     """
@@ -75,4 +78,3 @@ def sort_by_x_and_filter_unique(x: NDArray, y: NDArray) -> Tuple[NDArray, NDArra
 
     y_filtered_sorted = y[unique_indices]
     return x_unique_sorted, y_filtered_sorted
-
