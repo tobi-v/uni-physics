@@ -4,6 +4,7 @@ from tools.python.sort import filter_unique_x, sort_by_x_and_filter_unique, sort
 
 ### Tests for filter_unique_x
 
+
 def test_filter_unique_x_basic():
     x = array([1.0, 2.0, 2.0, 3.0, 1.0])
     y = array([10.0, 20.0, 21.0, 30.0, 11.0])
@@ -16,6 +17,7 @@ def test_filter_unique_x_basic():
     assert allclose(x_unique, x_expected)
     assert allclose(y_filtered, y_expected)
 
+
 def test_filter_unique_x_all_unique():
     x = array([1.0, 2.0, 3.0])
     y = array([10.0, 20.0, 30.0])
@@ -24,6 +26,7 @@ def test_filter_unique_x_all_unique():
 
     assert allclose(x_unique, x)
     assert allclose(y_filtered, y)
+
 
 def test_filter_unique_x_all_duplicates():
     x = array([5.0, 5.0, 5.0])
@@ -37,6 +40,7 @@ def test_filter_unique_x_all_duplicates():
     assert allclose(x_unique, x_expected)
     assert allclose(y_filtered, y_expected)
 
+
 def test_filter_unique_x_empty():
     x = array([])
     y = array([])
@@ -46,6 +50,7 @@ def test_filter_unique_x_empty():
     assert x_unique.size == 0
     assert y_filtered.size == 0
 
+
 def test_filter_unique_x_length_mismatch():
     x = array([1.0, 2.0])
     y = array([10.0])  # mismatched length
@@ -53,7 +58,9 @@ def test_filter_unique_x_length_mismatch():
     with pytest.raises(IndexError):
         _ = filter_unique_x(x, y)
 
+
 ### Tests for sort_by_x
+
 
 def test_sort_by_x_basic():
     x = array([3.0, 1.0, 2.0])
@@ -67,6 +74,7 @@ def test_sort_by_x_basic():
     assert allclose(x_sorted, x_expected)
     assert allclose(z_sorted, z_expected)
 
+
 ### Tests for
 
 
@@ -77,12 +85,14 @@ def test_basic_unique_sort():
     assert array_equal(x_unique, array([1, 2, 3]))
     assert array_equal(y_filtered, array([10, 20, 30]))
 
+
 def test_already_sorted_input():
     x = array([1, 2, 3, 4])
     y = array([10, 20, 30, 40])
     x_unique, y_filtered = sort_by_x_and_filter_unique(x, y)
     assert array_equal(x_unique, x)
     assert array_equal(y_filtered, y)
+
 
 def test_all_duplicates():
     x = array([5, 5, 5, 5])
@@ -91,6 +101,7 @@ def test_all_duplicates():
     assert array_equal(x_unique, array([5]))
     assert array_equal(y_filtered, array([50]))
 
+
 def test_empty_arrays():
     x = array([])
     y = array([])
@@ -98,12 +109,14 @@ def test_empty_arrays():
     assert x_unique.size == 0
     assert y_filtered.size == 0
 
+
 def test_non_integer_values():
     x = array([2.5, 3.1, 2.5, 4.0])
     y = array([100, 200, 300, 400])
     x_unique, y_filtered = sort_by_x_and_filter_unique(x, y)
     assert allclose(x_unique, array([2.5, 3.1, 4.0]))
     assert array_equal(y_filtered, array([100, 200, 400]))
+
 
 def test_negative_values():
     x = array([-1, -2, -1, 0])

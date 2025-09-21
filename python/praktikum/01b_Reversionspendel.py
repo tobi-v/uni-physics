@@ -1,5 +1,5 @@
-from numpy import array, diag, linspace, max, mean, min, pi, sqrt, std
-from tools.statistics.linear_regression import linreg
+from numpy import array, linspace, max, mean, min, pi, sqrt, std
+from tools.statistics.linear_regression import linreg, plotWithErrorBars
 import matplotlib.pyplot as plt
 
 # 1. Time calibration
@@ -7,14 +7,15 @@ import matplotlib.pyplot as plt
 T = array([86.417, 86.387, 86.390, 86.381, 86.378])
 T_mean = mean(T)
 T_uncertainty = sqrt(std(T/50))
+length_uncertainty = 3e-3
 
 # 2.
-#length = array([74.6, 75, 75.6, 76, 76.8, 77.7, 78.3])*10**-2
-#T_heavy_bottom  = array([T_mean, 86.671, 86.966, 87.204, 87.646, 88.226, 88.45])
-#T_heavy_top     = array([86.737, 84.809, 86.979, 88.685, 87.548, 87.910, 87.99])
-length = array([74.6, 75.6, 76.8, 77.7, 78.3])*10**-2
-T_heavy_bottom  = array([T_mean, 86.966, 87.646, 88.226, 88.45])/50
-T_heavy_top     = array([86.737, 86.979, 87.548, 87.910, 87.99])/50
+length = array([74.6, 75, 75.6, 76, 76.8, 77.7, 78.3])*10**-2
+T_heavy_bottom  = array([T_mean, 86.671, 86.966, 87.204, 87.646, 88.226, 88.45])
+T_heavy_top     = array([86.737, 84.809, 86.979, 88.685, 87.548, 87.910, 87.99])
+#length = array([74.6, 75.6, 76.8, 77.7, 78.3])*10**-2
+#T_heavy_bottom  = array([T_mean, 86.966, 87.646, 88.226, 88.45])/50
+#T_heavy_top     = array([86.737, 86.979, 87.548, 87.910, 87.99])/50
 
 # linreg
 hb_fun, _, hb_cov = linreg(length, T_heavy_bottom**2)
@@ -73,14 +74,17 @@ print(f"g = {g} +- {g_uncertainty} m/s²")
 # plot
 x_fit = linspace(min(length), max(length), 100)
 fig, ax = plt.subplots()
-ax.plot(length, T_heavy_bottom**2, 'o', label='Schwer unten', color="C0")
-ax.plot(length, T_heavy_top**2, 'o', label='Schwer oben', color="C1")
-ax.plot(x_fit, hb_fun(x_fit), label='Fit unten', color="C0")
-ax.plot(x_fit, ht_fun(x_fit), label='Fit oben', color="C1")
-ax.axvline(l_eff, color='gray', linestyle='--', label=f'Schnitt: {l_eff:.4f} m')
+
+plotWithErrorBars(ax, length, T_heavy_bottom**2, hb_fun,
+                  x_absErr=length_uncertainty, y_absErr=T_uncertainty, label="Schwer unten", color='C0', data_color='C0.', error_color='k')
+plotWithErrorBars(ax, length, T_heavy_top**2, ht_fun,
+                  x_absErr=length_uncertainty, y_absErr=T_uncertainty, label="Schwer unten", color='C1', data_color='C1.', error_color='k')
 ax.set_xlabel("l / m")
-ax.set_ylabel("$T^2$ / s$^2$")
-ax.set_title("Messkurven ohne Ausreißer")
+ax.set_ylabel("$T^2$ / $s^2$")
+
+ax.axvline(l_eff, color='gray', linestyle='--')
+ax.axhline(hb_fun(l_eff), color='gray', linestyle='--', label=f'Schnitt: {l_eff:.4f} m, {hb_fun(l_eff):.4f} $s^2$')
+ax.set_title("Messkurven mit Ausreißern")
 ax.grid(True)
 ax.legend()
 
