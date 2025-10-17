@@ -1,4 +1,4 @@
-from numpy import array
+from numpy import array, linspace
 
 ### Units
 ### U always in V, I always in A
@@ -51,3 +51,8 @@ I2 = array([0.31, 0.36, 0.43, 0.5, 0.61, 0.71, 0.84, 0.99, 1.16, 1.32, 1.46])*10
 
 # Widerstand der Spule bei 500 Windungen
 R = 5.3
+
+### 3.4
+f = 500 #Hz
+U = 5 #V
+T = array([]) + 273.15 # 85 statt 80
