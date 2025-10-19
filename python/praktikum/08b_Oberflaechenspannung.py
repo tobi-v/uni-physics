@@ -1,4 +1,4 @@
-from numpy import array, empty, linspace, sqrt
+from numpy import array, linspace, sqrt
 from tools.hydrodyn.static_properties import GravitationalPressure, RhoFromGravitationalPresure
 from tools.statistics.linear_regression import linreg, plotWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
@@ -56,7 +56,6 @@ ProcessResultsFromVoltage(U, "demineralisiertes Wasser", axs[1])
 
 U_sal = array([2.32, 1.08, 0.616, 0.528]) # [V] Measured voltages for saltwater
 ProcessResultsFromVoltage(U_sal, "Salzwasser", axs[2])
-
 
 ### 4. Density
 
