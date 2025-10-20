@@ -13,32 +13,11 @@ def polyreg(
     coeff, cov = polyfit(x, y, deg=order, cov=True)
     return poly1d(coeff), coeff, cov
 
-
-def plotWithErrorBars(
-    ax,
-    x,
-    y,
-    linregFunc,
-    x_absErr=0,
-    y_absErr=0,
-    title="",
-    label="",
-    xlabel="",
-    ylabel="",
-    color="C0",
-    data_color="C0",
-    error_color="r",
-):
+def plotWithErrorBars(ax, x, y, linregFunc,
+                      x_absErr=0, y_absErr=0, title="", fun_label="", scatter_label="", xlabel="", ylabel="", data_color="k.", error_color="r", color="--k"):
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    ax.plot(x, linregFunc(x), color=color, label=label)
-    ax.errorbar(
-        x,
-        y,
-        fmt=data_color,
-        xerr=x_absErr,
-        yerr=y_absErr,
-        ecolor=error_color,
-        capsize=1.5,
-    )
+    ax.plot(x, linregFunc(x), color=color, label=fun_label)
+    ax.errorbar(x, y, fmt=data_color, xerr=x_absErr, yerr=y_absErr, label=scatter_label, ecolor=error_color, capsize=1.5)
+    ax.grid()
