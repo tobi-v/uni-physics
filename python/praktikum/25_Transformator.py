@@ -1,5 +1,6 @@
-from numpy import append, array, linspace, ones
+from numpy import append, array, linspace, ones, sqrt
 from numpy.typing import NDArray
+from tools.python.plot import DefaultScatter
 from tools.statistics.linear_regression import linreg, plotWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
@@ -9,6 +10,26 @@ import matplotlib.pyplot as plt
 U_uncertainty = 0.01
 I_uncertainty = 1e-5
 X = linspace(1, 10, 1000)
+
+def PlotInductivitiesAndKappa(loop_ratio, L1, L2, L12, kappa):
+    _, axs = plt.subplots(2, 1)
+    
+    DefaultScatter(axs[0], loop_ratio, L1[0:11], label="L1", c="r")
+    DefaultScatter(axs[0], loop_ratio, L2[0:11], label="L2", c="g")
+    DefaultScatter(axs[0], loop_ratio, L12[0:11], label="L12", c="b")
+    DefaultScatter(axs[0], loop_ratio, kappa[0:11], title="Experimentell bestimmte" \
+                    "Induktivtäten und Kopplungsgrad bei 130 Hz", label="kappa",
+                    xlabel="N2/N1")
+    DefaultScatter(axs[1], loop_ratio, L1[11:22], label="L1", c="r")
+    DefaultScatter(axs[1], loop_ratio, L2[11:22], label="L2", c="g")
+    DefaultScatter(axs[1], loop_ratio, L12[11:22], label="L12", c="b")
+    DefaultScatter(axs[1], loop_ratio, kappa[11:22], title="Experimentell bestimmte" \
+                    "Induktivtäten und Kopplungsgrad bei 130 Hz", label="kappa",
+                    xlabel="N2/N1")
+    
+    plt.tight_layout()
+    plt.show()
+
 
 def UfromI(I: NDArray, R:NDArray):
     return R*I
@@ -63,8 +84,8 @@ def Exp1():
     return L1, L12
 
 def Exp2(L1: NDArray, L12: NDArray):
-    def ExpectedCurve(X):
-        return 1/X
+    def ExpectedCurve(x):
+        return 1/x
     
     def plot(ax, I1, I2, omega):
         ax.plot(X, ExpectedCurve(X), '--g', label="Theoriekurve")
@@ -91,13 +112,16 @@ def Exp2(L1: NDArray, L12: NDArray):
     plot(axs[1], I1, I2, omega)
     
     plt.tight_layout()
-    plt.show()
+    #plt.show()
 
     return L2
 
 def Exp3():
+    def ExpectedCurve(x):
+        return x # Gilt unter Annahme einer idealen Kopplung
+    
     def plot(ax, U1, U2, omega, R):
-        #ax.plot(X, ExpectedCurve(X), '--g', label="Theoriekurve")
+        ax.plot(X, ExpectedCurve(X), '--g', label="Theoriekurve bei idealer Kopplung")
         PlotRatios(ax, U1, U2, loop_ratio, uncertainty=U2_uncertainty,
                title=f"Spannungs- und Windungsverhältnis unter Belastung"
                    f" für {omega} Hz und {R} Ohm Last", xlabel="N2/N1", ylabel="U2/U1")
@@ -138,14 +162,17 @@ def Exp3():
     plot(axs[1][1], U1, U2, omega, R)
         
     plt.tight_layout()
-    plt.show()
-
+    #plt.show()
 
 ### 3.4
 f = 500 #Hz
 U = 5 #V
 T = array([]) + 273.15
 
-#L1, L12 = Exp1()
-#L2 = Exp2(L1, L12)
+L1, L12 = Exp1()
+L2 = Exp2(L1, L12)
 Exp3()
+
+
+kappa = L12 / sqrt(L1*L2)
+PlotInductivitiesAndKappa(loop_ratio, L1, L2, L12, kappa)
