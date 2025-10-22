@@ -91,7 +91,7 @@ B_dipole = transpose(GetBFromPointDPoleList(M_loop, positions))
 ax = fig.add_subplot(3, 1, 2)
 ax.set_title("B from dipole")
 ax.quiver(plot_positions[0], plot_positions[2], B_dipole[0], B_dipole[2], width=0.002)
-plt.grid()
+plt.grid(visible=True)
 
 B_diff_arr = array([norm(elem) for elem in (transpose(B_field) - transpose(B_dipole))])
 B_field_norm = array([norm(elem) for elem in transpose(B_field)])
@@ -101,7 +101,7 @@ B_error = B_diff_arr / B_field_norm
 ax = fig.add_subplot(3, 1, 3)
 ax.set_title("B from dipole")
 ax.contour(plot_positions[0], plot_positions[2], B_error)
-plt.grid()
+plt.grid(visible=True)
 
 plt.tight_layout()
 plt.show()

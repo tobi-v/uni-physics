@@ -20,4 +20,4 @@ def plotWithErrorBars(ax, x, y, linregFunc,
     ax.set_ylabel(ylabel)
     ax.plot(x, linregFunc(x), color=color, label=fun_label)
     ax.errorbar(x, y, fmt=data_color, xerr=x_absErr, yerr=y_absErr, label=scatter_label, ecolor=error_color, capsize=1.5)
-    ax.grid()
+    ax.grid(visible=True)

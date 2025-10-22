@@ -19,7 +19,7 @@ def plot_helmholtz(ax, dist: float):
         f"B(0) = {HelmholtzAlongZ(0, current, radius, dist, turns)}"
     )
     ax.plot(z, B)
-    ax.grid()
+    ax.grid(visible=True)
     ax.set_title(f"Distance: {dist}")
 
 
@@ -29,6 +29,6 @@ for ii, distance in enumerate(distances):
     plot_helmholtz(axs[ii], distance)
 
 plt.tight_layout()
-plt.grid()
-plt.grid()
+plt.grid(visible=True)
+plt.grid(visible=True)
 plt.show()
