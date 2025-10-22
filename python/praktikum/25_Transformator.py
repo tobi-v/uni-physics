@@ -14,17 +14,17 @@ X = linspace(1, 10, 1000)
 def PlotInductivitiesAndKappa(loop_ratio, L1, L2, L12, kappa):
     _, axs = plt.subplots(2, 1)
     
-    DefaultScatter(axs[0], loop_ratio, L1[0:11], label="L1", c="r")
-    DefaultScatter(axs[0], loop_ratio, L2[0:11], label="L2", c="g")
-    DefaultScatter(axs[0], loop_ratio, L12[0:11], label="L12", c="b")
+    DefaultScatter(axs[0], loop_ratio, L1[0:11], label=r'$L_{1}$', c="r")
+    DefaultScatter(axs[0], loop_ratio, L2[0:11], label=r'$L_{2}$', c="g")
+    DefaultScatter(axs[0], loop_ratio, L12[0:11], label=r'$L_{12}$', c="b")
     DefaultScatter(axs[0], loop_ratio, kappa[0:11], title="Experimentell bestimmte" \
-                    "Induktivtäten und Kopplungsgrad bei 130 Hz", label="kappa",
+                    "Induktivtäten und Kopplungsgrad bei 130 Hz", label=r'Kopplungsgrad $\kappa$',
                     xlabel="N2/N1")
-    DefaultScatter(axs[1], loop_ratio, L1[11:22], label="L1", c="r")
-    DefaultScatter(axs[1], loop_ratio, L2[11:22], label="L2", c="g")
-    DefaultScatter(axs[1], loop_ratio, L12[11:22], label="L12", c="b")
+    DefaultScatter(axs[1], loop_ratio, L1[11:22], label=r'$L_{1}$', c="r")
+    DefaultScatter(axs[1], loop_ratio, L2[11:22], label=r'$L_{2}$', c="g")
+    DefaultScatter(axs[1], loop_ratio, L12[11:22], label=r'$L_{12}$', c="b")
     DefaultScatter(axs[1], loop_ratio, kappa[11:22], title="Experimentell bestimmte" \
-                    "Induktivtäten und Kopplungsgrad bei 130 Hz", label="kappa",
+                    "Induktivtäten und Kopplungsgrad bei 130 Hz", label=r'Kopplungsgrad $\kappa$',
                     xlabel="N2/N1")
     
     plt.tight_layout()
