@@ -17,15 +17,14 @@ def PlotInductivitiesAndKappa(loop_ratio, L1, L2, L12, kappa):
     DefaultScatter(axs[0], loop_ratio, L1[0:11], label=r'$L_{1}$', c="r")
     DefaultScatter(axs[0], loop_ratio, L2[0:11], label=r'$L_{2}$', c="g")
     DefaultScatter(axs[0], loop_ratio, L12[0:11], label=r'$L_{12}$', c="b")
-    DefaultScatter(axs[0], loop_ratio, kappa[0:11], title="Experimentell bestimmte" \
-                    "Induktivtäten und Kopplungsgrad bei 130 Hz", label=r'Kopplungsgrad $\kappa$',
-                    xlabel="N2/N1")
+    DefaultScatter(axs[0], loop_ratio, kappa[0:11], title=r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $130 Hz$', label=r'Kopplungsgrad $\kappa$',
+                    xlabel=r'$N_2 / N_1$')
     DefaultScatter(axs[1], loop_ratio, L1[11:22], label=r'$L_{1}$', c="r")
     DefaultScatter(axs[1], loop_ratio, L2[11:22], label=r'$L_{2}$', c="g")
     DefaultScatter(axs[1], loop_ratio, L12[11:22], label=r'$L_{12}$', c="b")
     DefaultScatter(axs[1], loop_ratio, kappa[11:22], title="Experimentell bestimmte" \
                     "Induktivtäten und Kopplungsgrad bei 130 Hz", label=r'Kopplungsgrad $\kappa$',
-                    xlabel="N2/N1")
+                    xlabel=r'$N_2 / N_1$')
     
     plt.tight_layout()
     plt.show()
@@ -56,8 +55,7 @@ def Exp1():
     def plot(ax, U1, U2, omega):
         ax.plot(X, ExpectedCurve(X), '--g', label="Theoriekurve")
         PlotRatios(ax, U1, U2, loop_ratio, uncertainty=U_uncertainty,
-               title=f"Spannungs- und Windungsverhältnis im offenen Betrieb"
-                   f" für {omega} Hz", xlabel="N2/N1", ylabel="U2/U1")
+               title=r'Spannungs- und Windungsverhältnis im offenen Betrieb für $%.f Hz$' % omega, xlabel=r'$N_2 / N_1$', ylabel=r'$U_2 / U_1$')
         ax.legend()
     
     _, axs = plt.subplots(2,1)
@@ -90,8 +88,7 @@ def Exp2(L1: NDArray, L12: NDArray):
     def plot(ax, I1, I2, omega):
         ax.plot(X, ExpectedCurve(X), '--g', label="Theoriekurve")
         PlotRatios(ax, I1, I2, loop_ratio, uncertainty=I_uncertainty,
-               title=f"Stromstärke- und Windungsverhältnis im Kurzschlussetrieb"
-                   f" für {omega} Hz", xlabel="N2/N1", ylabel="I2/I1")
+               title=r'Stromstärke- und Windungsverhältnis im Kurzschlussetrieb für $%.f Hz$' % omega, xlabel=r'$N_2 / N_1$', ylabel=r'$I_2 / I_1$')
         ax.legend()
     
     _, axs = plt.subplots(2,1)
@@ -123,8 +120,7 @@ def Exp3():
     def plot(ax, U1, U2, omega, R):
         ax.plot(X, ExpectedCurve(X), '--g', label="Theoriekurve bei idealer Kopplung")
         PlotRatios(ax, U1, U2, loop_ratio, uncertainty=U2_uncertainty,
-               title=f"Spannungs- und Windungsverhältnis unter Belastung"
-                   f" für {omega} Hz und {R} Ohm Last", xlabel="N2/N1", ylabel="U2/U1")
+               title=r'Spannungs- und Windungsverhältnis unter Belastung für $%.f Hz$ und $%.f \Omega$ Last' % (omega, R), xlabel=r'$N_2 / N_1$', ylabel=r'$U_2 / U_1$')
         ax.legend()
 
     R_500 = 5.3
