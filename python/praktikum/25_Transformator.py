@@ -49,11 +49,8 @@ N = N2.size
 loop_ratio = N2/N1
 
 def Exp1():
-    def ExpectedCurve(x):
-        return x
-    
     def plot(ax, U1, U2, omega):
-        ax.plot(X, ExpectedCurve(X), '--g', label="Theoriekurve")
+        ax.plot(X, X, '--g', label="Theoriekurve")
         PlotRatios(ax, U1, U2, loop_ratio, uncertainty=U_uncertainty,
                title=r'Spannungs- und Windungsverhältnis im offenen Betrieb für $%.f Hz$' % omega, xlabel=r'$N_2 / N_1$', ylabel=r'$U_2 / U_1$')
         ax.legend()
@@ -81,14 +78,11 @@ def Exp1():
 
     return L1, L12
 
-def Exp2(L1: NDArray, L12: NDArray):
-    def ExpectedCurve(x):
-        return 1/x
-    
+def Exp2(L1: NDArray, L12: NDArray):    
     def plot(ax, I1, I2, omega):
-        ax.plot(X, ExpectedCurve(X), '--g', label="Theoriekurve")
-        PlotRatios(ax, I1, I2, loop_ratio, uncertainty=I_uncertainty,
-               title=r'Stromstärke- und Windungsverhältnis im Kurzschlussetrieb für $%.f Hz$' % omega, xlabel=r'$N_2 / N_1$', ylabel=r'$I_2 / I_1$')
+        ax.plot(X, X, '--g', label="Theoriekurve")
+        PlotRatios(ax, I2, I1, loop_ratio, uncertainty=I_uncertainty,
+               title=r'Stromstärke- und Windungsverhältnis im Kurzschlussetrieb für $%.f Hz$' % omega, xlabel=r'$N_2 / N_1$', ylabel=r'$I_1 / I_2$')
         ax.legend()
     
     _, axs = plt.subplots(2,1)
@@ -113,18 +107,16 @@ def Exp2(L1: NDArray, L12: NDArray):
 
     return L2
 
-def Exp3():
-    def ExpectedCurve(x):
-        return x # Gilt unter Annahme einer idealen Kopplung
-    
+def Exp3(R_coil):    
     def plot(ax, U1, U2, omega, R):
-        ax.plot(X, ExpectedCurve(X), '--g', label="Theoriekurve bei idealer Kopplung")
+        ax.plot(X, X, '--g', label="Theoriekurve bei idealer Kopplung")
         PlotRatios(ax, U1, U2, loop_ratio, uncertainty=U2_uncertainty,
                title=r'Spannungs- und Windungsverhältnis unter Belastung für $%.f Hz$ und $%.f \Omega$ Last' % (omega, R), xlabel=r'$N_2 / N_1$', ylabel=r'$U_2 / U_1$')
         ax.legend()
 
-    R_500 = 5.3
-    R_coil = R_500*N2/500
+    def CorrectionWithResistance():
+        pass
+
     _, axs = plt.subplots(2,2)
 
     R = 100
@@ -165,10 +157,10 @@ f = 500 #Hz
 U = 5 #V
 T = array([]) + 273.15
 
+### Execution
 L1, L12 = Exp1()
 L2 = Exp2(L1, L12)
-Exp3()
-
-
 kappa = L12 / sqrt(L1*L2)
 PlotInductivitiesAndKappa(loop_ratio, L1, L2, L12, kappa)
+R_coil = 5.3*N2/500
+Exp3(R_coil)
