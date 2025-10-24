@@ -1,4 +1,4 @@
-from numpy import append, array, linspace, ones, sqrt
+from numpy import append, array, linspace, multiply, ones, sqrt
 from numpy.typing import NDArray
 from tools.python.plot import DefaultScatter
 from tools.statistics.linear_regression import linreg, plotWithErrorBars
@@ -114,7 +114,7 @@ def Exp3(R_coil):
                title=r'Spannungs- und Windungsverhältnis unter Belastung für $%.f Hz$ und $%.f \Omega$ Last' % (omega, R), xlabel=r'$N_2 / N_1$', ylabel=r'$U_2 / U_1$')
         ax.legend()
 
-    def CorrectionWithResistance():
+    def U1Correction(U1: NDArray, R_coil: float, R_load: float, L1: NDArray, L2: NDArray):
         pass
 
     _, axs = plt.subplots(2,2)
@@ -124,14 +124,17 @@ def Exp3(R_coil):
     U1 = array([375, 366.5, 352, 335, 307, 278, 241, 201, 164, 133, 108])*10**(-3)
     I1 = 0.05 * ones(N)
     I2 = array([3.86, 4.36, 4.985, 5.48, 5.99, 6.24, 6.315, 6.12, 5.69, 5.145, 4.57])*10**(-3)
-    U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil+R], True, [I_uncertainty, 0])
+    U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, ones(N)*R], True, [I_uncertainty, 0])
+    U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil+R], True, [I_uncertainty, 0])
     plot(axs[0][0], U1, U2, omega, R)
+    #CorrectionWithResistance(R, I2, U2)
 
     omega = 320
     U1 = array([678, 634, 570, 507.5, 424, 355, 284, 220, 170, 132, 105])*10**(-3)
     I1 = 0.04e-3 * ones(N)
     I2 = array([7.5, 8.15, 8.7, 9, 8.95, 8.6, 8, 7.2, 6.3, 5.4, 4.65])*10**(-3)
-    U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil+R], True, [I_uncertainty, 0])
+    U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, ones(N)*R], True, [I_uncertainty, 0])
+    U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil+R], True, [I_uncertainty, 0])
     plot(axs[1][0], U1, U2, omega, R)
 
     R = 3000
@@ -139,14 +142,16 @@ def Exp3(R_coil):
     U1 = array([395, 394.5, 394, 394, 393, 392, 390.5, 388, 384, 378, 369])*10**(-3)
     I1 = 0.05 * ones(N)
     I2 = array([0.15, 0.18, 0.21, 0.25, 0.3, 0.35, 0.42, 0.5, 0.59, 0.7, 0.81])*10**(-3)
-    U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil+R], True, [I_uncertainty, 0])
+    U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, ones(N)*R], True, [I_uncertainty, 0])
+    U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil+R], True, [I_uncertainty, 0])
     plot(axs[0][1], U1, U2, omega, R)
 
     omega = 320
     U1 = array([833, 831.5, 828.5, 825, 818, 810, 797, 777.5, 750, 713, 667])*10**(-3)
     I1 = 0.04 * ones(N)
     I2 = array([0.31, 0.36, 0.43, 0.5, 0.61, 0.71, 0.84, 0.99, 1.16, 1.32, 1.46])*10**(-3)
-    U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil+R], True, [I_uncertainty, 0])
+    U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, ones(N)*R], True, [I_uncertainty, 0])
+    U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil+R], True, [I_uncertainty, 0])
     plot(axs[1][1], U1, U2, omega, R)
         
     plt.tight_layout()
