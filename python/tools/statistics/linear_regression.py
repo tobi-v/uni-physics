@@ -14,10 +14,21 @@ def polyreg(
     return poly1d(coeff), coeff, cov
 
 def plotWithErrorBars(ax, x, y, linregFunc,
-                      x_absErr=0, y_absErr=0, title="", fun_label="", scatter_label="", xlabel="", ylabel="", data_color="k.", error_color="r", color="--k"):
+                      x_absErr=0, y_absErr=0, title="", fun_label="", scatter_label="", xlabel="", ylabel="", data_color="k.", error_color="r", color="--k", legend_loc='best', grid=True):
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
     ax.plot(x, linregFunc(x), color=color, label=fun_label)
     ax.errorbar(x, y, fmt=data_color, xerr=x_absErr, yerr=y_absErr, label=scatter_label, ecolor=error_color, capsize=1.5)
-    ax.grid(visible=True)
+    ax.legend(loc=legend_loc)
+    ax.grid(visible=grid)
+
+
+def scatterWithErrorBars(ax, x, y, x_absErr=0, y_absErr=0,
+                         title="", scatter_label="", xlabel="", ylabel="", fmt='k.', legend_loc='best', grid=True):
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    ax.errorbar(x, y, fmt=fmt, xerr=x_absErr, yerr=y_absErr, label=scatter_label, ecolor='r', capsize=1.5)
+    ax.legend(loc=legend_loc)
+    ax.grid(visible=grid)
