@@ -59,7 +59,7 @@ def PlotRatios(ax, var1: NDArray, var2: NDArray, other_ratio: NDArray, uncertain
                       scatter_label="Messwerte mit Unsicherheit", xlabel=xlabel, ylabel=ylabel)
     
 def kappa_fun(L1: NDArray, L2: NDArray, L12: NDArray) -> NDArray:
-    return L12 / sqrt(L1*L2)
+    return L12 / sqrt(abs(L1*L2))
 
 N1 = 50
 N2 = array([85, 100, 120, 140, 170, 200, 240, 290, 350, 420, 500])
