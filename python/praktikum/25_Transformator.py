@@ -1,6 +1,5 @@
 from numpy import abs, append, array, linspace, ones, sqrt
 from numpy.typing import NDArray
-from tools.python.plot import DefaultScatter
 from tools.statistics.linear_regression import linreg, plotWithErrorBars, scatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
@@ -29,17 +28,6 @@ def PlotInductivitiesAndKappa(loop_ratio, L1, L1_uncertainty, L2, L2_uncertainty
     ax.yaxis.set_label_position("right")
     scatterWithErrorBars(ax, loop_ratio, kappa[11:22], y_absErr=kappa_uncertainty[11:22], title=r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $320 Hz$', scatter_label=r'Kopplungsgrad $\kappa$',
                          xlabel=r'$N_2 / N_1$', ylabel=r'Kopplungsgrad $\kappa$', fmt='k.', legend_loc='right', grid=False)
-    
-    #DefaultScatter(axs[0], loop_ratio, L1[0:11], label=r'$L_1$', c="r")
-    #DefaultScatter(axs[0], loop_ratio, L2[0:11], label=r'$L_2$', c="g")
-    #DefaultScatter(axs[0], loop_ratio, L12[0:11], label=r'$L_{12}$', c="b")
-    #DefaultScatter(axs[0], loop_ratio, kappa[0:11], title=r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $130 Hz$', label=r'Kopplungsgrad $\kappa$',
-    #                xlabel=r'$N_2 / N_1$')
-    #DefaultScatter(axs[1], loop_ratio, L1[11:22], label=r'$L_1$', c="r")
-    #DefaultScatter(axs[1], loop_ratio, L2[11:22], label=r'$L_2$', c="g")
-    #DefaultScatter(axs[1], loop_ratio, L12[11:22], label=r'$L_{12}$', c="b")
-    #DefaultScatter(axs[1], loop_ratio, kappa[11:22], title=r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $320 Hz$', label=r'Kopplungsgrad $\kappa$',
-    #                xlabel=r'$N_2 / N_1$')
     
     plt.tight_layout()
     #plt.show()
