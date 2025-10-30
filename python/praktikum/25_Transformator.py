@@ -196,15 +196,7 @@ T = array([]) + 273.15
 ### Execution
 L1, L1_uncertainty, L12, L12_uncertainty = Exp1()
 L2, L2_uncertainty = Exp2(L12, L12_uncertainty)
-print(L1)
-print(L12)
-print(L2)
-print(L1_uncertainty)
-print(L12_uncertainty)
-print(L2_uncertainty)
 kappa, kappa_uncertainty = GetResultAndUncertainty(kappa_fun, [L1, L2, L12], True, [L1_uncertainty, L2_uncertainty, L12_uncertainty])
-print(kappa)
-print(kappa_uncertainty)
 PlotInductivitiesAndKappa(loop_ratio, L1, L1_uncertainty, L2, L2_uncertainty, L12, L12_uncertainty, kappa, kappa_uncertainty)
 R_coil1 = 25.3 * 50/500
 R_coil2 = 25.3*N2/500
