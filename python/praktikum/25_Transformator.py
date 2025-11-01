@@ -87,7 +87,7 @@ def Exp1():
     U1 = 0.59 * ones(N)
     I1 = 0.03 * ones(N)
     U2 = array([0.75, 0.87, 1.05, 1.23, 1.5, 1.76, 2.12, 2.57, 3.1, 3.73, 4.44])
-    L1, L1_uncertainty =GetResultAndUncertainty(LfromU, [U1, I1, omega*ones(N)], True, [U_uncertainty, I_uncertainty, 0])
+    L1, L1_uncertainty = GetResultAndUncertainty(LfromU, [U1, I1, omega*ones(N)], True, [U_uncertainty, I_uncertainty, 0])
     L1_full = append(L1_full, L1)
     L1_uncertainty_full = append(L1_uncertainty_full, L1_uncertainty)
     L12, L12_uncertainty = GetResultAndUncertainty(LfromU, [U2, I1, omega*ones(N)], True, [U_uncertainty, I_uncertainty, 0])
@@ -132,7 +132,7 @@ def Exp2(L12: NDArray, L12_uncrtainty: NDArray):
 
     return L2, L2_uncertainty
 
-def Exp3(R_coil1: float, R_coil2: NDArray, L12: NDArray, L12_uncertainty: NDArray, L1: NDArray, L1_uncrtainty: NDArray):
+def Exp3(R_coil1: float, R_coil2: NDArray, L1: NDArray, L1_uncertainty: NDArray, L12: NDArray, L12_uncertainty: NDArray):
     def plot(ax, U1, U2, omega, R):
         ax.plot(X, X, '--g', label="Theoriekurve bei idealer Kopplung")
         PlotRatios(ax, U1, U2, loop_ratio, uncertainty=U2_uncertainty,
@@ -174,7 +174,7 @@ def Exp3(R_coil1: float, R_coil2: NDArray, L12: NDArray, L12_uncertainty: NDArra
     U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil2+R], True, [I_uncertainty, 0])
     plot_corr(axs_corr[0][0], U1_corr, U2_corr, omega, R)
     plot_corr2(axs_corr2[0][0], U1_corr, U1_corr_uncertainty, U2_corr, U2_corr_uncertainty,
-               L12[0:11], L12_uncertainty[0:11], L1[0:11], L1_uncertainty[0:11], omega, R)
+               L1[0:11], L1_uncertainty[0:11], L12[0:11], L12_uncertainty[0:11], omega, R)
 
     omega = 320
     U1 = array([678, 634, 570, 507.5, 424, 355, 284, 220, 170, 132, 105])*10**(-3)
@@ -186,7 +186,7 @@ def Exp3(R_coil1: float, R_coil2: NDArray, L12: NDArray, L12_uncertainty: NDArra
     U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil2+R], True, [I_uncertainty, 0])
     plot_corr(axs_corr[1][0], U1_corr, U2_corr, omega, R)
     plot_corr2(axs_corr2[1][0], U1_corr, U1_corr_uncertainty, U2_corr, U2_corr_uncertainty,
-               L12[11:22], L12_uncertainty[11:22], L1[11:22], L1_uncertainty[11:22], omega, R)
+               L1[11:22], L1_uncertainty[11:22], L12[11:22], L12_uncertainty[11:22], omega, R)
 
     R = 3000
     omega = 130
@@ -199,7 +199,7 @@ def Exp3(R_coil1: float, R_coil2: NDArray, L12: NDArray, L12_uncertainty: NDArra
     U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil2+R], True, [I_uncertainty, 0])
     plot_corr(axs_corr[0][1], U1_corr, U2_corr, omega, R)
     plot_corr2(axs_corr2[0][1], U1_corr, U1_corr_uncertainty, U2_corr, U2_corr_uncertainty,
-               L12[0:11], L12_uncertainty[0:11], L1[0:11], L1_uncertainty[0:11], omega, R)
+               L1[0:11], L1_uncertainty[0:11], L12[0:11], L12_uncertainty[0:11],  omega, R)
 
     omega = 320
     U1 = array([833, 831.5, 828.5, 825, 818, 810, 797, 777.5, 750, 713, 667])*10**(-3)
@@ -211,7 +211,7 @@ def Exp3(R_coil1: float, R_coil2: NDArray, L12: NDArray, L12_uncertainty: NDArra
     U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil2+R], True, [I_uncertainty, 0])
     plot_corr(axs_corr[1][1], U1_corr, U2_corr, omega, R)
     plot_corr2(axs_corr2[1][1], U1_corr, U1_corr_uncertainty, U2_corr, U2_corr_uncertainty,
-               L12[11:22], L12_uncertainty[11:22], L1[11:22], L1_uncertainty[11:22], omega, R)
+               L1[11:22], L1_uncertainty[11:22], L12[11:22], L12_uncertainty[11:22], omega, R)
         
     plt.tight_layout()
     plt.show()
