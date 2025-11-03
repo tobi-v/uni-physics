@@ -4,7 +4,7 @@ from scipy.integrate import solve_ivp
 
 import matplotlib.pyplot as plt
 
-def Azimutalbeschleunigung(y: NDArray[float64], accel) -> NDArray[float64]:
+def Azimutalbeschleunigung(t: float, y: NDArray[float64], accel) -> NDArray[float64]:
     """Bewegungsgleichungen azimutal beschleunigte Bewegung
 
     Args:
@@ -51,9 +51,9 @@ fig, axs = plt.subplots(2, 2)
 for ax, (rho0, v0, phi0, omega0) in zip(axs.ravel(), starts):
     sol = SimulateAcceleration(rho0, v0, phi0, omega0, (0, 10), t_eval, accel)
     ax.plot(sol.y[0], sol.y[2], '-')
-    ax.set_title(r'$\rho_0=%.2f, v_0=%.2f, \phi_0=%.2f, \omega_0=%.2f$' % (rho0, v0, phi0, omega0))
-    ax.set_xlabel(r'\rho (m)')
-    ax.set_ylabel(r'\phi (rad)')
+    ax.set_title(r'$a_0=1.0, \rho_0=%.2f, v_0=%.2f, \phi_0=%.2f, \omega_0=%.2f$' % (rho0, v0, phi0, omega0))
+    ax.set_xlabel(r'$\rho (m)$')
+    ax.set_ylabel(r'$\phi (rad)$')
     ax.grid(visible=True)
 
 plt.tight_layout()
