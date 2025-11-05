@@ -1,4 +1,4 @@
-from util.linear_regression import linreg, plotWithErrorBars
+from util.linear_regression import linreg, PlotWithErrorBars
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -57,7 +57,7 @@ GMod_Al_error = GModuleError(Al_steigung, r_Al, 0.002, 0.001, np.sqrt(Al_cov[0, 
 print(f"\n\nFehler GModule\nEisen: {GMod_Fe_error/10**9}\nKupfer: {GMod_Cu_error/10**9}\nAluminium: {GMod_Al_error/10**9}")
 
 fig, axs = plt.subplots(3, 1)
-plotWithErrorBars(axs[0], m_Cu_Fe, rad_Cu, CuFun, y_absErr=error_Cu, title="Copper")
-plotWithErrorBars(axs[1], m_Cu_Fe, rad_Fe, FeFun, y_absErr=error_Fe, title="Steel")
-plotWithErrorBars(axs[2], m_Al, rad_Cu, AlFun, y_absErr=error_Al, title="Aluminum")
+PlotWithErrorBars(axs[0], m_Cu_Fe, rad_Cu, CuFun, y_absErr=error_Cu, title="Copper")
+PlotWithErrorBars(axs[1], m_Cu_Fe, rad_Fe, FeFun, y_absErr=error_Fe, title="Steel")
+PlotWithErrorBars(axs[2], m_Al, rad_Cu, AlFun, y_absErr=error_Al, title="Aluminum")
 plt.show()

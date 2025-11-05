@@ -8,4 +8,5 @@ def Gaussian(x: NDArray, amplitude: float, mean: float, stddev: float) -> NDArra
     return amplitude * exp(-0.5 * ((x - mean) / stddev) ** 2)
 
 def Ratio(var1: NDArray, var2: NDArray) -> NDArray:
+    '''Berechnet das Verhältnis zweier Variablen var2/var1.'''
     return var2/var1

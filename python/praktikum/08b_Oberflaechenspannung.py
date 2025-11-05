@@ -1,6 +1,6 @@
 from numpy import array, linspace, sqrt
 from tools.hydrodyn.static_properties import GravitationalPressure, RhoFromGravitationalPresure
-from tools.statistics.linear_regression import linreg, plotWithErrorBars
+from tools.statistics.linear_regression import linreg, PlotWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 import matplotlib.pyplot as plt
@@ -25,7 +25,7 @@ p_cal = GravitationalPressure(rho, g, h_cal)                # [Pa]
 
 U_to_p, U_to_p_coeffs, U_to_p_cov = linreg(U_cal, p_cal)
 
-plotWithErrorBars(axs[0], U_cal, p_cal,  U_to_p,
+PlotWithErrorBars(axs[0], U_cal, p_cal,  U_to_p,
                   x_absErr=uncertainty_osci, y_absErr=uncertainty_caliper,
                   title="Kalibrierung des Messgerätes", xlabel=r'Spannung $[V]$', ylabel=r'Druckdifferenz $[Pa]$')
 measurement_device_textbox = r'$p \propto %.1f\cdot U$' % U_to_p_coeffs[0]
@@ -43,7 +43,7 @@ def GetSigmaFromPressure(r: array, p: array):
 def ProcessResultsFromVoltage(U: array, substance: str, ax):
     p = U_to_p(U)
     fun, sigma, sigma_deviation = GetSigmaFromPressure(d/2, p)
-    plotWithErrorBars(ax, 2/d, p, fun,
+    PlotWithErrorBars(ax, 2/d, p, fun,
                       x_absErr=0, y_absErr=sigma_deviation,
                       title=f"Messung für {substance}", xlabel=r'1/r $[\frac{1}{m}]$', ylabel=r'Druckdifferenz $[Pa]$')
     print(f"\nFür {substance}: \tsigma = ({sigma/2:1.5f} +/- {sigma_deviation:1.5f}) N/m")

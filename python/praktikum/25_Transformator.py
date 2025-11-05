@@ -1,6 +1,6 @@
 from numpy import abs, append, array, linspace, ones, sqrt
 from numpy.typing import NDArray
-from tools.statistics.linear_regression import linreg, plotWithErrorBars, scatterWithErrorBars
+from tools.statistics.linear_regression import linreg, PlotWithErrorBars, scatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 import matplotlib.pyplot as plt
@@ -42,7 +42,7 @@ def Ratio(var1: NDArray, var2: NDArray) -> NDArray:
 def PlotRatios(ax, var1: NDArray, var2: NDArray, other_ratio: NDArray, uncertainty=0, title="", xlabel="", ylabel=""):
     ratio, funcertainty = GetResultAndUncertainty(Ratio, [var1, var2], True, [uncertainty, uncertainty])
     fun, _, _ = linreg(other_ratio, ratio)
-    plotWithErrorBars(ax, other_ratio, ratio, fun, y_absErr=funcertainty,
+    PlotWithErrorBars(ax, other_ratio, ratio, fun, y_absErr=funcertainty,
                       title=title, fun_label="Lineare Regression",
                       scatter_label="Messwerte mit Unsicherheit", xlabel=xlabel, ylabel=ylabel)
 
@@ -51,7 +51,7 @@ def PlotRatiosMulti(ax, x1: NDArray, x2: NDArray, x1_uncertainties: NDArray, x2_
     y_ratio, y_funcertainty = GetResultAndUncertainty(Ratio, [y1, y2], True, [y1_uncertainties, y2_uncertainties])
     x_ratio, x_funcertainty = GetResultAndUncertainty(Ratio, [x1, x2], True, [x1_uncertainties, x2_uncertainties])
     fun, _, _ = linreg(x_ratio, y_ratio)
-    plotWithErrorBars(ax, x_ratio, y_ratio, fun, x_absErr=x_funcertainty, y_absErr=y_funcertainty,
+    PlotWithErrorBars(ax, x_ratio, y_ratio, fun, x_absErr=x_funcertainty, y_absErr=y_funcertainty,
                       title=title, fun_label="Lineare Regression",
                       scatter_label="Messwerte mit Unsicherheit", xlabel=xlabel, ylabel=ylabel)
     
