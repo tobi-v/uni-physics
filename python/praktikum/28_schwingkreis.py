@@ -1,13 +1,15 @@
 from numpy import array, diff, log, mean, std
 from numpy.typing import NDArray
-from tools.statistics.linear_regression import plotWithErrorBars
+from tools.maths.functions import Ratio
+from tools.statistics.linear_regression import polyreg
 from tools.python.checks import CheckLengths
-from tools.python.plot import DefaultScatter
+from tools.python.plot import DefaultScatter, ScatterWithErrorBars
+from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 import matplotlib.pyplot as plt
 
 t_uncertainty = 10**-6 # s
-U_uncertainty = 0.2*10**-3 # V
+U_uncertainty = 2*10**-3 # V
 
 ### Teil 1 freie Schwingung
 t = array([0, 90, 190, 280, 380, 470, 570, 660, 750, 850, 940, 1040, 1130, 1230, 1320, 1410, 1510, 1600, 1700, 1790, 1880, 1980, 2070])*10**-6
@@ -26,7 +28,7 @@ def OpenLoopDamping(t: NDArray, U: NDArray):
     damping_uncertainty (float): Unsicherheit der Dämpfungskonstante.
   """
   delta = log(U[:-1] / U[1:])
-
+  
   T = diff(t)
   decrements = delta / T
 
@@ -39,9 +41,12 @@ damping, damping_uncertainty = OpenLoopDamping(t, U)
 print("Dämpfungskonstante:", damping, "±", damping_uncertainty, "1/s")
 
 _, ax =  plt.subplots(1, 1)
-DefaultScatter(ax, t, U, xlabel="Zeit (s)", ylabel="Spannung (V)", title="Freie Schwingung: Spannung über Zeit")
+ScatterWithErrorBars(ax, t, U, x_absErr=t_uncertainty, y_absErr=U_uncertainty, label="Amplitude", xlabel="Zeit (s)", ylabel="Spannung (V)", title="Freie Schwingung: Spannung über Zeit")
+U_fun, _, _ = polyreg(t, U, 5)
+ax.plot(t, U_fun(t), '--b', label="Fit")
+ax.legend()
 plt.tight_layout()
-plt.show()
+#plt.show()
 
 ### Teil 2: Erzwungene Schwingung 
 omega = array([10, 15, 20, 30, 50, 70, 125, 250, 500,
@@ -57,6 +62,23 @@ phi = array([90, 86, 85, 78, 72, 70, 60, 40, 20,
   16.5, 13, 9, 6, 6, 4.5, 3, 1.5, 0, -1, -3,
              -12, - 20, -28, -35, -40, -38, 6, 56, 77]) # degree
 CheckLengths(omega, U_chain, U_R, phi)
+
+bode_fig, (ampl_ax, phase_ax) = plt.subplots(2, 1)
+voltage_ratio, voltage_ratio_uncertainty = GetResultAndUncertainty(Ratio, [U_chain, U_R + U_chain], uncertainty=True, uncertainty_params=[U_uncertainty, U_uncertainty])
+
+ScatterWithErrorBars(ampl_ax, omega, voltage_ratio, y_absErr=voltage_ratio_uncertainty, label="Messwerte", xlabel="Kreisfrequenz ω (1/s)", ylabel=r'Spannungsverhältnis $U_{Ch1} / (U_{Ch1} + U_{Ch2})$', title="Bode-Diagramm: Verstärkung über Kreisfrequenz")
+voltage_ratio_fit, _, _ = polyreg(omega, voltage_ratio, 10)
+ampl_ax.plot(omega, voltage_ratio_fit(omega), '--b', label="Fit")
+ampl_ax.set_xscale('log'); ampl_ax.set_yscale('log')
+ampl_ax.legend()
+ScatterWithErrorBars(phase_ax, omega, phi, y_absErr=2, label="Messwerte", xlabel="Kreisfrequenz ω (1/s)", ylabel=r'Phasenverschiebung $\varphi\degree$', title="Bode-Diagramm: Phasenverschiebung über Kreisfrequenz")
+phase_fit, _, _ = polyreg(omega, phi, 10)
+phase_ax.plot(omega, phase_fit(omega), '--b', label="Fit")
+phase_ax.set_xscale('log'); phase_ax.set_yscale('linear')
+phase_ax.legend()
+
+plt.tight_layout()
+plt.show()
 
 ### 3.
 
