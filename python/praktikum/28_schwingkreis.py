@@ -75,11 +75,25 @@ def resonance_frequency(omega: NDArray, U_source: NDArray, U_signal: NDArray) ->
         float: Resonanzfrequenz.
     """
     amplitude_ratio = U_signal/U_source
-    min_index = amplitude_ratio.argmin()
-    return omega[min_index]
+    min_idx = amplitude_ratio.argmin()
+    return min_idx, omega[min_idx]
+
+def resistance(U_R: float, U_Vorwiderstand: float, R_Vorwiderstand: float) -> float:
+    """Berechnet den Widerstand im Schwingkreis.
+
+    Args:
+        U_R (float): Spannung am Widerstand.
+        U_Vorwiderstand (float): Spannung am Vorwiderstand.
+        R_Vorwiderstand (float): Widerstand des Vorwiderstands.
+
+    Returns:
+        float: Widerstand im Schwingkreis.
+    """
+    return (U_R / U_Vorwiderstand) * R_Vorwiderstand
 
 t_uncertainty = 10**-6 # s
 U_uncertainty = 2*10**-3 # V
+R_Vorwiderstand = 80 # Ohm
 
 ### Teil 1 freie Schwingung
 t = array([0, 90, 190, 280, 380, 470, 570, 660, 750, 850, 940, 1040, 1130, 1230, 1320, 1410, 1510, 1600, 1700, 1790, 1880, 1980, 2070])*10**-6
@@ -128,7 +142,12 @@ CheckLengths(omega_no_outliers, U_chain_no_outliers, U_R_no_outliers, phi_no_out
 
 plot_bode_measurements(omega_no_outliers, U_R_no_outliers + U_chain_no_outliers, U_chain_no_outliers, phi_no_outliers, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot angeregter Schwingkreis ohne Ausreißer")
 
-print("Resonanzfrequenz: ", resonance_frequency(omega, U_chain + U_R, U_chain), " 1/s")
+res_idx, res_freq = resonance_frequency(omega, U_chain + U_R, U_chain)
+print("Resonanzfrequenz: ", res_freq, " 1/s")
+R_chain, R_chain_uncertainty = GetResultAndUncertainty(
+    resistance, [U_chain[res_idx], U_R[res_idx], R_Vorwiderstand], uncertainty=True,
+    uncertainty_params=[U_uncertainty, U_uncertainty, 0])
+print("Widerstand im Schwingkreis: ", R_chain, " +/- ", R_chain_uncertainty, " Ohm")
 
 ### 3. 4-Pol
 
