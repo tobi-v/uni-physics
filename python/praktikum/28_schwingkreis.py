@@ -1,4 +1,4 @@
-from numpy import array, diff, log, mean, std
+from numpy import array, diff, log, mean, ones, std
 from numpy.typing import NDArray
 from tools.maths.functions import Ratio
 from tools.statistics.linear_regression import polyreg
@@ -45,8 +45,6 @@ ScatterWithErrorBars(ax, t, U, x_absErr=t_uncertainty, y_absErr=U_uncertainty, l
 U_fun, _, _ = polyreg(t, U, 5)
 ax.plot(t, U_fun(t), '--b', label="Fit")
 ax.legend()
-plt.tight_layout()
-#plt.show()
 
 ### Teil 2: Erzwungene Schwingung 
 omega = array([10, 15, 20, 30, 50, 70, 125, 250, 500,
@@ -63,27 +61,51 @@ phi = array([90, 86, 85, 78, 72, 70, 60, 40, 20,
              -12, - 20, -28, -35, -40, -38, 6, 56, 77]) # degree
 CheckLengths(omega, U_chain, U_R, phi)
 
-bode_fig, (ampl_ax, phase_ax) = plt.subplots(2, 1)
-voltage_ratio, voltage_ratio_uncertainty = GetResultAndUncertainty(Ratio, [U_chain, U_R + U_chain], uncertainty=True, uncertainty_params=[U_uncertainty, U_uncertainty])
+def plot_bode_measurements(omega: NDArray,
+                           U_den: NDArray,
+                           U_num: NDArray,
+                           phi: NDArray,
+                           U_num_uncertainty: float = 0,
+                           U_den_uncertainty: float = 0,
+                           phase_uncertainty: float = 0,
+                           y_label_ampl: str = r'Spannungsverhältnis Ausgang/Eingang'):
+    """Plot Bode amplitude (U_num / U_den) and phase. Both U_num and U_den must be arrays."""
 
-ScatterWithErrorBars(ampl_ax, omega, voltage_ratio, y_absErr=voltage_ratio_uncertainty, label="Messwerte", xlabel="Kreisfrequenz ω (1/s)", ylabel=r'Spannungsverhältnis $U_{Ch1} / (U_{Ch1} + U_{Ch2})$', title="Bode-Diagramm: Verstärkung über Kreisfrequenz")
-voltage_ratio_fit, _, _ = polyreg(omega, voltage_ratio, 10)
-ampl_ax.plot(omega, voltage_ratio_fit(omega), '--b', label="Fit")
-ampl_ax.set_xscale('log'); ampl_ax.set_yscale('log')
-ampl_ax.legend()
-ScatterWithErrorBars(phase_ax, omega, phi, y_absErr=2, label="Messwerte", xlabel="Kreisfrequenz ω (1/s)", ylabel=r'Phasenverschiebung $\varphi\degree$', title="Bode-Diagramm: Phasenverschiebung über Kreisfrequenz")
-phase_fit, _, _ = polyreg(omega, phi, 10)
-phase_ax.plot(omega, phase_fit(omega), '--b', label="Fit")
-phase_ax.set_xscale('log'); phase_ax.set_yscale('linear')
-phase_ax.legend()
+    voltage_ratio, voltage_ratio_uncertainty = GetResultAndUncertainty(
+        Ratio, [U_den, U_num], uncertainty=True,
+        uncertainty_params=[U_num_uncertainty, U_den_uncertainty]
+    )
 
-plt.tight_layout()
-plt.show()
+    _, (ampl_ax, phase_ax) = plt.subplots(2, 1)
 
-### 3.
+    ScatterWithErrorBars(ampl_ax, omega, voltage_ratio, y_absErr=voltage_ratio_uncertainty,
+                         label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
+                         ylabel=y_label_ampl, title="Bode-Diagramm: Verstärkung über Kreisfrequenz")
+    voltage_ratio_fit, _, _ = polyreg(omega, voltage_ratio, 10)
+    ampl_ax.plot(omega, voltage_ratio_fit(omega), '--b', label="Fit")
+    ampl_ax.set_xscale('log'); ampl_ax.set_yscale('log')
+    ampl_ax.set_ylim(top=2)
+    ampl_ax.legend()
 
-U_source = 4
+    ScatterWithErrorBars(phase_ax, omega, phi, y_absErr=phase_uncertainty, label="Messwerte",
+                         xlabel="Kreisfrequenz ω (1/s)", ylabel=r'Phasenverschiebung $\varphi\degree$',
+                         title="Bode-Diagramm: Phasenverschiebung über Kreisfrequenz")
+    phase_fit, _, _ = polyreg(omega, phi, 10)
+    phase_ax.plot(omega, phase_fit(omega), '--b', label="Fit")
+    phase_ax.set_xscale('log'); phase_ax.set_yscale('linear')
+    phase_ax.legend()
+
+plot_bode_measurements(omega, U_R + U_chain, U_chain, phi, U_uncertainty, U_uncertainty, phase_uncertainty=2)
+
+### 3. 4-Pol
+
 omega = array([10, 100, 1000, 5000, 6000, 6500, 7000, 7250, 7500, 7750, 8000, 8250, 8500, 8750, 9000, 9250, 9500, 9750, 10000, 10500, 11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000, 20000, 25000, 30000, 40000, 60000, 80000, 99990])
 U_signal = array([3.36, 3.36, 3.36, 2.76, 2.56, 2.48, 2.4, 2.32, 2.32, 2.32, 2.24, 2.24, 2.16, 2.12, 2.08, 2.08, 2, 1.96, 1.92, 1.88, 1.8, 1.68, 1.6, 1.52, 1.44, 1.36, 1.28, 1.2, 1.16, 1.12, 0.92, 0.92, 0.72, 0.52, 0.44, 0.36])
 phi = array([0, 1, -6, -33, -41, -42, -42, -44, -46, -46, -48, -49, -50, -50, -50, -52, -50, -51, -52, -54, -53, -60, -60, -60, -65, -65, -62, -67, -64, -70, -80, -66, -85, -60, -87, -90]) # degree
-CheckLengths(omega, U_signal, phi)
+U_source = 4 * ones(len(omega))
+CheckLengths(omega, U_source, U_signal, phi)
+
+plot_bode_measurements(omega, U_source, U_signal,  phi, U_uncertainty, U_uncertainty, phase_uncertainty=2)
+
+plt.tight_layout()
+plt.show()
