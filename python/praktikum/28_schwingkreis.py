@@ -1,9 +1,9 @@
-from numpy import array, convolve, degrees, diff, log, mean, ones, radians, std, unwrap
+from numpy import array, diff, log, mean, ones, std
 from numpy.typing import NDArray
 from tools.maths.functions import Ratio
 from tools.statistics.linear_regression import polyreg
 from tools.python.checks import CheckLengths
-from tools.python.plot import DefaultScatter, ScatterWithErrorBars
+from tools.python.plot import ScatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 import matplotlib.pyplot as plt
@@ -62,6 +62,21 @@ def plot_bode_measurements(omega: NDArray,
     axP.set_xscale('log'); axP.set_yscale('linear'); axP.legend()
 
     plt.tight_layout()
+    
+def resonance_frequency(omega: NDArray, U_source: NDArray, U_signal: NDArray) -> float:
+    """Bestimmt die Resonanzfrequenz aus den Messdaten.
+
+    Args:
+        omega (NDArray): Kreisfrequenzen.
+        U_source (NDArray): Quellspannungen.
+        U_signal (NDArray): gemessene Spannungen.
+
+    Returns:
+        float: Resonanzfrequenz.
+    """
+    amplitude_ratio = U_signal/U_source
+    min_index = amplitude_ratio.argmin()
+    return omega[min_index]
 
 t_uncertainty = 10**-6 # s
 U_uncertainty = 2*10**-3 # V
@@ -112,6 +127,8 @@ phi_no_outliers = array([90, 86, 85, 78, 72, 70, 60, 40, 20,
 CheckLengths(omega_no_outliers, U_chain_no_outliers, U_R_no_outliers, phi_no_outliers)
 
 plot_bode_measurements(omega_no_outliers, U_R_no_outliers + U_chain_no_outliers, U_chain_no_outliers, phi_no_outliers, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot angeregter Schwingkreis ohne Ausreißer")
+
+print("Resonanzfrequenz: ", resonance_frequency(omega, U_chain + U_R, U_chain), " 1/s")
 
 ### 3. 4-Pol
 
