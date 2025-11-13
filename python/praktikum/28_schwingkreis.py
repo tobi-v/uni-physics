@@ -1,10 +1,11 @@
 from numpy import array, diff, log, mean, ones, std
 from numpy.typing import NDArray
 from tools.maths.functions import Ratio
-from tools.statistics.linear_regression import polyreg
+from tools.statistics.linear_regression import linreg, polyreg
 from tools.python.checks import CheckLengths
 from tools.python.plot import ScatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
+from typing import Tuple
 
 import matplotlib.pyplot as plt
 
@@ -91,6 +92,38 @@ def resistance(U_R: float, U_Vorwiderstand: float, R_Vorwiderstand: float) -> fl
     """
     return (U_R / U_Vorwiderstand) * R_Vorwiderstand
 
+def capacity_from_low_frequencies(omega: NDArray, U_R: NDArray, U_chain: NDArray) -> Tuple[float, float]:
+    """Berechnet die Kapazität aus den Messdaten bei niedrigen Frequenzen.
+
+    Args:
+        omega (NDArray): Kreisfrequenzen.
+        U_source (NDArray): Quellspannungen.
+        U_signal (NDArray): gemessene Spannungen.
+
+    Returns:
+        float: Kapazität in Farad.
+    """
+    inv_amplitude_ratio = U_R / U_chain
+    low_freq_indices = omega < 100
+    _, inclination, inclination_uncertainty = linreg(omega[low_freq_indices], inv_amplitude_ratio[low_freq_indices])
+    return inclination, inclination_uncertainty
+
+def inductivity_from_high_frequencies(omega: NDArray, U_R: NDArray, U_chain: NDArray) -> Tuple[float, float]:
+    """Berechnet die Induktivität aus den Messdaten bei hohen Frequenzen.
+
+    Args:
+        omega (NDArray): Kreisfrequenzen.
+        U_source (NDArray): Quellspannungen.
+        U_signal (NDArray): gemessene Spannungen.
+
+    Returns:
+        float: Induktivität in Henry.
+    """
+    amplitude_ratio = U_chain / U_R
+    high_freq_indices = omega > 5000  # Beispielgrenze für hohe Frequenzen
+    _, inclination, inclination_uncertainty = linreg(omega[high_freq_indices], amplitude_ratio[high_freq_indices])
+    return inclination, inclination_uncertainty
+
 t_uncertainty = 10**-6 # s
 U_uncertainty = 2*10**-3 # V
 R_Vorwiderstand = 80 # Ohm
@@ -148,6 +181,10 @@ R_chain, R_chain_uncertainty = GetResultAndUncertainty(
     resistance, [U_chain[res_idx], U_R[res_idx], R_Vorwiderstand], uncertainty=True,
     uncertainty_params=[U_uncertainty, U_uncertainty, 0])
 print("Widerstand im Schwingkreis: ", R_chain, " +/- ", R_chain_uncertainty, " Ohm")
+C_chain, C_chain_uncertainty = capacity_from_low_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers)
+print("Kapazität im Schwingkreis: ", C_chain[0], " +/- ", C_chain_uncertainty[0][0], " F")
+L_chain, L_chain_uncertainty = inductivity_from_high_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers)
+print("Induktivität im Schwingkreis: ", L_chain[0], " +/- ", L_chain_uncertainty[0][0], " H")
 
 ### 3. 4-Pol
 
@@ -158,7 +195,6 @@ U_source = 4 * ones(len(omega))
 CheckLengths(omega, U_source, U_signal, phi)
 
 plot_bode_measurements(omega, U_source, U_signal,  phi, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot 4-Pol")
-
 
 omega_no_outliers = array([10, 100, 1000, 5000, 6000, 6500, 7000, 7250, 7500, 7750, 8000, 8250, 8500, 8750, 9000, 9250, 9500, 9750, 10000, 10500, 11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000, 20000, 25000, 40000, 80000, 99990])
 U_signal_no_outliers = array([3.36, 3.36, 3.36, 2.76, 2.56, 2.48, 2.4, 2.32, 2.32, 2.32, 2.24, 2.24, 2.16, 2.12, 2.08, 2.08, 2, 1.96, 1.92, 1.88, 1.8, 1.68, 1.6, 1.52, 1.44, 1.36, 1.28, 1.2, 1.16, 1.12, 0.92, 0.72, 0.44, 0.36])
