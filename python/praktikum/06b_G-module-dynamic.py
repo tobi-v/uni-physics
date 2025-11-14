@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 from numpy import array, empty, pi, sqrt
 from util.inertia import HollowCylinder
 from util.uncertainty_calculation import GetResultAndUncertainty, MeanAndStd
-from util.linear_regression import linreg, plotWithErrorBars
+from util.linear_regression import linreg, PlotWithErrorBars
 
 def T_i_sq_minus_T_0_sq(T_i, T_0, uncertainty=False, delT_i=0, delT_0=0):
   def T_i_sq_minus_T_0_sqInner(T_i, T_0):
@@ -51,7 +51,7 @@ for ii, T in enumerate(T_steel_means): # Need to loop because we have different 
 C_steel_linreg_fun, C_steel_inclination, C_steel_covariance = linreg(J, Y_steel)
 fig, axs = plt.subplots(nrows=3,ncols=1, figsize=(9,9))
 
-plotWithErrorBars(axs[0], J, Y_steel, C_steel_linreg_fun, x_absErr=delJ, y_absErr=delY_steel, title="Stahl", xlabel=r'$J/kgm^2$', ylabel=r'$T_{steel}^2-T_{0,steel}^2/s^2$')
+PlotWithErrorBars(axs[0], J, Y_steel, C_steel_linreg_fun, x_absErr=delJ, y_absErr=delY_steel, title="Stahl", xlabel=r'$J/kgm^2$', ylabel=r'$T_{steel}^2-T_{0,steel}^2/s^2$')
 fe_textbox = r'$C_{Stahl}=%.1f \pm %.1f$' % (C_steel_inclination, C_steel_covariance[0,0])
 axs[0].text(0.05, 0.95, fe_textbox, transform=axs[0].transAxes, fontsize=14, verticalalignment='top', bbox=textbox_props)
 
@@ -77,7 +77,7 @@ C_aluminum_linreg_fun, C_aluminum_inclination, C_aluminum_covariance = linreg(J,
 
 al_textbox = r'$C_{Aluminium}=%.1f \pm %.1f$' % (C_aluminum_inclination, C_aluminum_covariance[0,0])
 axs[1].text(0.05, 0.95, al_textbox, transform=axs[1].transAxes, fontsize=14, verticalalignment='top', bbox=textbox_props)
-plotWithErrorBars(axs[1], J, Y_aluminum, C_aluminum_linreg_fun, x_absErr=delJ, y_absErr=delY_aluminum, title="Aluminium", xlabel=r'$J/kgm^2$', ylabel=r'$T_{aluminum}^2-T_{0,aluminum}^2/s^2$')
+PlotWithErrorBars(axs[1], J, Y_aluminum, C_aluminum_linreg_fun, x_absErr=delJ, y_absErr=delY_aluminum, title="Aluminium", xlabel=r'$J/kgm^2$', ylabel=r'$T_{aluminum}^2-T_{0,aluminum}^2/s^2$')
 
 Gdyn_aluminum, delGdyn_aluminum = GfromC(C_aluminum_inclination, wire_aluminum_l, wire_aluminum_d/2, uncertainty, sqrt(C_aluminum_covariance[0, 0]), error_ruler, error_caliper/2)
 print(f"\nG Modul Aluminium: \t{Gdyn_aluminum/10**9} +/- {delGdyn_aluminum/10**9} GPa")
@@ -101,7 +101,7 @@ C_copper_linreg_fun, C_copper_inclination, C_copper_covariance = linreg(J, Y_cop
 
 cu_textbox = r'$C_{Kupfer}=%.1f \pm %.1f$' % (C_copper_inclination, C_copper_covariance[0,0])
 axs[2].text(0.05, 0.95, cu_textbox, transform=axs[2].transAxes, fontsize=14, verticalalignment='top', bbox=textbox_props)
-plotWithErrorBars(axs[2], J, Y_copper, C_copper_linreg_fun,
+PlotWithErrorBars(axs[2], J, Y_copper, C_copper_linreg_fun,
                   x_absErr=delJ, y_absErr=delY_copper, title="Kupfer", xlabel=r'$J/kgm^2$', ylabel=r'$T_{copper}^2-T_{0,copper}^2/s^2$')
 
 Gdyn_copper, delGdyn_copper = GfromC(C_copper_inclination, wire_copper_l, wire_copper_d/2, uncertainty, sqrt(C_copper_covariance[0, 0]), error_ruler, error_caliper/2)

@@ -1,5 +1,5 @@
 from numpy import array, linspace, max, mean, min, pi, sqrt, std
-from tools.statistics.linear_regression import linreg, plotWithErrorBars
+from tools.statistics.linear_regression import linreg, PlotWithErrorBars
 import matplotlib.pyplot as plt
 
 # 1. Time calibration
@@ -75,9 +75,9 @@ print(f"g = {g} +- {g_uncertainty} m/s²")
 x_fit = linspace(min(length), max(length), 100)
 fig, ax = plt.subplots()
 
-plotWithErrorBars(ax, length, T_heavy_bottom**2, hb_fun,
+PlotWithErrorBars(ax, length, T_heavy_bottom**2, hb_fun,
                   x_absErr=length_uncertainty, y_absErr=T_uncertainty, label="Schwer unten", color='C0', data_color='C0.', error_color='k')
-plotWithErrorBars(ax, length, T_heavy_top**2, ht_fun,
+PlotWithErrorBars(ax, length, T_heavy_top**2, ht_fun,
                   x_absErr=length_uncertainty, y_absErr=T_uncertainty, label="Schwer unten", color='C1', data_color='C1.', error_color='k')
 ax.set_xlabel("l / m")
 ax.set_ylabel("$T^2$ / $s^2$")

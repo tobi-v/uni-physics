@@ -13,7 +13,7 @@ def polyreg(
     coeff, cov = polyfit(x, y, deg=order, cov=True)
     return poly1d(coeff), coeff, cov
 
-def plotWithErrorBars(ax, x, y, linregFunc,
+def PlotWithErrorBars(ax, x, y, linregFunc,
                       x_absErr=0, y_absErr=0, title="", fun_label="", scatter_label="", xlabel="", ylabel="", data_color="k.", error_color="r", fmt="--k", legend_loc='best', grid=True):
     ax.set_title(title)
     ax.set_xlabel(xlabel)
