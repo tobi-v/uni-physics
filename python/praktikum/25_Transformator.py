@@ -1,5 +1,6 @@
 from numpy import abs, append, array, linspace, ones, sqrt
 from numpy.typing import NDArray
+from tools.python.text import wrap
 from tools.statistics.linear_regression import linreg, PlotWithErrorBars, scatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
@@ -18,7 +19,7 @@ def PlotInductivitiesAndKappa(loop_ratio, L1, L1_uncertainty, L2, L2_uncertainty
     scatterWithErrorBars(axs[0], loop_ratio, L12[0:11], y_absErr=L12_uncertainty[0:11], scatter_label=r'$L_{12}$', ylabel="L [T]", fmt='b.')
     ax = axs[0].twinx()
     ax.yaxis.set_label_position("right")
-    scatterWithErrorBars(ax, loop_ratio, kappa[0:11], y_absErr=kappa_uncertainty[0:11], title=r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $130 Hz$', scatter_label=r'Kopplungsgrad $\kappa$',
+    scatterWithErrorBars(ax, loop_ratio, kappa[0:11], y_absErr=kappa_uncertainty[0:11], title=wrap(r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $130 Hz$', 40), scatter_label=r'Kopplungsgrad $\kappa$',
                          xlabel=r'$N_2 / N_1$', ylabel=r'Kopplungsgrad $\kappa$', fmt='k.', legend_loc='right', grid=False)
     
     scatterWithErrorBars(axs[1], loop_ratio, L1[11:22], y_absErr=L1_uncertainty[11:22], scatter_label=r'$L_1$', fmt='r.')
@@ -26,7 +27,7 @@ def PlotInductivitiesAndKappa(loop_ratio, L1, L1_uncertainty, L2, L2_uncertainty
     scatterWithErrorBars(axs[1], loop_ratio, L12[11:22], y_absErr=L12_uncertainty[11:22], scatter_label=r'$L_{12}$', ylabel="L [T]", fmt='b.')
     ax = axs[1].twinx()
     ax.yaxis.set_label_position("right")
-    scatterWithErrorBars(ax, loop_ratio, kappa[11:22], y_absErr=kappa_uncertainty[11:22], title=r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $320 Hz$', scatter_label=r'Kopplungsgrad $\kappa$',
+    scatterWithErrorBars(ax, loop_ratio, kappa[11:22], y_absErr=kappa_uncertainty[11:22], title=wrap(r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $320 Hz$', 40), scatter_label=r'Kopplungsgrad $\kappa$',
                          xlabel=r'$N_2 / N_1$', ylabel=r'Kopplungsgrad $\kappa$', fmt='k.', legend_loc='right', grid=False)
     
     plt.tight_layout()
@@ -136,32 +137,32 @@ def Exp3(R_coil1: float, R_coil2: NDArray, L1: NDArray, L1_uncertainty: NDArray,
     def plot(ax, U1, U2, omega, R):
         ax.plot(X, X, '--g', label="Theoriekurve bei idealer Kopplung")
         PlotRatios(ax, U1, U2, loop_ratio, uncertainty=U2_uncertainty,
-               title=r'Spannungs- und Windungsverhältnis unter Belastung für $%.f Hz$ und $%.f \Omega$ Last' % (omega, R),
+               title=wrap(r'Spannungs- und Windungsverhältnis für $%.f Hz$ unter $%.f \Omega$ Last' % (omega, R), 40),
                xlabel=r'$N_2 / N_1$', ylabel=r'$U_2 / U_1$')
-        ax.legend()
+        ax.legend(fontsize=7, markerscale=0.9, handlelength=1.0, handletextpad=0.2)
         
     def plot_corr(ax, U1, U2, omega, R):
         ax.plot(X, X, '--g', label="Theoriekurve bei idealer Kopplung")
         PlotRatios(ax, U1, U2, loop_ratio, uncertainty=U2_uncertainty,
-               title=r'Korrigiertes Spannungs- und Windungsverhältnis unter Belastung für $%.f Hz$ und $%.f \Omega$ Last' % (omega, R),
+               title=wrap(r'Korrigiertes Spannungs- und Windungsverhältnis für $%.f Hz$ unter $%.f \Omega$ Last' % (omega, R), 40),
                xlabel=r'$N_2 / N_1$', ylabel=r'$U_2 / U_1$')
-        ax.legend()
+        ax.legend(fontsize=7, markerscale=0.9, handlelength=1.0, handletextpad=0.2)
 
     def plot_corr2(ax, U1, U1_uncertainty, U2, U2_uncertainty, L1, L1_uncertainty, L2, L2_uncertainty, omega, R):
         ax.plot(X, X, '--g', label="Theoriekurve bei idealer Kopplung")
         PlotRatiosMulti(ax, L1, L2, L1_uncertainty, L2_uncertainty, U1, U2, U1_uncertainty, U2_uncertainty,
-               title=r'Korrigiertes Spannungsverhältnis über $L_{12}/L_1$ unter Belastung für $%.f Hz$ und $%.f \Omega$ Last' % (omega, R),
+               title=wrap(r'Korrigiertes Spannungsverhältnis über $L_{12}/L_1$ für $%.f Hz$ unter $%.f \Omega$ Last' % (omega, R), 50),
                xlabel=r'$L_{12} / L_1$', ylabel=r'$U_2 / U_1$')
-        ax.legend()
+        ax.legend(fontsize=7, markerscale=0.9, handlelength=1.0, handletextpad=0.2)
 
     def U1Correction(omega: float, U1: NDArray, R_coil: float, R_load: float, L1: NDArray, L2: NDArray) -> NDArray:
-        denominator_fraction = (1j*omega*L2 + R_load) / (1j*omega*L1*R_load)
+        denominator_fraction = (1j*omega*L1 + R_load) / (1j*omega*L2*R_load)
         denominator = abs(1 + R_coil * denominator_fraction)
         return U1 / denominator
 
-    #_, axs = plt.subplots(2,2)
-    _, axs_corr = plt.subplots(2,2)
-    _, axs_corr2 = plt.subplots(2,2)
+    fig, axs = plt.subplots(2,2)
+    fig_corr, axs_corr = plt.subplots(2,2)
+    fig_corr2, axs_corr2 = plt.subplots(2,2)
 
     R = 100
     omega = 130
@@ -169,7 +170,7 @@ def Exp3(R_coil1: float, R_coil2: NDArray, L1: NDArray, L1_uncertainty: NDArray,
     I1 = 0.05 * ones(N)
     I2 = array([3.86, 4.36, 4.985, 5.48, 5.99, 6.24, 6.315, 6.12, 5.69, 5.145, 4.57])*10**(-3)
     U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, ones(N)*R], True, [I_uncertainty, 0])
-    #plot(axs[0][0], U1, U2, omega, R)
+    plot(axs[0][0], U1, U2, omega, R)
     U1_corr, U1_corr_uncertainty = GetResultAndUncertainty(U1Correction, [omega*ones(N), U1, R_coil1*ones(N), R*ones(N), L1[0:11], L2[0:11]], True, [0, U_uncertainty, 0, 0, 0, 0]) # TODO: Coil and resistance uncertainty
     U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil2+R], True, [I_uncertainty, 0])
     plot_corr(axs_corr[0][0], U1_corr, U2_corr, omega, R)
@@ -181,7 +182,7 @@ def Exp3(R_coil1: float, R_coil2: NDArray, L1: NDArray, L1_uncertainty: NDArray,
     I1 = 0.04e-3 * ones(N)
     I2 = array([7.5, 8.15, 8.7, 9, 8.95, 8.6, 8, 7.2, 6.3, 5.4, 4.65])*10**(-3)
     U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, ones(N)*R], True, [I_uncertainty, 0])
-    #plot(axs[1][0], U1, U2, omega, R)
+    plot(axs[1][0], U1, U2, omega, R)
     U1_corr, U1_corr_uncertainty = GetResultAndUncertainty(U1Correction, [omega*ones(N), U1, R_coil1*ones(N), R*ones(N), L1[11:22], L2[11:22]], True, [0, U_uncertainty, 0, 0, 0, 0]) # TODO: Coil and resistance uncertainty
     U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil2+R], True, [I_uncertainty, 0])
     plot_corr(axs_corr[1][0], U1_corr, U2_corr, omega, R)
@@ -194,7 +195,7 @@ def Exp3(R_coil1: float, R_coil2: NDArray, L1: NDArray, L1_uncertainty: NDArray,
     I1 = 0.05 * ones(N)
     I2 = array([0.15, 0.18, 0.21, 0.25, 0.3, 0.35, 0.42, 0.5, 0.59, 0.7, 0.81])*10**(-3)
     U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, ones(N)*R], True, [I_uncertainty, 0])
-    #plot(axs[0][1], U1, U2, omega, R)
+    plot(axs[0][1], U1, U2, omega, R)
     U1_corr, U1_corr_uncertainty = GetResultAndUncertainty(U1Correction, [omega*ones(N), U1, R_coil1*ones(N), R*ones(N), L1[0:11], L2[0:11]], True, [0, U_uncertainty, 0, 0, 0, 0]) # TODO: Coil and resistance uncertainty
     U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil2+R], True, [I_uncertainty, 0])
     plot_corr(axs_corr[0][1], U1_corr, U2_corr, omega, R)
@@ -206,14 +207,16 @@ def Exp3(R_coil1: float, R_coil2: NDArray, L1: NDArray, L1_uncertainty: NDArray,
     I1 = 0.04 * ones(N)
     I2 = array([0.31, 0.36, 0.43, 0.5, 0.61, 0.71, 0.84, 0.99, 1.16, 1.32, 1.46])*10**(-3)
     U2, U2_uncertainty = GetResultAndUncertainty(UfromI, [I2, ones(N)*R], True, [I_uncertainty, 0])
-    #plot(axs[1][1], U1, U2, omega, R)
+    plot(axs[1][1], U1, U2, omega, R)
     U1_corr, U1_corr_uncertainty = GetResultAndUncertainty(U1Correction, [omega*ones(N), U1, R_coil1*ones(N), R*ones(N), L1[11:22], L2[11:22]], True, [0, U_uncertainty, 0, 0, 0, 0]) # TODO: Coil and resistance uncertainty
     U2_corr, U2_corr_uncertainty = GetResultAndUncertainty(UfromI, [I2, R_coil2+R], True, [I_uncertainty, 0])
     plot_corr(axs_corr[1][1], U1_corr, U2_corr, omega, R)
     plot_corr2(axs_corr2[1][1], U1_corr, U1_corr_uncertainty, U2_corr, U2_corr_uncertainty,
                L1[11:22], L1_uncertainty[11:22], L12[11:22], L12_uncertainty[11:22], omega, R)
-        
-    plt.tight_layout()
+
+    fig.tight_layout()
+    fig_corr.tight_layout()
+    fig_corr2.tight_layout()
     plt.show()
 
 ### 3.4
