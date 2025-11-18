@@ -5,7 +5,7 @@ from scipy.stats import linregress
 from tools.dynamics.harmonic_osci import estimate_damping_constant, find_resonance_frequency
 from tools.maths.functions import Gaussian
 from tools.python.sort import sort_by_x_and_filter_unique
-from tools.statistics.linear_regression import linreg, polyreg
+from tools.statistics.linear_regression import Linreg, Polyreg
 
 ### 1. Gedämpfte Schwingungen
 
@@ -119,8 +119,8 @@ for label, omega, ampl, phi, color in [
     ("401 mA", omega401, ampl401, phi401, "C1")
 ]:
     phi_deg = -phi*180/pi
-    fit, _, _ = linreg(omega, phi_deg)
-    cubic_fit, _, _ = polyreg(omega, phi_deg, 3)
+    fit, _, _ = Linreg(omega, phi_deg)
+    cubic_fit, _, _ = Polyreg(omega, phi_deg, 3)
     ax2.plot(omega, phi_deg, 'o', label=f"{label} data", color=color)
     ax2.plot(omega, fit(omega), '-', label=f"{label} linear fit", color=color)
     omega_fit = linspace(min(omega), max(omega), 300)

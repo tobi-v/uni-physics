@@ -1,7 +1,7 @@
 from numpy import array, diff, log, mean, ones, std
 from numpy.typing import NDArray
 from tools.maths.functions import Ratio
-from tools.statistics.linear_regression import linreg, polyreg
+from tools.statistics.linear_regression import Linreg, Polyreg
 from tools.python.checks import CheckLengths
 from tools.python.plot import ScatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
@@ -50,7 +50,7 @@ def plot_bode_measurements(omega: NDArray,
     ScatterWithErrorBars(axA, omega, voltage_ratio, y_absErr=voltage_ratio_uncertainty,
                          label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
                          ylabel=r'Spannungsverhältnis Ausgang/Eingang', title="Amplitude")
-    mag_fit, _, _ = polyreg(omega, voltage_ratio, 10)
+    mag_fit, _, _ = Polyreg(omega, voltage_ratio, 10)
     axA.plot(omega, mag_fit(omega), '--C1', label="Fit")
     axA.set_xscale('log'); axA.set_yscale('log'); axA.set_ylim(top=2); axA.legend()
 
@@ -58,7 +58,7 @@ def plot_bode_measurements(omega: NDArray,
                          label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
                          ylabel=r'Phasenverschiebung $\varphi\degree$', title="Phase")
     # unwrap phase, smooth with small moving average, convert back to degrees
-    phi_fit, _, _ = polyreg(omega, phi, 10)
+    phi_fit, _, _ = Polyreg(omega, phi, 10)
     axP.plot(omega, phi_fit(omega), '--C1', label='smoothed')
     axP.set_xscale('log'); axP.set_yscale('linear'); axP.legend()
 
@@ -105,7 +105,7 @@ def capacity_from_low_frequencies(omega: NDArray, U_R: NDArray, U_chain: NDArray
     """
     inv_amplitude_ratio = U_R / U_chain
     low_freq_indices = omega < 100
-    _, inclination, inclination_uncertainty = linreg(omega[low_freq_indices], inv_amplitude_ratio[low_freq_indices])
+    _, inclination, inclination_uncertainty = Linreg(omega[low_freq_indices], inv_amplitude_ratio[low_freq_indices])
     return inclination, inclination_uncertainty
 
 def inductivity_from_high_frequencies(omega: NDArray, U_R: NDArray, U_chain: NDArray) -> Tuple[float, float]:
@@ -121,7 +121,7 @@ def inductivity_from_high_frequencies(omega: NDArray, U_R: NDArray, U_chain: NDA
     """
     amplitude_ratio = U_chain / U_R
     high_freq_indices = omega > 5000  # Beispielgrenze für hohe Frequenzen
-    _, inclination, inclination_uncertainty = linreg(omega[high_freq_indices], amplitude_ratio[high_freq_indices])
+    _, inclination, inclination_uncertainty = Linreg(omega[high_freq_indices], amplitude_ratio[high_freq_indices])
     return inclination, inclination_uncertainty
 
 t_uncertainty = 10**-6 # s
@@ -138,7 +138,7 @@ print("Dämpfungskonstante:", damping, "±", damping_uncertainty, "1/s")
 
 _, ax =  plt.subplots(1, 1)
 ScatterWithErrorBars(ax, t, U, x_absErr=t_uncertainty, y_absErr=U_uncertainty, label="Amplitude", xlabel="Zeit (s)", ylabel="Spannung (V)", title="Freie Schwingung: Spannung über Zeit")
-U_fun, _, _ = polyreg(t, U, 5)
+U_fun, _, _ = Polyreg(t, U, 5)
 ax.plot(t, U_fun(t), '--b', label="Fit")
 ax.legend()
 
