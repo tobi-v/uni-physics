@@ -1,21 +1,42 @@
 from numpy import array, linspace
-from tools.python.checks import CheckLengths
+from tools.statistics.linear_regression import PlotLinregWithError
+
+import matplotlib.pyplot as plt
 
 def Ex01Poggendorf():
   print("=== Auswertung Poggendorf ===")
   def Ausmessen():
     # a)
-    R_Feinsicherung = 2.3
+
+    R_Feinsicherung = 2.3 # Ohm
     R_potentiometer_links = array([13.1, 22.9, 33.3, 46.5, 52.4, 62.2, 72.1, 81.9, 91.6, 101.3]) - R_Feinsicherung
     R_potentiometer_lvl = linspace(1,len(R_potentiometer_links), len(R_potentiometer_links))
+    plt.show()
     R_potentiometer_rechts = array([99.5, 198.3, 297.4, 396.7, 495, 594, 693, 793, 891, 990]) - R_Feinsicherung
     R_potentiometer_oben = array([97.8, 197.8, 298, 398, 497, 597, 697, 796, 896, 996])
-    R_dekade_lvl = array([1, 10])
-    R_dekade_links = array([10.2, 100.6])
-    R_dekade_mitte = array([100.1, 1000])
-    R_drehschalter_oben_rechts = array([12320, 4750, 1805, 679, 191.8, 178.9, ])
+    R_potentiometers = [R_potentiometer_links, R_potentiometer_rechts, R_potentiometer_oben]
+    R_dekade_lvl = array([1, 5, 10])
+    R_dekade_links = array([10.2, 50.4, 100.6])
+    R_dekade_mitte = array([100.1, 500, 1000])
+    R_dekades = [R_dekade_links, R_dekade_mitte]
+    R_drehschalter_oben_rechts = array([12320, 4750, 1805, 679, 191.8, 178.9]) # Kommt in Tabelle
     # Dekade rechts kaputt
-    # TODO Bestimmung der Potentiometerlevel mit linearer Regression
+
+    potentiometer_titles = ["Potentiometer Links", "Potentiometer Rechts", "Potentiometer Oben"]    
+    potentiometer_fig, potentiometer_axs = plt.subplots(3, 1)
+    for R_potentiometer, title, ax in zip(R_potentiometers, potentiometer_titles, potentiometer_axs):
+        PlotLinregWithError(R_potentiometer_lvl, R_potentiometer, ax, title, "Drehschalterstellung", r"Widerstand $(\Omega)$")
+        ax.set_xticks(R_potentiometer_lvl)
+    potentiometer_fig.tight_layout()
+    #plt.close(potentiometer_fig)
+      
+    dekade_titles = ["Dekade Links", "Dekade Mitte"]
+    dekade_fig, dekade_axs = plt.subplots(2, 1)
+    for R_dekade, title, ax in zip(R_dekades, dekade_titles, dekade_axs):
+        PlotLinregWithError(R_dekade_lvl, R_dekade, ax, title, "Drehschalterstellung", r"Widerstand $(\Omega)$")
+        ax.set_xticks(R_potentiometer_lvl)
+    dekade_fig.tight_layout()
+    #plt.close(dekade_fig)
     
     # b) Batterie
     U_battery = 1.399
@@ -64,6 +85,8 @@ def Ex02Wheatstone02():
 
 Ex01Poggendorf()
 
-Ex02Wheatstone01()
+#Ex02Wheatstone01()
 
-Ex02Wheatstone02()
+#Ex02Wheatstone02()
+
+plt.show()
