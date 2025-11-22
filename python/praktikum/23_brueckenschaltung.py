@@ -1,4 +1,4 @@
-from numpy import array, linspace
+from numpy import array, linspace, mean, std
 from tools.statistics.linear_regression import PlotLinregWithError
 
 import matplotlib.pyplot as plt
@@ -42,11 +42,19 @@ def Ex01Poggendorf():
     U_battery = 1.399
 
   def Poggendorf():
+    def Poggendorf_U(R_1, R_2, U_A):
+      U_B = -(R_2/(R_1 + R_2)) * U_A
+      return U_B
+    
     U_A = 2 # Volt
     R_2 = array([400, 420, 440, 460, 480, 500, 520, 540, 560, 580])
+    # TODO if there is still time, use the real values from Ausmessen
     R_1 = array([258, 269, 283, 295, 308, 320, 333, 346, 358, 371])
+    U_batterie = Poggendorf_U(R_1, R_2, U_A)
+    print("U_batterie: ", mean(U_batterie), "±", std(U_batterie))
 
   Ausmessen()
+  Poggendorf()
 
 def Ex02Wheatstone01():
   print("=== Auswertung Wheatstone Teil 1 ===")
