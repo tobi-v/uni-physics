@@ -49,7 +49,7 @@ def Ex01Poggendorf():
     U_A = 2 # Volt
     R_2 = array([400, 420, 440, 460, 480, 500, 520, 540, 560, 580])
     # TODO if there is still time, use the real values from Ausmessen
-    R_1 = array([258, 269, 283, 295, 308, 320, 333, 346, 358, 371])
+    R_1 = array([258, 269, 283, 295, 308, 320, 333, 346, 358, 371]) - 2.3
     U_batterie = Poggendorf_U(R_1, R_2, U_A)
     print("U_batterie: ", mean(U_batterie), "±", std(U_batterie))
 
@@ -62,17 +62,17 @@ def Ex02Wheatstone01():
     R_x = R_2*R_3/R_1
     print("R_x_", name, ": " , mean(R_x) , "±", std(R_x))
   R_1_blau = array([200, 220, 240, 260, 280, 300, 320, 340, 360, 380]) # Dekade Ohm
-  R_2_blau = array([166, 183, 200, 218, 234, 250, 267, 284, 301, 317]) # Potentiometer links Ohm
+  R_2_blau = array([166, 183, 200, 218, 234, 250, 267, 284, 301, 317]) - 2.3 # Potentiometer links Ohm
   R_3_blau = 191.9 # Ohm
   R_1_schwarz = R_1_blau + 300
-  R_2_schwarz = array([613, 638, 662, 687, 712, 735, 760, 784, 809, 834])
+  R_2_schwarz = array([613, 638, 662, 687, 712, 735, 760, 784, 809, 834]) - 2.3
   R_3_schwarz = 679 # Ohm
   R_1_C = array([300, 350, 400, 450, 500, 550, 600, 650, 700, 750])
-  R_2_C = array([306, 364, 415, 468, 514, 562, 616, 670, 728, 764])
+  R_2_C = array([306, 364, 415, 468, 514, 562, 616, 670, 728, 764]) - 2.3
   C_3 = 682*10**-9 # Farad
   C_3_uncertainty = C_3 * 0.01
   R_1_RC = R_1_C
-  R_2_RC = array([304, 360, 411, 464, 504, 561, 606, 660, 710, 767])
+  R_2_RC = array([304, 360, 411, 464, 504, 561, 606, 660, 710, 767]) - 2.3
   RC_3_C = 336*10**-9 # Farad
   RC_3_R = 200 # Potentiometer rechts, Ohm
   RC_3_uncertainty = RC_3_C*0.01
