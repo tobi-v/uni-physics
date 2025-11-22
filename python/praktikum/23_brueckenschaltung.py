@@ -28,7 +28,7 @@ def Ex01Poggendorf():
         PlotLinregWithError(R_potentiometer_lvl, R_potentiometer, ax, title, "Drehschalterstellung", r"Widerstand $(\Omega)$")
         ax.set_xticks(R_potentiometer_lvl)
     potentiometer_fig.tight_layout()
-    #plt.close(potentiometer_fig)
+    plt.close(potentiometer_fig)
       
     dekade_titles = ["Dekade Links", "Dekade Mitte"]
     dekade_fig, dekade_axs = plt.subplots(2, 1)
@@ -36,7 +36,7 @@ def Ex01Poggendorf():
         PlotLinregWithError(R_dekade_lvl, R_dekade, ax, title, "Drehschalterstellung", r"Widerstand $(\Omega)$")
         ax.set_xticks(R_potentiometer_lvl)
     dekade_fig.tight_layout()
-    #plt.close(dekade_fig)
+    plt.close(dekade_fig)
     
     # b) Batterie
     U_battery = 1.399
@@ -57,11 +57,10 @@ def Ex01Poggendorf():
   Poggendorf()
 
 def Ex02Wheatstone01():
-  print("=== Auswertung Wheatstone Teil 1 ===")
+  print("\n=== Auswertung Wheatstone Teil 1 ===")
   def Res(R_1, R_2, R_3: float, name):
     R_x = R_2*R_3/R_1
-    # TODO mean & var
-    print("R_x_", name, ": " , R_x)
+    print("R_x_", name, ": " , mean(R_x) , "±", std(R_x))
   R_1_blau = array([200, 220, 240, 260, 280, 300, 320, 340, 360, 380]) # Dekade Ohm
   R_2_blau = array([166, 183, 200, 218, 234, 250, 267, 284, 301, 317]) # Potentiometer links Ohm
   R_3_blau = 191.9 # Ohm
@@ -84,7 +83,7 @@ def Ex02Wheatstone01():
   Res(R_1_RC, R_2_RC, RC_3_R, "RC_Res")
 
 def Ex02Wheatstone02():
-  print("=== Auswertung Wheatstone Teil 2 ===")
+  print("\n=== Auswertung Wheatstone Teil 2 ===")
   del_R_2 = linspace(5, 50, 10)
   U_bridge = array([5, 5, 6, 6, 7, 8, 9, 9, 10, 11])*10**-3
   del_R_2_2 = -linspace(10, 50, 5)
@@ -93,7 +92,7 @@ def Ex02Wheatstone02():
 
 Ex01Poggendorf()
 
-#Ex02Wheatstone01()
+Ex02Wheatstone01()
 
 #Ex02Wheatstone02()
 
