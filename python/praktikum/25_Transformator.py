@@ -1,7 +1,7 @@
 from numpy import abs, append, array, linspace, ones, sqrt
 from numpy.typing import NDArray
 from tools.python.text import wrap
-from tools.statistics.linear_regression import linreg, PlotWithErrorBars, scatterWithErrorBars
+from tools.statistics.linear_regression import Linreg, PlotWithErrorBars, ScatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 import matplotlib.pyplot as plt
@@ -14,20 +14,20 @@ X = linspace(1, 10, 1000)
 def PlotInductivitiesAndKappa(loop_ratio, L1, L1_uncertainty, L2, L2_uncertainty, L12, L12_uncertainty, kappa, kappa_uncertainty):
     _, axs = plt.subplots(2, 1)
 
-    scatterWithErrorBars(axs[0], loop_ratio, L1[0:11], y_absErr=L1_uncertainty[0:11], scatter_label=r'$L_1$', fmt='r.')
-    scatterWithErrorBars(axs[0], loop_ratio, L2[0:11], y_absErr=L2_uncertainty[0:11], scatter_label=r'$L_2$', fmt='g.')
-    scatterWithErrorBars(axs[0], loop_ratio, L12[0:11], y_absErr=L12_uncertainty[0:11], scatter_label=r'$L_{12}$', ylabel="L [T]", fmt='b.')
+    ScatterWithErrorBars(axs[0], loop_ratio, L1[0:11], y_absErr=L1_uncertainty[0:11], scatter_label=r'$L_1$', fmt='r.')
+    ScatterWithErrorBars(axs[0], loop_ratio, L2[0:11], y_absErr=L2_uncertainty[0:11], scatter_label=r'$L_2$', fmt='g.')
+    ScatterWithErrorBars(axs[0], loop_ratio, L12[0:11], y_absErr=L12_uncertainty[0:11], scatter_label=r'$L_{12}$', ylabel="L [T]", fmt='b.')
     ax = axs[0].twinx()
     ax.yaxis.set_label_position("right")
-    scatterWithErrorBars(ax, loop_ratio, kappa[0:11], y_absErr=kappa_uncertainty[0:11], title=wrap(r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $130 Hz$', 40), scatter_label=r'Kopplungsgrad $\kappa$',
+    ScatterWithErrorBars(ax, loop_ratio, kappa[0:11], y_absErr=kappa_uncertainty[0:11], title=wrap(r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $130 Hz$', 40), scatter_label=r'Kopplungsgrad $\kappa$',
                          xlabel=r'$N_2 / N_1$', ylabel=r'Kopplungsgrad $\kappa$', fmt='k.', legend_loc='right', grid=False)
     
-    scatterWithErrorBars(axs[1], loop_ratio, L1[11:22], y_absErr=L1_uncertainty[11:22], scatter_label=r'$L_1$', fmt='r.')
-    scatterWithErrorBars(axs[1], loop_ratio, L2[11:22], y_absErr=L2_uncertainty[11:22], scatter_label=r'$L_2$', fmt='g.')
-    scatterWithErrorBars(axs[1], loop_ratio, L12[11:22], y_absErr=L12_uncertainty[11:22], scatter_label=r'$L_{12}$', ylabel="L [T]", fmt='b.')
+    ScatterWithErrorBars(axs[1], loop_ratio, L1[11:22], y_absErr=L1_uncertainty[11:22], scatter_label=r'$L_1$', fmt='r.')
+    ScatterWithErrorBars(axs[1], loop_ratio, L2[11:22], y_absErr=L2_uncertainty[11:22], scatter_label=r'$L_2$', fmt='g.')
+    ScatterWithErrorBars(axs[1], loop_ratio, L12[11:22], y_absErr=L12_uncertainty[11:22], scatter_label=r'$L_{12}$', ylabel="L [T]", fmt='b.')
     ax = axs[1].twinx()
     ax.yaxis.set_label_position("right")
-    scatterWithErrorBars(ax, loop_ratio, kappa[11:22], y_absErr=kappa_uncertainty[11:22], title=wrap(r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $320 Hz$', 40), scatter_label=r'Kopplungsgrad $\kappa$',
+    ScatterWithErrorBars(ax, loop_ratio, kappa[11:22], y_absErr=kappa_uncertainty[11:22], title=wrap(r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $320 Hz$', 40), scatter_label=r'Kopplungsgrad $\kappa$',
                          xlabel=r'$N_2 / N_1$', ylabel=r'Kopplungsgrad $\kappa$', fmt='k.', legend_loc='right', grid=False)
     
     plt.tight_layout()
@@ -42,7 +42,7 @@ def Ratio(var1: NDArray, var2: NDArray) -> NDArray:
 
 def PlotRatios(ax, var1: NDArray, var2: NDArray, other_ratio: NDArray, uncertainty=0, title="", xlabel="", ylabel=""):
     ratio, funcertainty = GetResultAndUncertainty(Ratio, [var1, var2], True, [uncertainty, uncertainty])
-    fun, _, _ = linreg(other_ratio, ratio)
+    fun, _, _ = Linreg(other_ratio, ratio)
     PlotWithErrorBars(ax, other_ratio, ratio, fun, y_absErr=funcertainty,
                       title=title, fun_label="Lineare Regression",
                       scatter_label="Messwerte mit Unsicherheit", xlabel=xlabel, ylabel=ylabel)
@@ -51,7 +51,7 @@ def PlotRatiosMulti(ax, x1: NDArray, x2: NDArray, x1_uncertainties: NDArray, x2_
                     y1: NDArray, y2: NDArray, y1_uncertainties: NDArray, y2_uncertainties: NDArray, title="", xlabel="", ylabel=""):
     y_ratio, y_funcertainty = GetResultAndUncertainty(Ratio, [y1, y2], True, [y1_uncertainties, y2_uncertainties])
     x_ratio, x_funcertainty = GetResultAndUncertainty(Ratio, [x1, x2], True, [x1_uncertainties, x2_uncertainties])
-    fun, _, _ = linreg(x_ratio, y_ratio)
+    fun, _, _ = Linreg(x_ratio, y_ratio)
     PlotWithErrorBars(ax, x_ratio, y_ratio, fun, x_absErr=x_funcertainty, y_absErr=y_funcertainty,
                       title=title, fun_label="Lineare Regression",
                       scatter_label="Messwerte mit Unsicherheit", xlabel=xlabel, ylabel=ylabel)

@@ -1,6 +1,6 @@
 from numpy import array, linspace, sqrt
 from tools.hydrodyn.static_properties import GravitationalPressure, RhoFromGravitationalPresure
-from tools.statistics.linear_regression import linreg, PlotWithErrorBars
+from tools.statistics.linear_regression import Linreg, PlotWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 import matplotlib.pyplot as plt
@@ -23,7 +23,7 @@ h_cal = linspace(0, 15, 7)*1e-3                             # [m]
 U_cal = array([240, 312, 408, 592, 752, 928, 1110])*1e-3    # [V]
 p_cal = GravitationalPressure(rho, g, h_cal)                # [Pa]
 
-U_to_p, U_to_p_coeffs, U_to_p_cov = linreg(U_cal, p_cal)
+U_to_p, U_to_p_coeffs, U_to_p_cov = Linreg(U_cal, p_cal)
 
 PlotWithErrorBars(axs[0], U_cal, p_cal,  U_to_p,
                   x_absErr=uncertainty_osci, y_absErr=uncertainty_caliper,
@@ -35,7 +35,7 @@ print(f"Unsicherheit Proportionalitätskonstante: {sqrt(U_to_p_cov[0][0])}")
 ### 2. Distilled Wasser
 
 def GetSigmaFromPressure(r: array, p: array):
-    fun, coeffs, cov = linreg(1/r, p)
+    fun, coeffs, cov = Linreg(1/r, p)
     sigma = coeffs[0]/2
     sigma_deviation = sqrt(cov[0,0])/2
     return fun, sigma, sigma_deviation

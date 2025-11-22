@@ -1,5 +1,5 @@
 from numpy import array, linspace, max, mean, min, pi, sqrt, std
-from tools.statistics.linear_regression import linreg, PlotWithErrorBars
+from tools.statistics.linear_regression import Linreg, PlotWithErrorBars
 import matplotlib.pyplot as plt
 
 # 1. Time calibration
@@ -18,8 +18,8 @@ T_heavy_top     = array([86.737, 84.809, 86.979, 88.685, 87.548, 87.910, 87.99])
 #T_heavy_top     = array([86.737, 86.979, 87.548, 87.910, 87.99])/50
 
 # linreg
-hb_fun, _, hb_cov = linreg(length, T_heavy_bottom**2)
-ht_fun, _, ht_cov = linreg(length, T_heavy_top**2)
+hb_fun, _, hb_cov = Linreg(length, T_heavy_bottom**2)
+ht_fun, _, ht_cov = Linreg(length, T_heavy_top**2)
 
 print(f"{hb_cov}\n{ht_cov}")
 
