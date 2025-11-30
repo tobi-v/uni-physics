@@ -1,4 +1,4 @@
-from numpy import array, diff, floating, log, mean, ones, std
+from numpy import abs, array, diff, floating, log, log10, mean, ones, std
 from numpy.typing import NDArray
 from tools.maths.functions import Ratio
 from tools.statistics.linear_regression import Linreg, Polyreg
@@ -29,6 +29,41 @@ def OpenLoopDamping(t: NDArray[floating], U: NDArray[floating]):
 
   return damping, damping_uncertainty
 
+def Z_plot(omega: NDArray[floating],
+                           U_den: NDArray[floating],
+                           U_num: NDArray[floating],
+                           phi: NDArray[floating],
+                           R_V: float = 1,
+                           U_num_uncertainty: float = 0,
+                           U_den_uncertainty: float = 0,
+                           phase_uncertainty: float = 0,
+                           suptitle: str = "Bode Plot"):
+    """Compact Bode plot: data + polynomial mag-fit and unwrap+MA phase smoothing."""
+    voltage_ratio, voltage_ratio_uncertainty = GetResultAndUncertainty(
+        Ratio, [U_den, U_num], uncertainty=True,
+        uncertainty_params=[U_num_uncertainty, U_den_uncertainty]
+    )
+
+    fig, (axA, axP) = plt.subplots(2, 1, figsize=(6, 6))
+    fig.suptitle(suptitle, fontsize=14, y=0.96)
+
+    ScatterWithErrorBars(axA, omega, voltage_ratio*R_V, y_absErr=voltage_ratio_uncertainty*R_V,
+                         label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
+                         ylabel=r'$Z(\omega) [dB]$', title="Amplitude")
+    #mag_fit, _, _ = Polyreg(omega, voltage_ratio*R_V, 4)
+    #axA.plot(omega, mag_fit(omega), '--C1', label="Fit")
+    axA.set_xscale('log'); axA.set_yscale('log'); axA.legend()
+
+    ScatterWithErrorBars(axP, omega, phi, y_absErr=phase_uncertainty,
+                         label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
+                         ylabel=r'Phasenverschiebung $\varphi\degree$', title="Phase")
+    # unwrap phase, smooth with small moving average, convert back to degrees
+    phi_fit, _, _ = Polyreg(omega, phi, 10)
+    axP.plot(omega, phi_fit(omega), '--C1', label='smoothed')
+    axP.set_xscale('log'); axP.set_yscale('linear'); axP.legend()
+
+    plt.tight_layout()
+
 def plot_bode_measurements(omega: NDArray[floating],
                            U_den: NDArray[floating],
                            U_num: NDArray[floating],
@@ -46,12 +81,13 @@ def plot_bode_measurements(omega: NDArray[floating],
     fig, (axA, axP) = plt.subplots(2, 1, figsize=(6, 6))
     fig.suptitle(suptitle, fontsize=14, y=0.96)
 
-    ScatterWithErrorBars(axA, omega, voltage_ratio, y_absErr=voltage_ratio_uncertainty,
+    ScatterWithErrorBars(axA, omega, 20*log10(voltage_ratio), y_absErr=0, #voltage_ratio_uncertainty*R_V,
                          label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
-                         ylabel=r'Spannungsverhältnis Ausgang/Eingang', title="Amplitude")
-    mag_fit, _, _ = Polyreg(omega, voltage_ratio, 10)
+                         ylabel=r'$Z(\omega) [dB]$', title="Amplitude")
+    mag_fit, _, _ = Polyreg(omega, 20*log10(voltage_ratio), 4)
     axA.plot(omega, mag_fit(omega), '--C1', label="Fit")
-    axA.set_xscale('log'); axA.set_yscale('log'); axA.set_ylim(top=2); axA.legend()
+    axA.set_xscale('log'); #axA.set_yscale('log');
+    axA.legend()
 
     ScatterWithErrorBars(axP, omega, phi, y_absErr=phase_uncertainty,
                          label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
@@ -62,6 +98,27 @@ def plot_bode_measurements(omega: NDArray[floating],
     axP.set_xscale('log'); axP.set_yscale('linear'); axP.legend()
 
     plt.tight_layout()
+
+def Z_plot_mag(ax: plt.Axes,
+                           omega: NDArray[floating],
+                           U_den: NDArray[floating],
+                           U_num: NDArray[floating],
+                           R_V: float = 1,
+                           U_num_uncertainty: float = 0,
+                           U_den_uncertainty: float = 0,
+                           title: str = "Amplitude"):
+    """Compact Bode plot: data + polynomial mag-fit and unwrap+MA phase smoothing."""
+    voltage_ratio, voltage_ratio_uncertainty = GetResultAndUncertainty(
+        Ratio, [U_den, U_num], uncertainty=True,
+        uncertainty_params=[U_num_uncertainty, U_den_uncertainty]
+    )
+
+    ScatterWithErrorBars(ax, omega, voltage_ratio*R_V, y_absErr=voltage_ratio_uncertainty*R_V,
+                         label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
+                         ylabel=r'$Z(\omega) [dB]$', title=title)
+    #mag_fit, _, _ = Polyreg(omega, voltage_ratio*R_V, 2)
+    #ax.plot(omega, mag_fit(omega), '--C1', label="Fit")
+    ax.set_xscale('log'); ax.set_yscale('log'); ax.legend()
     
 def resonance_frequency(omega: NDArray[floating], U_source: NDArray[floating], U_signal: NDArray[floating]) -> float:
     """Bestimmt die Resonanzfrequenz aus den Messdaten.
@@ -135,11 +192,12 @@ CheckLengths(t, U)
 damping, damping_uncertainty = OpenLoopDamping(t, U)
 print("Dämpfungskonstante:", damping, "±", damping_uncertainty, "1/s")
 
-_, ax =  plt.subplots(1, 1)
+fig, ax =  plt.subplots(1, 1)
 ScatterWithErrorBars(ax, t, U, x_absErr=t_uncertainty, y_absErr=U_uncertainty, label="Amplitude", xlabel="Zeit (s)", ylabel="Spannung (V)", title="Freie Schwingung: Spannung über Zeit")
 U_fun, _, _ = Polyreg(t, U, 5)
 ax.plot(t, U_fun(t), '--b', label="Fit")
 ax.legend()
+plt.close(fig)
 
 ### Teil 2: Erzwungene Schwingung
 omega = array([10, 15, 20, 30, 50, 70, 125, 250, 500,
@@ -156,7 +214,7 @@ phi = array([90, 86, 85, 78, 72, 70, 60, 40, 20,
              -12, - 20, -28, -35, -40, -38, 6, 56, 77]) # degree
 CheckLengths(omega, U_chain, U_R, phi)
 
-plot_bode_measurements(omega, U_R + U_chain, U_chain, phi, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot angeregter Schwingkreis")
+Z_plot(omega, U_R, U_chain, phi, R_Vorwiderstand, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot angeregter Schwingkreis")
 
 omega_no_outliers = array([10, 15, 20, 30, 50, 70, 125, 250, 500,
   700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700,
@@ -172,9 +230,17 @@ phi_no_outliers = array([90, 86, 85, 78, 72, 70, 60, 40, 20,
              -12, - 20, -28, -35, -40, -38]) # degree
 CheckLengths(omega_no_outliers, U_chain_no_outliers, U_R_no_outliers, phi_no_outliers)
 
-plot_bode_measurements(omega_no_outliers, U_R_no_outliers + U_chain_no_outliers, U_chain_no_outliers, phi_no_outliers, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot angeregter Schwingkreis ohne Ausreißer")
+Z_plot(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers, phi_no_outliers, R_Vorwiderstand, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot angeregter Schwingkreis ohne Ausreißer")
+low_freq_indices = omega_no_outliers < 400
+mid_freq_indices = (omega_no_outliers >= 100) & (omega_no_outliers <= 5000)
+high_freq_indices = omega_no_outliers > 3000
+fig, (axL, axM, axH) = plt.subplots(3, 1, figsize=(6, 12))
+Z_plot_mag(axL, omega_no_outliers[low_freq_indices], U_R_no_outliers[low_freq_indices], U_chain_no_outliers[low_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Bode Plot angeregter Schwingkreis in tiefen Frequenzen")
+Z_plot_mag(axM, omega_no_outliers[mid_freq_indices], U_R_no_outliers[mid_freq_indices], U_chain_no_outliers[mid_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Bode Plot angeregter Schwingkreis nahe der Resonanzfrequenz")
+Z_plot_mag(axH, omega_no_outliers[high_freq_indices], U_R_no_outliers[high_freq_indices], U_chain_no_outliers[high_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Bode Plot angeregter Schwingkreis in hohen Frqeuenzen")
+plt.tight_layout()
 
-res_idx, res_freq = resonance_frequency(omega, U_chain + U_R, U_chain)
+res_idx, res_freq = resonance_frequency(omega, U_R, U_chain)
 print("Resonanzfrequenz: ", res_freq, " 1/s")
 R_chain, R_chain_uncertainty = GetResultAndUncertainty(
     resistance, [U_chain[res_idx], U_R[res_idx], R_Vorwiderstand], uncertainty=True,
@@ -193,7 +259,7 @@ phi = array([0, 1, -6, -33, -41, -42, -42, -44, -46, -46, -48, -49, -50, -50, -5
 U_source = 4 * ones(len(omega))
 CheckLengths(omega, U_source, U_signal, phi)
 
-plot_bode_measurements(omega, U_source, U_signal,  phi, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot 4-Pol")
+plot_bode_measurements(omega, U_source, U_signal,  phi, U_num_uncertainty=U_uncertainty, U_den_uncertainty=U_uncertainty, phase_uncertainty=2, suptitle="Bode Plot 4-Pol")
 
 omega_no_outliers = array([10, 100, 1000, 5000, 6000, 6500, 7000, 7250, 7500, 7750, 8000, 8250, 8500, 8750, 9000, 9250, 9500, 9750, 10000, 10500, 11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000, 20000, 25000, 40000, 80000, 99990])
 U_signal_no_outliers = array([3.36, 3.36, 3.36, 2.76, 2.56, 2.48, 2.4, 2.32, 2.32, 2.32, 2.24, 2.24, 2.16, 2.12, 2.08, 2.08, 2, 1.96, 1.92, 1.88, 1.8, 1.68, 1.6, 1.52, 1.44, 1.36, 1.28, 1.2, 1.16, 1.12, 0.92, 0.72, 0.44, 0.36])
@@ -201,6 +267,6 @@ phi_no_outliers = array([0, 1, -6, -33, -41, -42, -42, -44, -46, -46, -48, -49, 
 U_source_no_outliers = 4 * ones(len(omega_no_outliers))
 CheckLengths(omega_no_outliers, U_source_no_outliers, U_signal_no_outliers, phi_no_outliers)
 
-plot_bode_measurements(omega_no_outliers, U_source_no_outliers, U_signal_no_outliers,  phi_no_outliers, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot 4-Pol ohne Ausreißer")
+plot_bode_measurements(omega_no_outliers, U_source_no_outliers, U_signal_no_outliers,  phi_no_outliers, U_num_uncertainty=U_uncertainty, U_den_uncertainty=U_uncertainty, phase_uncertainty=2, suptitle="Bode Plot 4-Pol ohne Ausreißer")
 
 plt.show()
