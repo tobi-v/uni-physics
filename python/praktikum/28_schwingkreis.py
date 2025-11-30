@@ -1,4 +1,4 @@
-from numpy import array, diff, log, mean, ones, std
+from numpy import array, diff, floating, log, mean, ones, std
 from numpy.typing import NDArray
 from tools.maths.functions import Ratio
 from tools.statistics.linear_regression import Linreg, Polyreg
@@ -8,8 +8,7 @@ from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 from typing import Tuple
 
 import matplotlib.pyplot as plt
-
-def OpenLoopDamping(t: NDArray, U: NDArray):
+def OpenLoopDamping(t: NDArray[floating], U: NDArray[floating]):
   """Berechnet das logarithmische Dekrement und die Dämpfungskonstante eines offenen Schwingkreises.
 
   Args:
@@ -30,10 +29,10 @@ def OpenLoopDamping(t: NDArray, U: NDArray):
 
   return damping, damping_uncertainty
 
-def plot_bode_measurements(omega: NDArray,
-                           U_den: NDArray,
-                           U_num: NDArray,
-                           phi: NDArray,
+def plot_bode_measurements(omega: NDArray[floating],
+                           U_den: NDArray[floating],
+                           U_num: NDArray[floating],
+                           phi: NDArray[floating],
                            U_num_uncertainty: float = 0,
                            U_den_uncertainty: float = 0,
                            phase_uncertainty: float = 0,
@@ -64,7 +63,7 @@ def plot_bode_measurements(omega: NDArray,
 
     plt.tight_layout()
     
-def resonance_frequency(omega: NDArray, U_source: NDArray, U_signal: NDArray) -> float:
+def resonance_frequency(omega: NDArray[floating], U_source: NDArray[floating], U_signal: NDArray[floating]) -> float:
     """Bestimmt die Resonanzfrequenz aus den Messdaten.
 
     Args:
@@ -92,7 +91,7 @@ def resistance(U_R: float, U_Vorwiderstand: float, R_Vorwiderstand: float) -> fl
     """
     return (U_R / U_Vorwiderstand) * R_Vorwiderstand
 
-def capacity_from_low_frequencies(omega: NDArray, U_R: NDArray, U_chain: NDArray) -> Tuple[float, float]:
+def capacity_from_low_frequencies(omega: NDArray[floating], U_R: NDArray[floating], U_chain: NDArray[floating]) -> Tuple[float, float]:
     """Berechnet die Kapazität aus den Messdaten bei niedrigen Frequenzen.
 
     Args:
@@ -108,7 +107,7 @@ def capacity_from_low_frequencies(omega: NDArray, U_R: NDArray, U_chain: NDArray
     _, inclination, inclination_uncertainty = Linreg(omega[low_freq_indices], inv_amplitude_ratio[low_freq_indices])
     return inclination, inclination_uncertainty
 
-def inductivity_from_high_frequencies(omega: NDArray, U_R: NDArray, U_chain: NDArray) -> Tuple[float, float]:
+def inductivity_from_high_frequencies(omega: NDArray[floating], U_R: NDArray[floating], U_chain: [floating]) -> Tuple[float, float]:
     """Berechnet die Induktivität aus den Messdaten bei hohen Frequenzen.
 
     Args:
