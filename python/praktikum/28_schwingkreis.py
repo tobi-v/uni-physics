@@ -79,7 +79,7 @@ def plot_bode_measurements(omega: NDArray[floating],
     )
 
     fig, (axA, axP) = plt.subplots(2, 1, figsize=(6, 6))
-    fig.suptitle(suptitle, fontsize=14, y=0.96)
+    fig.suptitle(suptitle, fontsize=20, y=0.96)
 
     ScatterWithErrorBars(axA, omega, 20*log10(voltage_ratio), y_absErr=0, #voltage_ratio_uncertainty*R_V,
                          label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
