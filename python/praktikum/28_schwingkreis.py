@@ -45,14 +45,14 @@ def Z_plot(omega: NDArray[floating],
     )
 
     fig, (axA, axP) = plt.subplots(2, 1, figsize=(6, 6))
-    fig.suptitle(suptitle, fontsize=14, y=0.96)
+    fig.suptitle(suptitle, fontsize=20, y=0.96)
 
     ScatterWithErrorBars(axA, omega, voltage_ratio*R_V, y_absErr=voltage_ratio_uncertainty*R_V,
                          label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
-                         ylabel=r'$Z(\omega) [dB]$', title="Amplitude")
+                         ylabel=r'$Z(\omega)$', title="Amplitude")
     #mag_fit, _, _ = Polyreg(omega, voltage_ratio*R_V, 4)
     #axA.plot(omega, mag_fit(omega), '--C1', label="Fit")
-    axA.set_xscale('log'); axA.set_yscale('log'); axA.legend()
+    axA.set_xscale('log'); axA.set_yscale('log'); axA.legend(fontsize=14)
 
     ScatterWithErrorBars(axP, omega, phi, y_absErr=phase_uncertainty,
                          label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
@@ -60,7 +60,7 @@ def Z_plot(omega: NDArray[floating],
     # unwrap phase, smooth with small moving average, convert back to degrees
     phi_fit, _, _ = Polyreg(omega, phi, 10)
     axP.plot(omega, phi_fit(omega), '--C1', label='smoothed')
-    axP.set_xscale('log'); axP.set_yscale('linear'); axP.legend()
+    axP.set_xscale('log'); axP.set_yscale('linear'); axP.legend(fontsize=14)
 
     plt.tight_layout()
 
@@ -87,7 +87,7 @@ def plot_bode_measurements(omega: NDArray[floating],
     mag_fit, _, _ = Polyreg(omega, 20*log10(voltage_ratio), 4)
     axA.plot(omega, mag_fit(omega), '--C1', label="Fit")
     axA.set_xscale('log'); #axA.set_yscale('log');
-    axA.legend()
+    axA.legend(fontsize=14)
 
     ScatterWithErrorBars(axP, omega, phi, y_absErr=phase_uncertainty,
                          label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
@@ -95,7 +95,7 @@ def plot_bode_measurements(omega: NDArray[floating],
     # unwrap phase, smooth with small moving average, convert back to degrees
     phi_fit, _, _ = Polyreg(omega, phi, 10)
     axP.plot(omega, phi_fit(omega), '--C1', label='smoothed')
-    axP.set_xscale('log'); axP.set_yscale('linear'); axP.legend()
+    axP.set_xscale('log'); axP.set_yscale('linear'); axP.legend(fontsize=14)
 
     plt.tight_layout()
 
@@ -118,7 +118,7 @@ def Z_plot_mag(ax: plt.Axes,
                          ylabel=r'$Z(\omega) [dB]$', title=title)
     #mag_fit, _, _ = Polyreg(omega, voltage_ratio*R_V, 2)
     #ax.plot(omega, mag_fit(omega), '--C1', label="Fit")
-    ax.set_xscale('log'); ax.set_yscale('log'); ax.legend()
+    ax.set_xscale('log'); ax.set_yscale('log'); ax.legend(fontsize=14)
     
 def resonance_frequency(omega: NDArray[floating], U_source: NDArray[floating], U_signal: NDArray[floating]) -> float:
     """Bestimmt die Resonanzfrequenz aus den Messdaten.
@@ -196,7 +196,7 @@ fig, ax =  plt.subplots(1, 1)
 ScatterWithErrorBars(ax, t, U, x_absErr=t_uncertainty, y_absErr=U_uncertainty, label="Amplitude", xlabel="Zeit (s)", ylabel="Spannung (V)", title="Freie Schwingung: Spannung über Zeit")
 U_fun, _, _ = Polyreg(t, U, 5)
 ax.plot(t, U_fun(t), '--b', label="Fit")
-ax.legend()
+ax.legend(fontsize=14)
 plt.close(fig)
 
 ### Teil 2: Erzwungene Schwingung
@@ -214,7 +214,7 @@ phi = array([90, 86, 85, 78, 72, 70, 60, 40, 20,
              -12, - 20, -28, -35, -40, -38, 6, 56, 77]) # degree
 CheckLengths(omega, U_chain, U_R, phi)
 
-Z_plot(omega, U_R, U_chain, phi, R_Vorwiderstand, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot angeregter Schwingkreis")
+Z_plot(omega, U_R, U_chain, phi, R_Vorwiderstand, U_uncertainty, U_uncertainty, 2, suptitle="Plot angeregter Schwingkreis")
 
 omega_no_outliers = array([10, 15, 20, 30, 50, 70, 125, 250, 500,
   700, 800, 900, 1000, 1100, 1200, 1300, 1400, 1500, 1600, 1700,
@@ -230,14 +230,14 @@ phi_no_outliers = array([90, 86, 85, 78, 72, 70, 60, 40, 20,
              -12, - 20, -28, -35, -40, -38]) # degree
 CheckLengths(omega_no_outliers, U_chain_no_outliers, U_R_no_outliers, phi_no_outliers)
 
-Z_plot(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers, phi_no_outliers, R_Vorwiderstand, U_uncertainty, U_uncertainty, 2, suptitle="Bode Plot angeregter Schwingkreis ohne Ausreißer")
+Z_plot(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers, phi_no_outliers, R_Vorwiderstand, U_uncertainty, U_uncertainty, 2, suptitle="Plot angeregter Schwingkreis ohne Ausreißer")
 low_freq_indices = omega_no_outliers < 400
 mid_freq_indices = (omega_no_outliers >= 100) & (omega_no_outliers <= 5000)
 high_freq_indices = omega_no_outliers > 3000
 fig, (axL, axM, axH) = plt.subplots(3, 1, figsize=(6, 12))
-Z_plot_mag(axL, omega_no_outliers[low_freq_indices], U_R_no_outliers[low_freq_indices], U_chain_no_outliers[low_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Bode Plot angeregter Schwingkreis in tiefen Frequenzen")
-Z_plot_mag(axM, omega_no_outliers[mid_freq_indices], U_R_no_outliers[mid_freq_indices], U_chain_no_outliers[mid_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Bode Plot angeregter Schwingkreis nahe der Resonanzfrequenz")
-Z_plot_mag(axH, omega_no_outliers[high_freq_indices], U_R_no_outliers[high_freq_indices], U_chain_no_outliers[high_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Bode Plot angeregter Schwingkreis in hohen Frqeuenzen")
+Z_plot_mag(axL, omega_no_outliers[low_freq_indices], U_R_no_outliers[low_freq_indices], U_chain_no_outliers[low_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis in tiefen Frequenzen")
+Z_plot_mag(axM, omega_no_outliers[mid_freq_indices], U_R_no_outliers[mid_freq_indices], U_chain_no_outliers[mid_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis nahe der Resonanzfrequenz")
+Z_plot_mag(axH, omega_no_outliers[high_freq_indices], U_R_no_outliers[high_freq_indices], U_chain_no_outliers[high_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis in hohen Frqeuenzen")
 plt.tight_layout()
 
 res_idx, res_freq = resonance_frequency(omega, U_R, U_chain)
