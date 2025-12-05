@@ -1,4 +1,4 @@
-from numpy import abs, array, diff, floating, log, log10, mean, ones, std
+from numpy import array, diff, floating, log, log10, mean, ones, std
 from numpy.typing import NDArray
 from tools.maths.functions import Ratio
 from tools.statistics.linear_regression import Linreg, Polyreg
@@ -106,18 +106,30 @@ def Z_plot_mag(ax: plt.Axes,
                            R_V: float = 1,
                            U_num_uncertainty: float = 0,
                            U_den_uncertainty: float = 0,
-                           title: str = "Amplitude"):
+                           title: str = "Amplitude",
+                           inv = False):
     """Compact Bode plot: data + polynomial mag-fit and unwrap+MA phase smoothing."""
     voltage_ratio, voltage_ratio_uncertainty = GetResultAndUncertainty(
         Ratio, [U_den, U_num], uncertainty=True,
         uncertainty_params=[U_num_uncertainty, U_den_uncertainty]
     )
 
-    ScatterWithErrorBars(ax, omega, voltage_ratio*R_V, y_absErr=voltage_ratio_uncertainty*R_V,
-                         label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
-                         ylabel=r'$Z(\omega) [dB]$', title=title)
-    #mag_fit, _, _ = Polyreg(omega, voltage_ratio*R_V, 2)
-    #ax.plot(omega, mag_fit(omega), '--C1', label="Fit")
+    Z = voltage_ratio*R_V
+    err = voltage_ratio_uncertainty*R_V
+    if inv:
+        Z = 1/Z
+        err = voltage_ratio_uncertainty / voltage_ratio**2
+
+    if inv:
+        ScatterWithErrorBars(ax, omega, Z, y_absErr=err,
+                            label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
+                            ylabel=r'$1/Z(\omega)$', title=title)
+    else:
+        ScatterWithErrorBars(ax, omega, Z, y_absErr=voltage_ratio_uncertainty*R_V,
+                            label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
+                            ylabel=r'$Z(\omega)$', title=title)
+    mag_fit, _, _ = Linreg(log10(omega), log10(Z))
+    ax.plot(omega, 10**mag_fit(log10(omega)), '--C1', label="Regressionsgerade")
     ax.set_xscale('log'); ax.set_yscale('log'); ax.legend(fontsize=14)
     
 def resonance_frequency(omega: NDArray[floating], U_source: NDArray[floating], U_signal: NDArray[floating]) -> float:
@@ -231,11 +243,11 @@ phi_no_outliers = array([90, 86, 85, 78, 72, 70, 60, 40, 20,
 CheckLengths(omega_no_outliers, U_chain_no_outliers, U_R_no_outliers, phi_no_outliers)
 
 Z_plot(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers, phi_no_outliers, R_Vorwiderstand, U_uncertainty, U_uncertainty, 2, suptitle="Plot angeregter Schwingkreis ohne Ausreißer")
-low_freq_indices = omega_no_outliers < 400
-mid_freq_indices = (omega_no_outliers >= 100) & (omega_no_outliers <= 5000)
+low_freq_indices = omega_no_outliers < 500
+mid_freq_indices = (omega_no_outliers >= 500) & (omega_no_outliers <= 3000)
 high_freq_indices = omega_no_outliers > 3000
 fig, (axL, axM, axH) = plt.subplots(3, 1, figsize=(6, 12))
-Z_plot_mag(axL, omega_no_outliers[low_freq_indices], U_R_no_outliers[low_freq_indices], U_chain_no_outliers[low_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis in tiefen Frequenzen")
+Z_plot_mag(axL, omega_no_outliers[low_freq_indices], U_R_no_outliers[low_freq_indices], U_chain_no_outliers[low_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis in tiefen Frequenzen", inv=True)
 Z_plot_mag(axM, omega_no_outliers[mid_freq_indices], U_R_no_outliers[mid_freq_indices], U_chain_no_outliers[mid_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis nahe der Resonanzfrequenz")
 Z_plot_mag(axH, omega_no_outliers[high_freq_indices], U_R_no_outliers[high_freq_indices], U_chain_no_outliers[high_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis in hohen Frqeuenzen")
 plt.tight_layout()
