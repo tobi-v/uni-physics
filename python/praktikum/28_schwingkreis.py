@@ -1,5 +1,6 @@
-from numpy import array, diff, floating, log, log10, mean, ones, std
+from numpy import array, diff, floating, linspace, log, log10, logspace, mean, ones, std
 from numpy.typing import NDArray
+from tools.electricity.RLC_circuit import SeriesAmplitude, SeriesPhase
 from tools.maths.functions import Ratio
 from tools.statistics.linear_regression import Linreg, Polyreg
 from tools.python.checks import CheckLengths
@@ -64,6 +65,22 @@ def Z_plot(omega: NDArray[floating],
 
     plt.tight_layout()
 
+def Z_plot_expected(omega: NDArray,
+                    R: float,
+                    L: float,
+                    C: float,
+                    suptitle: str ="Theoriekurve"):
+    """Bode plot of expected curve in LRC series circuit."""
+    fig, (axA, axP) = plt.subplots(2, 1, figsize=(6, 6))
+    fig.suptitle(suptitle, fontsize=20, y=0.96)
+    axA.plot(omega, SeriesAmplitude(omega, R, L, C), '--C1')
+    axA.set_xscale('log'); axA.set_yscale('log')
+    axA.grid(visible=True)
+    axP.plot(omega, -SeriesPhase(omega, R, L, C, deg=True), '--C1')
+    axP.set_xscale('log'); axP.set_yscale('linear')
+    axP.grid(visible=True)
+    plt.tight_layout()
+
 def plot_bode_measurements(omega: NDArray[floating],
                            U_den: NDArray[floating],
                            U_num: NDArray[floating],
@@ -98,6 +115,7 @@ def plot_bode_measurements(omega: NDArray[floating],
     axP.set_xscale('log'); axP.set_yscale('linear'); axP.legend(fontsize=14)
 
     plt.tight_layout()
+    plt.close(fig)
 
 def Z_plot_mag(ax: plt.Axes,
                            omega: NDArray[floating],
@@ -262,6 +280,9 @@ C_chain, C_chain_uncertainty = capacity_from_low_frequencies(omega_no_outliers, 
 print("Kapazität im Schwingkreis: ", C_chain[0], " +/- ", C_chain_uncertainty[0][0], " F")
 L_chain, L_chain_uncertainty = inductivity_from_high_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers)
 print("Induktivität im Schwingkreis: ", L_chain[0], " +/- ", L_chain_uncertainty[0][0], " H")
+
+omega_continuous = logspace(1, 5, 1000)
+Z_plot_expected(omega_continuous, R_chain, 50*L_chain[0], C_chain[0]/50)
 
 ### 3. 4-Pol
 
