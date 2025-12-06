@@ -1,5 +1,6 @@
-from numpy import abs, array, diff, floating, log, log10, mean, ones, std
+from numpy import array, diff, floating, linspace, log, log10, logspace, mean, ones, std
 from numpy.typing import NDArray
+from tools.electricity.RLC_circuit import SeriesAmplitude, SeriesPhase
 from tools.maths.functions import Ratio
 from tools.statistics.linear_regression import Linreg, Polyreg
 from tools.python.checks import CheckLengths
@@ -64,6 +65,26 @@ def Z_plot(omega: NDArray[floating],
 
     plt.tight_layout()
 
+def Z_plot_expected(omega: NDArray,
+                    R: float,
+                    L: float,
+                    C: float,
+                    suptitle: str ="Theoriekurve"):
+    """Bode plot of expected curve in LRC series circuit."""
+    fig, (axA, axP) = plt.subplots(2, 1, figsize=(6, 6))
+    fig.suptitle(suptitle, fontsize=20, y=0.96)
+    axA.plot(omega, SeriesAmplitude(omega, R, L, C), '--C1')
+    axA.set_xscale('log'); axA.set_yscale('log')
+    axA.grid(visible=True)
+    axA.set_xlabel("Kreisfrequenz ω (1/s)", fontsize = 18)
+    axA.set_ylabel(r'$Z(\omega)$', fontsize = 18)
+    axP.plot(omega, -SeriesPhase(omega, R, L, C, deg=True), '--C1')
+    axP.set_xscale('log'); axP.set_yscale('linear')
+    axP.grid(visible=True)
+    axP.set_xlabel("Kreisfrequenz ω (1/s)", fontsize = 18)
+    axP.set_ylabel(r'Phasenverschiebung $\varphi\degree$', fontsize = 18)
+    plt.tight_layout()
+
 def plot_bode_measurements(omega: NDArray[floating],
                            U_den: NDArray[floating],
                            U_num: NDArray[floating],
@@ -98,6 +119,7 @@ def plot_bode_measurements(omega: NDArray[floating],
     axP.set_xscale('log'); axP.set_yscale('linear'); axP.legend(fontsize=14)
 
     plt.tight_layout()
+    plt.close(fig)
 
 def Z_plot_mag(ax: plt.Axes,
                            omega: NDArray[floating],
@@ -106,18 +128,30 @@ def Z_plot_mag(ax: plt.Axes,
                            R_V: float = 1,
                            U_num_uncertainty: float = 0,
                            U_den_uncertainty: float = 0,
-                           title: str = "Amplitude"):
+                           title: str = "Amplitude",
+                           inv = False):
     """Compact Bode plot: data + polynomial mag-fit and unwrap+MA phase smoothing."""
     voltage_ratio, voltage_ratio_uncertainty = GetResultAndUncertainty(
         Ratio, [U_den, U_num], uncertainty=True,
         uncertainty_params=[U_num_uncertainty, U_den_uncertainty]
     )
 
-    ScatterWithErrorBars(ax, omega, voltage_ratio*R_V, y_absErr=voltage_ratio_uncertainty*R_V,
-                         label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
-                         ylabel=r'$Z(\omega) [dB]$', title=title)
-    #mag_fit, _, _ = Polyreg(omega, voltage_ratio*R_V, 2)
-    #ax.plot(omega, mag_fit(omega), '--C1', label="Fit")
+    Z = voltage_ratio*R_V
+    err = voltage_ratio_uncertainty*R_V
+    if inv:
+        Z = 1/Z
+        err = voltage_ratio_uncertainty / voltage_ratio**2
+
+    if inv:
+        ScatterWithErrorBars(ax, omega, Z, y_absErr=err,
+                            label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
+                            ylabel=r'$1/Z(\omega)$', title=title)
+    else:
+        ScatterWithErrorBars(ax, omega, Z, y_absErr=voltage_ratio_uncertainty*R_V,
+                            label="Messwerte", xlabel="Kreisfrequenz ω (1/s)",
+                            ylabel=r'$Z(\omega)$', title=title)
+    mag_fit, _, _ = Linreg(log10(omega), log10(Z))
+    ax.plot(omega, 10**mag_fit(log10(omega)), '--C1', label="Regressionsgerade")
     ax.set_xscale('log'); ax.set_yscale('log'); ax.legend(fontsize=14)
     
 def resonance_frequency(omega: NDArray[floating], U_source: NDArray[floating], U_signal: NDArray[floating]) -> float:
@@ -148,7 +182,7 @@ def resistance(U_R: float, U_Vorwiderstand: float, R_Vorwiderstand: float) -> fl
     """
     return (U_R / U_Vorwiderstand) * R_Vorwiderstand
 
-def capacity_from_low_frequencies(omega: NDArray[floating], U_R: NDArray[floating], U_chain: NDArray[floating]) -> Tuple[float, float]:
+def capacity_from_low_frequencies(omega: NDArray[floating], U_R: NDArray[floating], U_chain: NDArray[floating], R_V) -> Tuple[float, float]:
     """Berechnet die Kapazität aus den Messdaten bei niedrigen Frequenzen.
 
     Args:
@@ -159,12 +193,12 @@ def capacity_from_low_frequencies(omega: NDArray[floating], U_R: NDArray[floatin
     Returns:
         float: Kapazität in Farad.
     """
-    inv_amplitude_ratio = U_R / U_chain
+    inv_amplitude_ratio = U_R / (U_chain*R_V)
     low_freq_indices = omega < 100
     _, inclination, inclination_uncertainty = Linreg(omega[low_freq_indices], inv_amplitude_ratio[low_freq_indices])
     return inclination, inclination_uncertainty
 
-def inductivity_from_high_frequencies(omega: NDArray[floating], U_R: NDArray[floating], U_chain: [floating]) -> Tuple[float, float]:
+def inductivity_from_high_frequencies(omega: NDArray[floating], U_R: NDArray[floating], U_chain: [floating], R_V) -> Tuple[float, float]:
     """Berechnet die Induktivität aus den Messdaten bei hohen Frequenzen.
 
     Args:
@@ -175,7 +209,7 @@ def inductivity_from_high_frequencies(omega: NDArray[floating], U_R: NDArray[flo
     Returns:
         float: Induktivität in Henry.
     """
-    amplitude_ratio = U_chain / U_R
+    amplitude_ratio = R_V*U_chain / U_R
     high_freq_indices = omega > 5000  # Beispielgrenze für hohe Frequenzen
     _, inclination, inclination_uncertainty = Linreg(omega[high_freq_indices], amplitude_ratio[high_freq_indices])
     return inclination, inclination_uncertainty
@@ -231,11 +265,11 @@ phi_no_outliers = array([90, 86, 85, 78, 72, 70, 60, 40, 20,
 CheckLengths(omega_no_outliers, U_chain_no_outliers, U_R_no_outliers, phi_no_outliers)
 
 Z_plot(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers, phi_no_outliers, R_Vorwiderstand, U_uncertainty, U_uncertainty, 2, suptitle="Plot angeregter Schwingkreis ohne Ausreißer")
-low_freq_indices = omega_no_outliers < 400
-mid_freq_indices = (omega_no_outliers >= 100) & (omega_no_outliers <= 5000)
+low_freq_indices = omega_no_outliers < 500
+mid_freq_indices = (omega_no_outliers >= 500) & (omega_no_outliers <= 3000)
 high_freq_indices = omega_no_outliers > 3000
 fig, (axL, axM, axH) = plt.subplots(3, 1, figsize=(6, 12))
-Z_plot_mag(axL, omega_no_outliers[low_freq_indices], U_R_no_outliers[low_freq_indices], U_chain_no_outliers[low_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis in tiefen Frequenzen")
+Z_plot_mag(axL, omega_no_outliers[low_freq_indices], U_R_no_outliers[low_freq_indices], U_chain_no_outliers[low_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis in tiefen Frequenzen", inv=True)
 Z_plot_mag(axM, omega_no_outliers[mid_freq_indices], U_R_no_outliers[mid_freq_indices], U_chain_no_outliers[mid_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis nahe der Resonanzfrequenz")
 Z_plot_mag(axH, omega_no_outliers[high_freq_indices], U_R_no_outliers[high_freq_indices], U_chain_no_outliers[high_freq_indices], R_Vorwiderstand, U_uncertainty, U_uncertainty, title="Plot angeregter Schwingkreis in hohen Frqeuenzen")
 plt.tight_layout()
@@ -246,10 +280,13 @@ R_chain, R_chain_uncertainty = GetResultAndUncertainty(
     resistance, [U_chain[res_idx], U_R[res_idx], R_Vorwiderstand], uncertainty=True,
     uncertainty_params=[U_uncertainty, U_uncertainty, 0])
 print("Widerstand im Schwingkreis: ", R_chain, " +/- ", R_chain_uncertainty, " Ohm")
-C_chain, C_chain_uncertainty = capacity_from_low_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers)
+C_chain, C_chain_uncertainty = capacity_from_low_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers, R_Vorwiderstand)
 print("Kapazität im Schwingkreis: ", C_chain[0], " +/- ", C_chain_uncertainty[0][0], " F")
-L_chain, L_chain_uncertainty = inductivity_from_high_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers)
+L_chain, L_chain_uncertainty = inductivity_from_high_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers, R_Vorwiderstand)
 print("Induktivität im Schwingkreis: ", L_chain[0], " +/- ", L_chain_uncertainty[0][0], " H")
+
+omega_continuous = logspace(1, 5, 1000)
+Z_plot_expected(omega_continuous, R_chain, L_chain[0], C_chain[0])
 
 ### 3. 4-Pol
 
