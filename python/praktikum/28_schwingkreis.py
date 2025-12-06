@@ -76,9 +76,13 @@ def Z_plot_expected(omega: NDArray,
     axA.plot(omega, SeriesAmplitude(omega, R, L, C), '--C1')
     axA.set_xscale('log'); axA.set_yscale('log')
     axA.grid(visible=True)
+    axA.set_xlabel("Kreisfrequenz ω (1/s)", fontsize = 18)
+    axA.set_ylabel(r'$Z(\omega)$', fontsize = 18)
     axP.plot(omega, -SeriesPhase(omega, R, L, C, deg=True), '--C1')
     axP.set_xscale('log'); axP.set_yscale('linear')
     axP.grid(visible=True)
+    axP.set_xlabel("Kreisfrequenz ω (1/s)", fontsize = 18)
+    axP.set_ylabel(r'Phasenverschiebung $\varphi\degree$', fontsize = 18)
     plt.tight_layout()
 
 def plot_bode_measurements(omega: NDArray[floating],
@@ -178,7 +182,7 @@ def resistance(U_R: float, U_Vorwiderstand: float, R_Vorwiderstand: float) -> fl
     """
     return (U_R / U_Vorwiderstand) * R_Vorwiderstand
 
-def capacity_from_low_frequencies(omega: NDArray[floating], U_R: NDArray[floating], U_chain: NDArray[floating]) -> Tuple[float, float]:
+def capacity_from_low_frequencies(omega: NDArray[floating], U_R: NDArray[floating], U_chain: NDArray[floating], R_V) -> Tuple[float, float]:
     """Berechnet die Kapazität aus den Messdaten bei niedrigen Frequenzen.
 
     Args:
@@ -189,12 +193,12 @@ def capacity_from_low_frequencies(omega: NDArray[floating], U_R: NDArray[floatin
     Returns:
         float: Kapazität in Farad.
     """
-    inv_amplitude_ratio = U_R / U_chain
+    inv_amplitude_ratio = U_R / (U_chain*R_V)
     low_freq_indices = omega < 100
     _, inclination, inclination_uncertainty = Linreg(omega[low_freq_indices], inv_amplitude_ratio[low_freq_indices])
     return inclination, inclination_uncertainty
 
-def inductivity_from_high_frequencies(omega: NDArray[floating], U_R: NDArray[floating], U_chain: [floating]) -> Tuple[float, float]:
+def inductivity_from_high_frequencies(omega: NDArray[floating], U_R: NDArray[floating], U_chain: [floating], R_V) -> Tuple[float, float]:
     """Berechnet die Induktivität aus den Messdaten bei hohen Frequenzen.
 
     Args:
@@ -205,7 +209,7 @@ def inductivity_from_high_frequencies(omega: NDArray[floating], U_R: NDArray[flo
     Returns:
         float: Induktivität in Henry.
     """
-    amplitude_ratio = U_chain / U_R
+    amplitude_ratio = R_V*U_chain / U_R
     high_freq_indices = omega > 5000  # Beispielgrenze für hohe Frequenzen
     _, inclination, inclination_uncertainty = Linreg(omega[high_freq_indices], amplitude_ratio[high_freq_indices])
     return inclination, inclination_uncertainty
@@ -276,13 +280,13 @@ R_chain, R_chain_uncertainty = GetResultAndUncertainty(
     resistance, [U_chain[res_idx], U_R[res_idx], R_Vorwiderstand], uncertainty=True,
     uncertainty_params=[U_uncertainty, U_uncertainty, 0])
 print("Widerstand im Schwingkreis: ", R_chain, " +/- ", R_chain_uncertainty, " Ohm")
-C_chain, C_chain_uncertainty = capacity_from_low_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers)
+C_chain, C_chain_uncertainty = capacity_from_low_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers, R_Vorwiderstand)
 print("Kapazität im Schwingkreis: ", C_chain[0], " +/- ", C_chain_uncertainty[0][0], " F")
-L_chain, L_chain_uncertainty = inductivity_from_high_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers)
+L_chain, L_chain_uncertainty = inductivity_from_high_frequencies(omega_no_outliers, U_R_no_outliers, U_chain_no_outliers, R_Vorwiderstand)
 print("Induktivität im Schwingkreis: ", L_chain[0], " +/- ", L_chain_uncertainty[0][0], " H")
 
 omega_continuous = logspace(1, 5, 1000)
-Z_plot_expected(omega_continuous, R_chain, 50*L_chain[0], C_chain[0]/50)
+Z_plot_expected(omega_continuous, R_chain, L_chain[0], C_chain[0])
 
 ### 3. 4-Pol
 
