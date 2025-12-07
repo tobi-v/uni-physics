@@ -1,4 +1,4 @@
-from numpy import array, inf, linspace
+from numpy import array, diag, linspace, sqrt
 from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 from tools.python.checks import CheckLengths
@@ -57,9 +57,14 @@ def Ex01():
   fig2, axs = plt.subplots(2, 1)
   for ax, R, U, I, material, guess in zip(axs, [R_tungsten, R_carbon], [U_tungsten, U_carbon], [I_tungsten, I_carbon], ['Tungsten', 'Carbon'], initial_guesses):
     PlotPowerRelativeResistance(ax, R, U, I, material)
-    popt, _ = curve_fit(StefanBoltzmannRelativeResistance, RelativeResistance(R, R[0]), Power(U, I), p0=guess, bounds=([0, -1, 290], [0.1, 1, 400]))
+    popt, pcov = curve_fit(StefanBoltzmannRelativeResistance, RelativeResistance(R, R[0]), Power(U, I), p0=guess, bounds=([0, -1, 290], [0.1, 1, 400]))
     area, temp_coeff, T_0 = popt
-    print(f"\n--- Params for {material} ---\nArea: {area} m, Temperature Coefficient: {temp_coeff} 1/K, Start temperature: {T_0} K")
+    p_uncertainties = sqrt(diag(pcov))
+    area_uncertainty, temp_coeff_uncertainty, T_0_uncertainty = p_uncertainties
+    print(f"\n--- Params for {material} ---\n" \
+          f"Area:\t\t\t\t{area} +/- {area_uncertainty:.3g} m,\n" \
+          f"Temperature Coefficient:\t{temp_coeff} +/- {temp_coeff_uncertainty:.3g} 1/K,\n" \
+          f"Start temperature:\t\t{T_0} +/- {T_0_uncertainty:.3g} K")
   #plt.close(fig2)
 
 def Ex02():
