@@ -61,6 +61,10 @@ def Ex01():
           f"Area:\t\t\t\t{area} +/- {area_uncertainty:.3g} m,\n" \
           f"Temperature Coefficient:\t{temp_coeff} +/- {temp_coeff_uncertainty:.3g} 1/K,\n" \
           f"Start temperature:\t\t{T_0} +/- {T_0_uncertainty:.3g} K")
+    ax.plot(RelativeResistance(R, R[0]), StefanBoltzmannRelativeResistance(RelativeResistance(R, R[0]), *popt), '--k', label='Fit: Stefan-Boltzmann Law')
+    ax.plot(RelativeResistance(R, R[0]), StefanBoltzmannRelativeResistance(RelativeResistance(R, R[0]), *(popt + p_uncertainties)), ':r', label='Fit Uncertainty')
+    ax.plot(RelativeResistance(R, R[0]), StefanBoltzmannRelativeResistance(RelativeResistance(R, R[0]), *(popt - p_uncertainties)), ':r')
+    ax.legend()
   #plt.close(fig2)
 
 def Ex02():
