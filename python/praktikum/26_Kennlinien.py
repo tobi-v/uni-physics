@@ -2,9 +2,13 @@ from numpy import array, diag, linspace, sqrt
 from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 from tools.python.checks import CheckLengths
+from tools.statistics.linear_regression import ScatterWithErrorBars
 from tools.thermo.stefan_boltzmann import StefanBoltzmannRelativeResistance
 
 import matplotlib.pyplot as plt
+
+U_uncertainty = 0.05  # V
+I_uncertainty = 0.0001  # A
 
 ### Schaltung 1 ###
 
@@ -14,15 +18,6 @@ def Ex01():
   
   def RelativeResistance(R: NDArray, R_0: float) -> NDArray:
     return R/R_0 - 1
-  
-  def PlotIU(ax: plt.Axes, U:NDArray, I:NDArray, material: str):
-    ax.plot(U, I, '+C0', label=f'Current and Voltage of {material}')
-    ax.set_xlabel('Voltage (V)')
-    ax.set_ylabel('Current (A)')
-    ax.set_title(f'Kennlinie {material}')
-    ax.grid(visible=True)
-    ax.legend()
-    plt.tight_layout()
 
   def PlotPowerRelativeResistance(ax: plt.Axes, R: NDArray, U:NDArray, I:NDArray, material: str):
     ax.plot(RelativeResistance(R, R[0]), Power(U, I), '+C0', label=f'Power and Relative Resistance of {material}')
@@ -49,8 +44,9 @@ def Ex01():
   # UI-Plots
   fig1, axs = plt.subplots(2, 1)
   for ax, U, I, material in zip(axs, [U_tungsten, U_carbon], [I_tungsten, I_carbon], ['Tungsten', 'Carbon']):
-    PlotIU(ax, U, I, material)
-  #plt.close(fig1)
+    ScatterWithErrorBars(ax, U, I, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {material}')
+    plt.tight_layout()
+  plt.close(fig1)
 
   # Power over relative Resistance and comparison to Stefan-Boltzmann Law
   initial_guesses = [[0.001, 0.003, 293], [0.001, -0.003, 293]]
