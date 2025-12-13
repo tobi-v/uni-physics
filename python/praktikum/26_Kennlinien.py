@@ -19,10 +19,10 @@ def Ex01():
   def RelativeResistance(R: NDArray, R_0: float) -> NDArray:
     return R/R_0 - 1
 
-  def PlotPowerRelativeResistance(ax: plt.Axes, R: NDArray, U:NDArray, I:NDArray, material: str):
-    print(RelativeResistance(R[1:], R[0]))
-    print(Power(U[1:],I[1:]))
-    ax.plot(RelativeResistance(R[1:], R[0]), Power(U[1:], I[1:]), '+C0', label=f'Power and Relative Resistance of {material}')
+  def PlotPowerRelativeResistance(ax: plt.Axes, relative_resistance: NDArray, power:NDArray, material: str):
+    print(relative_resistance)
+    print(power)
+    ax.plot(relative_resistance, power, '+C0', label=f'Power and Relative Resistance of {material}')
     ax.set_xlabel('Relative Resistance r')
     ax.set_ylabel('Power (W)')
     ax.set_title(f'Power over Relative Resistance {material}')
@@ -33,8 +33,11 @@ def Ex01():
     plt.tight_layout()
 
   def PlotBoltzi(ax: plt.Axes, R: NDArray, U: NDArray, I: NDArray, material: str, guess: list):
-    PlotPowerRelativeResistance(ax, R, U, I, material)
-    popt, pcov = curve_fit(StefanBoltzmannRelativeResistance, RelativeResistance(R[1:], R[0]), Power(U[1:], I[1:]), p0=guess, bounds=([0, -1, 290], [0.1, 1, 400]))
+    relative_resistance = RelativeResistance(R[1:], R[0])
+    power = Power(U[1:], I[1:])
+
+    PlotPowerRelativeResistance(ax, relative_resistance, power, material)
+    popt, pcov = curve_fit(StefanBoltzmannRelativeResistance, relative_resistance, power, p0=guess, bounds=([0, -1, 290], [0.1, 1, 400]))
     area, temp_coeff, T_0 = popt
     p_uncertainties = sqrt(diag(pcov))
     area_uncertainty, temp_coeff_uncertainty, T_0_uncertainty = p_uncertainties
@@ -42,9 +45,9 @@ def Ex01():
           f"Area:\t\t\t\t{area} +/- {area_uncertainty:.3g} m,\n" \
           f"Temperature Coefficient:\t{temp_coeff} +/- {temp_coeff_uncertainty:.3g} 1/K,\n" \
           f"Start temperature:\t\t{T_0} +/- {T_0_uncertainty:.3g} K")
-    ax.plot(RelativeResistance(R[1:], R[0]), StefanBoltzmannRelativeResistance(RelativeResistance(R[1:], R[0]), *popt), '--k', label='Fit: Stefan-Boltzmann Law')
-    ax.plot(RelativeResistance(R[1:], R[0]), StefanBoltzmannRelativeResistance(RelativeResistance(R[1:], R[0]), *(popt + p_uncertainties)), ':r', label='Fit Uncertainty')
-    ax.plot(RelativeResistance(R[1:], R[0]), StefanBoltzmannRelativeResistance(RelativeResistance(R[1:], R[0]), *(popt - p_uncertainties)), ':r')
+    ax.plot(relative_resistance, StefanBoltzmannRelativeResistance(relative_resistance, *popt), '--k', label='Fit: Stefan-Boltzmann Law')
+    ax.plot(relative_resistance, StefanBoltzmannRelativeResistance(relative_resistance, *(popt + p_uncertainties)), ':r', label='Fit Uncertainty')
+    ax.plot(relative_resistance, StefanBoltzmannRelativeResistance(relative_resistance, *(popt - p_uncertainties)), ':r')
     ax.legend()    
 
   # Messdaten
