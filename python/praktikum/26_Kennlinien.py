@@ -21,8 +21,6 @@ def Ex01():
     return R/R_0 - 1
 
   def PlotPowerRelativeResistance(ax: plt.Axes, relative_resistance: NDArray, power:NDArray, material: str):
-    print(relative_resistance)
-    print(power)
     ax.plot(relative_resistance, power, '+C0', label=f'Power and Relative Resistance of {material}')
     ax.set_xlabel('Relative Resistance r')
     ax.set_ylabel('Power (W)')
@@ -79,9 +77,10 @@ def Ex01():
   fig2, axs = plt.subplots(2, 1)
   for ax, R, U, I, material, guess in zip(axs, [R_tungsten, R_carbon], [U_tungsten, U_carbon], [I_tungsten, I_carbon], ['Tungsten', 'Carbon'], initial_guesses):
     PlotBoltzi(ax, R, U, I, material, guess)
-  #plt.close(fig2)
+  plt.close(fig2)
   fig3, ax = plt.subplots()
   PlotBoltzi(ax, R_carbon_filtered, U_carbon_filtered, I_carbon_filtered, 'Filtered Carbon Data', initial_guesses[1])
+  plt.close(fig3)
 
 def Ex02():
   U1 = array([2.0, 4.0, 4.9, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9])
