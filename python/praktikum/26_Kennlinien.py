@@ -2,6 +2,7 @@ from numpy import array, diag, linspace, sqrt
 from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 from tools.python.checks import CheckLengths
+from tools.python.sort import sort_by_x
 from tools.statistics.linear_regression import ScatterWithErrorBars
 from tools.thermo.stefan_boltzmann import StefanBoltzmannRelativeResistance
 
@@ -35,6 +36,7 @@ def Ex01():
   def PlotBoltzi(ax: plt.Axes, R: NDArray, U: NDArray, I: NDArray, material: str, guess: list):
     relative_resistance = RelativeResistance(R[1:], R[0])
     power = Power(U[1:], I[1:])
+    relative_resistance, power = sort_by_x(relative_resistance, power)
 
     PlotPowerRelativeResistance(ax, relative_resistance, power, material)
     popt, pcov = curve_fit(StefanBoltzmannRelativeResistance, relative_resistance, power, p0=guess, bounds=([0, -1, 290], [0.1, 1, 400]))
