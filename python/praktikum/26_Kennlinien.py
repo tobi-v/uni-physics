@@ -143,7 +143,16 @@ def Ex04():
   I_CE_40 = array([15.0, 16.1, 17.1, 18.5, 19.1, 20.0, 20.8, 21.5, 22.0, 22.2])*10**-3
   CheckLengths(U_CE, I_CE_20, I_CE_40)
 
-
+  fig, ax = plt.subplots()
+  ax.plot(U_CE, I_CE_20, '--k', label=r'$I_{BE} = 20 \mu A$')
+  ax.plot(U_CE, I_CE_40, '--b', label=r'$I_{BE} = 40 \mu A$')
+  ax.set_title('Transistor Characteristic Curves')
+  ax.set_xlabel(r'Collector-Emitter Voltage $U_{CE} (V)$')
+  ax.set_ylabel(r'Collector-Emitter Current $I_{CE} (A)$')
+  ax.legend()
+  ax.grid(visible=True)
+  plt.tight_layout()
+  #plt.close(fig)
 
 
 
