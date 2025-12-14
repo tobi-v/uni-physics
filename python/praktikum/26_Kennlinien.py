@@ -1,4 +1,4 @@
-from numpy import array, diag, linspace, sqrt
+from numpy import array, diag, linspace, ones, sqrt
 from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 from tools.python.checks import CheckLengths
@@ -83,12 +83,32 @@ def Ex01():
   plt.close(fig3)
 
 def Ex02():
-  U1 = array([2.0, 4.0, 4.9, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9])
-  I1 = array([0, 0, 0.1, 0.1, 0.2, 0.3, 0.7, 16.5, 56, 125, 161, 500])*10**-3
-  U2 = array([.1, .2, .4, .5, .7, .8, .9, 1.])
-  I2 = array([0, 0, 0, .1, 11, 44, 75., 120])*10**-3
-  CheckLengths(U1, I1, U2, I2)
+  U_through = array([2.0, 4.0, 4.9, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9])
+  I_through = array([0, 0, 0.1, 0.1, 0.2, 0.3, 0.7, 16.5, 56, 125, 161, 500])*10**-3
+  U_block = array([.1, .2, .4, .5, .7, .8, .9, 1.])
+  I_block = array([0, 0, 0, .1, 11, 44, 75., 120])*10**-3
+  CheckLengths(U_through, I_through); CheckLengths(U_block, I_block)
+
+  def PowerLossHyperbola(U: NDArray, P_max: float) -> NDArray:
+    return (P_max/U)
+
+  # UI-Plots and power loss hyperbola
+  P_max = .25 # W
+  fig1, axs = plt.subplots(2, 1)
+  for ax, U, I, material in zip(axs, [U_through, U_block], [I_through, I_block], ['Forward Direction', 'Reverse Direction']):
+    U_plot = linspace(0, max(U)*1.1, 100)
+    ax.plot(U_plot, PowerLossHyperbola(U_plot, P_max), '--r', label=r'Power Loss Hyperbola for $P_\mathrm{max} = %.2f W$' % P_max)
+    ax.plot(U_plot, 0.1*ones(len(U_plot)), '--k', label=r'$I_\mathrm{max} = 100 mA$')
+    ScatterWithErrorBars(ax, U, I, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {material}')
+    ax.set_ylim(0, max(max(I)*1.1, 0.5))
+    #ax.legend(visible=True)
+    plt.tight_layout()
+  #plt.close(fig1)
+
+
 
 #Ex01()
+
+Ex02()
 
 plt.show()
