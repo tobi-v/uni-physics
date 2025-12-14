@@ -144,15 +144,15 @@ def Ex04():
   CheckLengths(U_CE, I_CE_20, I_CE_40)
 
   fig, ax = plt.subplots()
-  char_curve_20, _, _ = Linreg(U_CE, I_CE_20)
-  char_curve_40, _, _ = Linreg(U_CE, I_CE_40)
-  PlotWithErrorBars(ax, U_CE, I_CE_20, char_curve_20, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label=r'$I_{BE} = 20 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', title='Transistor Characteristic Curves')
-  PlotWithErrorBars(ax, U_CE, I_CE_40, char_curve_40, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label=r'$I_{BE} = 40 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', title='Transistor Characteristic Curves')
+  char_curve_20, coeff_20, cov_20 = Linreg(U_CE, I_CE_20)
+  char_curve_40, coeff_40, cov_40 = Linreg(U_CE, I_CE_40)
+  PlotWithErrorBars(ax, U_CE, I_CE_20, char_curve_20, x_absErr=U_uncertainty, y_absErr=I_uncertainty, fun_label=r'Linear fit $I_{CE} = %.2f U_{CE} + %.2f' % (coeff_20[0], coeff_20[1]), scatter_label=r'Measurements for $I_{BE} = 20 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', data_color="k.", fmt="--k", title='Transistor Characteristic Curves')
+  PlotWithErrorBars(ax, U_CE, I_CE_40, char_curve_40, x_absErr=U_uncertainty, y_absErr=I_uncertainty, fun_label=r'Linear fit $I_{CE} = %.2f U_{CE} + %.2f' % (coeff_20[0], coeff_20[1]), scatter_label=r'Measurements for $I_{BE} = 40 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', data_color="b.", fmt="--b", title='Transistor Characteristic Curves')
   plt.tight_layout()
   #plt.close(fig)
 
-
-
+  print(f"\nOutput resistance for I_BE=20 muA: r = {1/coeff_20[0]:.2f} +/- {sqrt(cov_20[0][0])/coeff_20[0]**2:.2f} Ohm")
+  print(f"Output resistance for I_BE=40 muA: r = {1/coeff_40[0]:.2f} +/- {sqrt(cov_40[0][0])/coeff_40[0]**2:.2f} Ohm")
 
 #Ex01()
 #Ex02()
