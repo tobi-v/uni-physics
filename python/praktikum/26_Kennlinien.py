@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 from tools.python.checks import CheckLengths
 from tools.python.sort import sort_by_x
-from tools.statistics.linear_regression import ScatterWithErrorBars
+from tools.statistics.linear_regression import Linreg, ScatterWithErrorBars
 from tools.thermo.stefan_boltzmann import StefanBoltzmannRelativeResistance
 
 import matplotlib.pyplot as plt
@@ -118,14 +118,27 @@ def Ex03():
   U_a = array([1.0, 1.9, 3.0, 3.9, 4.9, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4])
   CheckLengths(U_e, U_a)
 
+  U_e_smooth = U_e[4:]
+  U_a_smooth = U_a[4:]
+  stabilized_in_out_fun, coeff, cov = Linreg(U_e_smooth, U_a_smooth)
+  slope = coeff[0]
+  slope_uncertainty = sqrt(cov[0][0])
+  y_intercept = coeff[1]
+  y_intercept_uncertainty = sqrt(cov[1][1])
+
   fig, ax = plt.subplots()
+  ax.plot(U_e_smooth, stabilized_in_out_fun(U_e_smooth), '--r', label=f'Linear Fit: $U_\\mathrm{{a}} = {coeff[0]:.3f} U_\\mathrm{{e}} + {coeff[1]:.3f}$')
+  ax.plot(U_e_smooth, (slope + slope_uncertainty)*U_e_smooth + (y_intercept + y_intercept_uncertainty), ':r', label='Fit Uncertainty')
+  ax.plot(U_e_smooth, (slope - slope_uncertainty)*U_e_smooth + (y_intercept - y_intercept_uncertainty), ':r')
   ScatterWithErrorBars(ax, U_e, U_a, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel=r"Input Voltage $U_\mathrm{e} (V)$", ylabel=r"Output Voltage $U_\mathrm{a} (V)$", title=f"In- and Output Voltage for Voltage Stabilization")
   plt.tight_layout()
-  #plt.close(fig)
+  plt.close(fig)
+
+  print(f"\nStabilization factor G = {1/slope:.2f} +/- {slope_uncertainty/slope**2:.2f}")
 
 
 #Ex01()
 #Ex02()
-Ex03()
+#Ex03()
 
 plt.show()
