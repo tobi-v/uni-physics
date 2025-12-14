@@ -136,9 +136,21 @@ def Ex03():
 
   print(f"\nStabilization factor G = {1/slope:.2f} +/- {slope_uncertainty/slope**2:.2f}")
 
+def Ex04():
+  I_BE = array([20, 40])*10**-6
+  U_CE = linspace(4, 40, 10)
+  I_CE_20 = array([6.5, 6.7, 6.9, 7.3, 7.5, 7.8, 8.1, 8.5, 8.8, 9.2  ])*10**-3
+  I_CE_40 = array([15.0, 16.1, 17.1, 18.5, 19.1, 20.0, 20.8, 21.5, 22.0, 22.2])*10**-3
+  CheckLengths(U_CE, I_CE_20, I_CE_40)
+
+
+
+
+
 
 #Ex01()
 #Ex02()
 #Ex03()
+Ex04()
 
 plt.show()
