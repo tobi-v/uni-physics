@@ -1,4 +1,4 @@
-from numpy import array, diag, linspace, ones, sqrt
+from numpy import array, diag, linspace, mean, ones, sqrt
 from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 from tools.python.checks import CheckLengths
@@ -153,6 +153,12 @@ def Ex04():
 
   print(f"\nOutput resistance for I_BE=20 muA: r = {1/coeff_20[0]:.2f} +/- {sqrt(cov_20[0][0])/coeff_20[0]**2:.2f} Ohm")
   print(f"Output resistance for I_BE=40 muA: r = {1/coeff_40[0]:.2f} +/- {sqrt(cov_40[0][0])/coeff_40[0]**2:.2f} Ohm")
+
+  print(I_CE_20[1:3])
+  B_20 = mean(I_CE_20[1:3]) / I_BE[0]
+  B_40 = mean(I_CE_40[1:3]) / I_BE[1]
+
+  print(f"\nLarge-Signal amplification B = {mean([B_20, B_40]):.2f} +/- {abs(B_20 - B_40)/2:.2f}")
 
 #Ex01()
 #Ex02()
