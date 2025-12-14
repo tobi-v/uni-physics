@@ -112,8 +112,20 @@ def Ex02():
   plt.tight_layout()
   plt.close(fig2)
 
-#Ex01()
+def Ex03():
+  R_V = 330  # Ohm
+  U_e = linspace(1, 20, 20)
+  U_a = array([1.0, 1.9, 3.0, 3.9, 4.9, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4, 5.4])
+  CheckLengths(U_e, U_a)
 
+  fig, ax = plt.subplots()
+  ScatterWithErrorBars(ax, U_e, U_a, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel=r"Input Voltage $U_\mathrm{e} (V)$", ylabel=r"Output Voltage $U_\mathrm{a} (V)$", title=f"In- and Output Voltage for Voltage Stabilization")
+  plt.tight_layout()
+  #plt.close(fig)
+
+
+#Ex01()
 #Ex02()
+Ex03()
 
 plt.show()
