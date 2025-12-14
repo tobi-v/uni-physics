@@ -94,21 +94,26 @@ def Ex02():
 
   # UI-Plots and power loss hyperbola
   P_max = .25 # W
-  fig1, axs = plt.subplots(2, 1)
-  for ax, U, I, material in zip(axs, [U_through, U_block], [I_through, I_block], ['Forward Direction', 'Reverse Direction']):
+  fig1, axs1 = plt.subplots(2, 1)
+  for ax, U, I, direction in zip(axs1, [U_through, U_block], [I_through, I_block], ['Forward Direction', 'Reverse Direction']):
     U_plot = linspace(0, max(U)*1.1, 100)
     ax.plot(U_plot, PowerLossHyperbola(U_plot, P_max), '--r', label=r'Power Loss Hyperbola for $P_\mathrm{max} = %.2f W$' % P_max)
     ax.plot(U_plot, 0.1*ones(len(U_plot)), '--k', label=r'$I_\mathrm{max} = 100 mA$')
-    ScatterWithErrorBars(ax, U, I, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {material}')
+    ScatterWithErrorBars(ax, U, I, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {direction}')
     ax.set_ylim(0, max(max(I)*1.1, 0.5))
-    #ax.legend(visible=True)
     plt.tight_layout()
-  #plt.close(fig1)
+  plt.close(fig1)
 
-
+  # half logarithmich UI-plots
+  fig2, axs2 = plt.subplots(2, 1)
+  for ax, U, I, direction in zip(axs2, [U_through, U_block], [I_through, I_block], ['Forward Direction', 'Reverse Direction']):
+    ScatterWithErrorBars(ax, U, I, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {direction} (half-log scale)')
+  ax.set_yscale('log')
+  plt.tight_layout()
+  plt.close(fig2)
 
 #Ex01()
 
-Ex02()
+#Ex02()
 
 plt.show()
