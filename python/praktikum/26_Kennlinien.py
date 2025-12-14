@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 from tools.python.checks import CheckLengths
 from tools.python.sort import sort_by_x
-from tools.statistics.linear_regression import Linreg, ScatterWithErrorBars
+from tools.statistics.linear_regression import Linreg, PlotWithErrorBars, ScatterWithErrorBars
 from tools.thermo.stefan_boltzmann import StefanBoltzmannRelativeResistance
 
 import matplotlib.pyplot as plt
@@ -144,13 +144,10 @@ def Ex04():
   CheckLengths(U_CE, I_CE_20, I_CE_40)
 
   fig, ax = plt.subplots()
-  ax.plot(U_CE, I_CE_20, '--k', label=r'$I_{BE} = 20 \mu A$')
-  ax.plot(U_CE, I_CE_40, '--b', label=r'$I_{BE} = 40 \mu A$')
-  ax.set_title('Transistor Characteristic Curves')
-  ax.set_xlabel(r'Collector-Emitter Voltage $U_{CE} (V)$')
-  ax.set_ylabel(r'Collector-Emitter Current $I_{CE} (A)$')
-  ax.legend()
-  ax.grid(visible=True)
+  char_curve_20, _, _ = Linreg(U_CE, I_CE_20)
+  char_curve_40, _, _ = Linreg(U_CE, I_CE_40)
+  PlotWithErrorBars(ax, U_CE, I_CE_20, char_curve_20, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label=r'$I_{BE} = 20 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', title='Transistor Characteristic Curves')
+  PlotWithErrorBars(ax, U_CE, I_CE_40, char_curve_40, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label=r'$I_{BE} = 40 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', title='Transistor Characteristic Curves')
   plt.tight_layout()
   #plt.close(fig)
 
