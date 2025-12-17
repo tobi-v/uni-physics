@@ -1,15 +1,18 @@
-from numpy import array, diag, linspace, mean, ones, sqrt
+from numpy import abs, array, diag, linspace, mean, ones, pi, sign, sqrt
 from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 from tools.python.checks import CheckLengths
 from tools.python.sort import sort_by_x
 from tools.statistics.linear_regression import Linreg, PlotWithErrorBars, ScatterWithErrorBars
+from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 from tools.thermo.stefan_boltzmann import StefanBoltzmannRelativeResistance
 
 import matplotlib.pyplot as plt
 
 U_uncertainty = 0.05  # V
 I_uncertainty = 0.0001  # A
+rho_tungsten = 55*10**-9 # ohm*m
+rho_carbon = 35*10**-6 # ohm*m
 
 ### Schaltung 1 ###
 
@@ -31,7 +34,7 @@ def Ex01():
     ax.legend()
     plt.tight_layout()
 
-  def PlotBoltzi(ax: plt.Axes, R: NDArray, U: NDArray, I: NDArray, material: str, guess: list):
+  def PlotBoltzi(ax: plt.Axes, R: NDArray, U: NDArray, I: NDArray, material: str, guess: list) -> tuple:
     relative_resistance = RelativeResistance(R[1:], R[0])
     power = Power(U[1:], I[1:])
     relative_resistance, power = sort_by_x(relative_resistance, power)
@@ -48,7 +51,17 @@ def Ex01():
     ax.plot(relative_resistance, StefanBoltzmannRelativeResistance(relative_resistance, *popt), '--k', label='Fit: Stefan-Boltzmann Law')
     ax.plot(relative_resistance, StefanBoltzmannRelativeResistance(relative_resistance, *(popt + p_uncertainties)), ':r', label='Fit Uncertainty')
     ax.plot(relative_resistance, StefanBoltzmannRelativeResistance(relative_resistance, *(popt - p_uncertainties)), ':r')
-    ax.legend()    
+    ax.legend()
+
+    return popt, p_uncertainties
+  
+  def RadiusFormula(area: float, rho: float, R_0: float) -> float:
+    expr = area*rho/(2*pi**2 * R_0)
+    return sign(expr) * (abs(expr))**(1/3)
+  
+  def LengthFormula(area: float, rho: float, R_0: float) -> float:
+    expr = R_0*area**2 / (4*pi*rho)
+    return sign(expr) * (abs(expr))**(1/3)
 
   # Messdaten
   V = linspace(2, 40, 20)
@@ -75,8 +88,13 @@ def Ex01():
   # Power over relative Resistance and comparison to Stefan-Boltzmann Law
   initial_guesses = [[0.001, 0.003, 293], [0.001, -0.003, 293]]
   fig2, axs = plt.subplots(2, 1)
-  for ax, R, U, I, material, guess in zip(axs, [R_tungsten, R_carbon], [U_tungsten, U_carbon], [I_tungsten, I_carbon], ['Tungsten', 'Carbon'], initial_guesses):
-    PlotBoltzi(ax, R, U, I, material, guess)
+  for ax, R, U, I, material, guess, rho in zip(axs, [R_tungsten, R_carbon], [U_tungsten, U_carbon], [I_tungsten, I_carbon], ['Tungsten', 'Carbon'], initial_guesses, [rho_tungsten, rho_carbon]):
+    popt, p_uncertainties = PlotBoltzi(ax, R, U, I, material, guess)
+    area, _, _ = popt
+    area_uncertainty, _, _ = p_uncertainties
+    radius, radius_uncertainty = GetResultAndUncertainty(RadiusFormula, [area, rho, R[0]], True, [area_uncertainty, 0, 0])
+    length, length_uncertainty = GetResultAndUncertainty(LengthFormula, [area, rho, R[0]], True, [area_uncertainty, 0, 0])
+    print(f'\nDimensions for {material} wire:\nLength: {length} +/- {length_uncertainty} m\nRadius: {radius} +/- {radius_uncertainty} m')
   plt.close(fig2)
   fig3, ax = plt.subplots()
   PlotBoltzi(ax, R_carbon_filtered, U_carbon_filtered, I_carbon_filtered, 'Filtered Carbon Data', initial_guesses[1])
@@ -149,7 +167,7 @@ def Ex04():
   PlotWithErrorBars(ax, U_CE, I_CE_20, char_curve_20, x_absErr=U_uncertainty, y_absErr=I_uncertainty, fun_label=r'Linear fit $I_{CE} = %.2f U_{CE} + %.2f' % (coeff_20[0], coeff_20[1]), scatter_label=r'Measurements for $I_{BE} = 20 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', data_color="k.", fmt="--k", title='Transistor Characteristic Curves')
   PlotWithErrorBars(ax, U_CE, I_CE_40, char_curve_40, x_absErr=U_uncertainty, y_absErr=I_uncertainty, fun_label=r'Linear fit $I_{CE} = %.2f U_{CE} + %.2f' % (coeff_20[0], coeff_20[1]), scatter_label=r'Measurements for $I_{BE} = 40 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', data_color="b.", fmt="--b", title='Transistor Characteristic Curves')
   plt.tight_layout()
-  #plt.close(fig)
+  plt.close(fig)
 
   print(f"\nOutput resistance for I_BE=20 muA: r = {1/coeff_20[0]:.2f} +/- {sqrt(cov_20[0][0])/coeff_20[0]**2:.2f} Ohm")
   print(f"Output resistance for I_BE=40 muA: r = {1/coeff_40[0]:.2f} +/- {sqrt(cov_40[0][0])/coeff_40[0]**2:.2f} Ohm")
@@ -160,9 +178,9 @@ def Ex04():
 
   print(f"\nLarge-Signal amplification B = {mean([B_20, B_40]):.2f} +/- {abs(B_20 - B_40)/2:.2f}")
 
-#Ex01()
+Ex01()
 #Ex02()
 #Ex03()
-Ex04()
+#Ex04()
 
 plt.show()
