@@ -135,7 +135,7 @@ def Ex02():
     ScatterWithErrorBars(ax, U, I, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {direction} (half-log scale)')
     ax.set_yscale('log')
   plt.tight_layout()
-  #plt.close(fig2)
+  plt.close(fig2)
 
 def Ex03():
   R_V = 330  # Ohm
@@ -168,13 +168,16 @@ def Ex04():
   I_CE_40 = array([15.0, 16.1, 17.1, 18.5, 19.1, 20.0, 20.8, 21.5, 22.0, 22.2])*10**-3
   CheckLengths(U_CE, I_CE_20, I_CE_40)
 
+  def format_significant(x, sig=2):
+    return '{:.{p}g}'.format(x, p=sig)
+
   fig, ax = plt.subplots()
   char_curve_20, coeff_20, cov_20 = Linreg(U_CE, I_CE_20)
   char_curve_40, coeff_40, cov_40 = Linreg(U_CE, I_CE_40)
-  PlotWithErrorBars(ax, U_CE, I_CE_20, char_curve_20, x_absErr=U_uncertainty, y_absErr=I_uncertainty, fun_label=r'Linear fit $I_{CE} = %.2f U_{CE} + %.2f' % (coeff_20[0], coeff_20[1]), scatter_label=r'Measurements for $I_{BE} = 20 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', data_color="k.", fmt="--k", title='Transistor Characteristic Curves')
-  PlotWithErrorBars(ax, U_CE, I_CE_40, char_curve_40, x_absErr=U_uncertainty, y_absErr=I_uncertainty, fun_label=r'Linear fit $I_{CE} = %.2f U_{CE} + %.2f' % (coeff_20[0], coeff_20[1]), scatter_label=r'Measurements for $I_{BE} = 40 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', data_color="b.", fmt="--b", title='Transistor Characteristic Curves')
+  PlotWithErrorBars(ax, U_CE, I_CE_20, char_curve_20, x_absErr=U_uncertainty, y_absErr=I_uncertainty, fun_label=r'Linear fit $I_{CE} = %s U_{CE} + %s' % (format_significant(coeff_20[0]), format_significant(coeff_20[1])), scatter_label=r'Measurements for $I_{BE} = 20 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', data_color="k.", fmt="--k", title='Transistor Characteristic Curves')
+  PlotWithErrorBars(ax, U_CE, I_CE_40, char_curve_40, x_absErr=U_uncertainty, y_absErr=I_uncertainty, fun_label=r'Linear fit $I_{CE} = %s U_{CE} + %s' % (format_significant(coeff_40[0]), format_significant(coeff_40[1])), scatter_label=r'Measurements for $I_{BE} = 40 \mu A$', xlabel=r'Collector-Emitter Voltage $U_{CE} (V)$', ylabel=r'Collector-Emitter Current $I_{CE} (A)$', data_color="b.", fmt="--b", title='Transistor Characteristic Curves')
   plt.tight_layout()
-  plt.close(fig)
+  #plt.close(fig)
 
   print(f"\nOutput resistance for I_BE=20 muA: r = {1/coeff_20[0]:.2f} +/- {sqrt(cov_20[0][0])/coeff_20[0]**2:.2f} Ohm")
   print(f"Output resistance for I_BE=40 muA: r = {1/coeff_40[0]:.2f} +/- {sqrt(cov_40[0][0])/coeff_40[0]**2:.2f} Ohm")
@@ -186,8 +189,8 @@ def Ex04():
   print(f"\nLarge-Signal amplification B = {mean([B_20, B_40]):.2f} +/- {abs(B_20 - B_40)/2:.2f}")
 
 #Ex01()
-Ex02()
+#Ex02()
 #Ex03()
-#Ex04()
+Ex04()
 
 plt.show()
