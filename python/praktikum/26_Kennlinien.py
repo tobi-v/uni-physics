@@ -1,4 +1,4 @@
-from numpy import abs, array, diag, linspace, mean, ones, pi, sign, sqrt
+from numpy import abs, array, diag, linspace, mean, set_printoptions, ones, pi, sign, sqrt
 from numpy.typing import NDArray
 from scipy.optimize import curve_fit
 from tools.python.checks import CheckLengths
@@ -22,6 +22,9 @@ def Ex01():
   
   def RelativeResistance(R: NDArray, R_0: float) -> NDArray:
     return R/R_0 - 1
+  
+  def TemperatureFromRelativeResistance(relative_resistance: NDArray, temp_coeff: float, T_0: float) -> NDArray:
+    return relative_resistance/temp_coeff + T_0
 
   def PlotPowerRelativeResistance(ax: plt.Axes, relative_resistance: NDArray, power:NDArray, material: str):
     ax.plot(relative_resistance, power, '+C0', label=f'Power and Relative Resistance of {material}')
@@ -52,6 +55,10 @@ def Ex01():
     ax.plot(relative_resistance, StefanBoltzmannRelativeResistance(relative_resistance, *(popt + p_uncertainties)), ':r', label='Fit Uncertainty')
     ax.plot(relative_resistance, StefanBoltzmannRelativeResistance(relative_resistance, *(popt - p_uncertainties)), ':r')
     ax.legend()
+
+    set_printoptions(formatter={'float_kind':"{:.2f}".format})
+    temperature = TemperatureFromRelativeResistance(relative_resistance, temp_coeff, T_0)
+    print(f"Temperatures for {material} filament at voltages \n{U} V:\n{temperature} K")
 
     return popt, p_uncertainties
   
