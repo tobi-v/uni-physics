@@ -115,7 +115,7 @@ def Ex02():
   CheckLengths(U_through, I_through); CheckLengths(U_block, I_block)
 
   def PowerLossHyperbola(U: NDArray, P_max: float) -> NDArray:
-    return (P_max/U)
+    return (P_max/(U+1e-10))
 
   # UI-Plots and power loss hyperbola
   P_max = .25 # W
@@ -133,9 +133,9 @@ def Ex02():
   fig2, axs2 = plt.subplots(2, 1)
   for ax, U, I, direction in zip(axs2, [U_through, U_block], [I_through, I_block], ['Forward Direction', 'Reverse Direction']):
     ScatterWithErrorBars(ax, U, I, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {direction} (half-log scale)')
-  ax.set_yscale('log')
+    ax.set_yscale('log')
   plt.tight_layout()
-  plt.close(fig2)
+  #plt.close(fig2)
 
 def Ex03():
   R_V = 330  # Ohm
@@ -185,8 +185,8 @@ def Ex04():
 
   print(f"\nLarge-Signal amplification B = {mean([B_20, B_40]):.2f} +/- {abs(B_20 - B_40)/2:.2f}")
 
-Ex01()
-#Ex02()
+#Ex01()
+Ex02()
 #Ex03()
 #Ex04()
 
