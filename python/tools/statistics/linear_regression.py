@@ -24,8 +24,8 @@ def PlotWithErrorBars(ax, x, y, linregFunc,
     ax.grid(visible=grid)
 
 
-def ScatterWithErrorBars(ax, x, y, x_absErr=0, y_absErr=0,
-                         title="", scatter_label="", xlabel="", ylabel="", fmt='k.', legend_loc='best', grid=True):
+def ScatterWithErrorBars(ax: Axes, x: NDArray, y: NDArray, x_absErr: float=0, y_absErr: float=0,
+                         title: str="", scatter_label: str="", xlabel: str="", ylabel: str="", fmt: str='k.', legend_loc: str='best', grid: bool=True):
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
