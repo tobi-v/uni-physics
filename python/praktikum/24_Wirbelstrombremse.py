@@ -1,4 +1,4 @@
-from numpy import arcsin, array
+from numpy import arcsin, array, inf
 
 ### 3.1 Vorbereitung
 d_magnet = 0.02
@@ -10,13 +10,11 @@ m_Auto = 0.02765
 #B_magnet = 
 B_uncertainty = 0.01
 
-d_blech_cu =
 s_lichtschranken = 0.51
 
 hypothenuse = 0.7 # m
 
 # 3.2 Magnetische Flussdichte
-B_max_1 = 
 B_max_2 = 0.34
 B_max_3 = 0.4
 
