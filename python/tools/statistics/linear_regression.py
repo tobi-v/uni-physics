@@ -24,18 +24,19 @@ def PlotWithErrorBars(ax, x, y, linregFunc,
     ax.grid(visible=grid)
 
 
-def ScatterWithErrorBars(ax: Axes, x: NDArray, y: NDArray, x_absErr: float=0, y_absErr: float=0,
+def ScatterWithErrorBars(ax: Axes, x: NDArray, y: NDArray, x_uncertainty: float=0, y_uncertainty: float=0,
                          title: str="", scatter_label: str="", xlabel: str="", ylabel: str="", fmt: str='k.', legend_loc: str='best', grid: bool=True):
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    ax.errorbar(x, y, fmt=fmt, xerr=x_absErr, yerr=y_absErr, label=scatter_label, ecolor='r', capsize=1.5)
+    ax.errorbar(x, y, fmt=fmt, xerr=x_uncertainty, yerr=y_uncertainty, label=scatter_label, ecolor='r', capsize=1.5)
     ax.legend(loc=legend_loc)
     ax.grid(visible=grid)
 
 
-def PlotLinregWithError(x: NDArray, y: NDArray, ax: Axes, title: str, xlabel="", ylabel=""):
+def PlotLinregWithError(ax: Axes, x: NDArray, y: NDArray, x_uncertainty, y_uncertainty,title: str, xlabel="", ylabel=""):
     CheckLengths(x, y)
+    ScatterWithErrorBars(ax, x, y, x_uncertainty=x_uncertainty, y_uncertainty=y_uncertainty, scatter_label="Werte")
     linregFunc, coeff, cov = Linreg(x, y)
     ax.set_title(title)
     ax.set_xlabel(xlabel, size='large')
@@ -45,6 +46,5 @@ def PlotLinregWithError(x: NDArray, y: NDArray, ax: Axes, title: str, xlabel="",
     ax.plot(x, linregFunc(x), '--k', label=f"Linear Regression y={coeff[0]:.2f}x + {coeff[1]:.2f}")
     ax.plot(x, upper_bound_fun(x), ':r', label=f"Upper Bound")
     ax.plot(x, lower_bound_fun(x), ':r', label=f"Lower Bound")
-    ax.scatter(x, y, c='b', marker='x', label="Messwerte")
     ax.grid(visible=True)
     ax.legend(loc='best')
