@@ -26,7 +26,13 @@ hypothenuse = 0.7 # m
 B_max_2 = 0.34
 B_max_3 = 0.4
 
-def tau(m: float, beta: float, sigma: float, B_0: float, V: float) -> float:
+def invert(x):
+    return 1/x
+
+def inv_sq(x):
+    return 1/(x**2)
+
+def tau_geom(m: float, beta: float, sigma: float, B_0: float, V: float) -> float:
     return m/(beta*sigma*B_0**2*V)
 
 def implicit_tau_from_t(tau: float, *times: float) -> float:
@@ -36,6 +42,18 @@ def implicit_tau_from_t(tau: float, *times: float) -> float:
 def explicit_tau_from_t(t1: float, t2: float) -> float:
     tau_result = root_scalar(implicit_tau_from_t, args=(t1, t2), bracket=[1e-10, 1])
     return tau_result.root
+
+def tau(times, t1_mean, t1_uncertainty, param, param_ids):
+    tau_mean, tau_uncertainty = [], []
+    for t, param_id in zip(times, param_ids):
+        t2_mean, t2_uncertainty = MeanAndStd(t)
+        print(f"{param}: {param_id}, t = {t2_mean:.3f} +/- {t2_uncertainty:.3f}")
+        
+        tau_mean.append(explicit_tau_from_t(t1_mean, t2_mean))
+        tau_uncertainty.append(VertexUncertainty(explicit_tau_from_t, [t1_mean, t2_mean], [t1_uncertainty, t2_uncertainty], tau_mean[-1]))
+        print(f"Tau for {param_id}: {tau_mean[-1]:.6f} +/- {tau_uncertainty[-1]:.3e}")
+
+    return tau_mean, tau_uncertainty
 
 def Ex_3_3_1():
     print("=== 3.3.1 Independence from angles ===")
@@ -71,36 +89,45 @@ def Ex_3_3_2():
     d_duenn = 0.001
     d_mittel = 0.002
     d_dick = 0.003
-    t_ungebremst_mid = array([0.441, 0.438, 0.440, 0.438, 0.441, 0.440])
-    t1_mean, t1_uncertainty = MeanAndStd(t_ungebremst_mid)
+    thickness = array([d_duenn, d_mittel, d_dick])
+    t_ungebremst = array([0.441, 0.438, 0.440, 0.438, 0.441, 0.440])
+    t1_mean, t1_uncertainty = MeanAndStd(t_ungebremst)
     t_gebremst_thin = array([2.941, 2.897, 2.943, 2.939, 2.940, 2.903])
     t_gebremst_mid = array([4.519, 4.481, 4.48, 4.493, 4.492, 4.490])
     t_gebremst_thicc = array([5.8, 5.762, 5.755, 5.755, 5.781, 5.779])
 
-    tau_mean, tau_uncertainty = [], []
-    for t, thickness_name in zip([t_gebremst_thin, t_gebremst_mid, t_gebremst_thicc], ["thin", "medium", "thicc"]):
-        t2_mean, t2_uncertainty = MeanAndStd(t)
-        print(f"Thickness: {thickness_name}, t = {t2_mean:.3f} +/- {t2_uncertainty:.3f}")
-        
-        tau_mean.append(explicit_tau_from_t(t1_mean, t2_mean))
-        tau_uncertainty.append(VertexUncertainty(explicit_tau_from_t, [t1_mean, t2_mean], [t1_uncertainty, t2_uncertainty], tau_mean[-1]))
-        print(f"Tau for {thickness_name}: {tau_mean[-1]:.6f} +/- {tau_uncertainty[-1]:.3e}")
+    tau_mean, tau_uncertainty = tau([t_gebremst_thin, t_gebremst_mid, t_gebremst_thicc], t1_mean, t1_uncertainty, "Thickness", ["thin", "medium", "thicc"])
+    
+    inv_thickness, inv_thickness_uncertainty = GetResultAndUncertainty(invert, [thickness*1000.], True, [caliper_uncertainty*1000.])
     
     fig, ax = subplots()
-    PlotLinregWithError([0.001/d_duenn, 0.001/d_mittel, 0.001/d_dick], tau_mean, ax, r'$\tau$ über der inversen Plattendicke $1/d$', r'$1/d \left[\frac{1}{\mathrm{mm}}\right]$', r'$\tau \left[s\right]$')
+    PlotLinregWithError(ax, inv_thickness, tau_mean, inv_thickness_uncertainty, tau_uncertainty, r'$\tau$ über der inversen Plattendicke $1/d$', r'$1/d \left[\frac{1}{\mathrm{mm}}\right]$', r'$\tau \left[s\right]$')
+    tight_layout()
+    close(fig)
+
+def Ex_3_3_3():
+    print("\n=== 3.3.3 Dependency on number of magnets ===")
+    t_ungebremst = array([0.441, 0.438, 0.440, 0.438, 0.441, 0.440])
+    t1_mean, t1_uncertainty = MeanAndStd(t_ungebremst)
+    B_max_3mag = 0.410
+    t_gebremst_3mag = array([2.941, 2.897, 2.943, 2.939, 2.940, 2.903])
+    B_max_messing_2mag = 0.375
+    t_gebremst_messing_2mag = array([1.799, 1.806, 1.806, 1.803, 1.801, 1.799])
+    B_max_sandwich = 0.325
+    t_gebremst_sandwich = array([1.378, 1.39, 1.393, 1.392, 1.383, 1.393])
+    B_max_2messing_mag = 0.275
+    t_gebremst_2messing_mag = array([0.813, 0.817, 0.827, 0.827, 0.813, 0.832])
+
+    B_0 = array([B_max_3mag, B_max_messing_2mag, B_max_sandwich, B_max_2messing_mag])
+    B_inv_sq_mean, B_inv_sq_uncertainty = GetResultAndUncertainty(inv_sq, [B_0], True, [B_uncertainty])
+
+    tau_mean, tau_uncertainty = tau([t_gebremst_3mag, t_gebremst_messing_2mag, t_gebremst_sandwich, t_gebremst_2messing_mag], t1_mean, t1_uncertainty, "Configuration", ["3 magnets", "1 brass, 2 magnets", "sandwich", "2 brass 1 magnet"])
+    
+    fig, ax = subplots()
+    PlotLinregWithError(ax, B_inv_sq_mean, tau_mean, B_inv_sq_uncertainty, tau_uncertainty, r'$\tau$ über dem inversen Magnetfeldquadrat $1/B_0^2$', r'$1/B_0^2 \left[\frac{1}{\mathrm{T}^2}\right]$', r'$\tau \left[s\right]$')
     tight_layout()
     show()
-    #close(fig)
-
-### 3.3.3 Abhängigkeicht von der Feldstärke
-
-B_max_3mag = 0.410
-B_max_messing_2mag = 0.375
-t_gebremst_messing_2mag = array([1.799, 1.806, 1.806, 1.803, 1.801, 1.799])
-B_max_sandwich = 0.325
-t_gebremst_sandwich = array([1.378, 1.39, 1.393, 1.392, 1.383, 1.393])
-B_max_2messing_mag = 0.275
-t_gebremst_2messing_mag = array([0.813, 0.817, 0.827, 0.827, 0.813, 0.832])
+    close(fig)
 
 ### 3.3.4
 
@@ -120,3 +147,6 @@ t = array([0.757, 0.75, 0.75, 0.755, 0.751, 0.75])
 
 #Ex_3_3_1()
 Ex_3_3_2()
+Ex_3_3_3()
+
+show()
