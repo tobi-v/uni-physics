@@ -87,7 +87,7 @@ def Ex_3_3_2():
         print(f"Tau for {thickness_name}: {tau_mean[-1]:.6f} +/- {tau_uncertainty[-1]:.3e}")
     
     fig, ax = subplots()
-    PlotLinregWithError([1/d_duenn, 1/d_mittel, 1/d_dick], tau_mean, ax, r'$\tau$ über der inversen Plattendicke $1/d$', r'$1/d$', r'$\tau$')
+    PlotLinregWithError([0.001/d_duenn, 0.001/d_mittel, 0.001/d_dick], tau_mean, ax, r'$\tau$ über der inversen Plattendicke $1/d$', r'$1/d \left[\frac{1}{\mathrm{mm}}\right]$', r'$\tau \left[s\right]$')
     tight_layout()
     show()
     #close(fig)
