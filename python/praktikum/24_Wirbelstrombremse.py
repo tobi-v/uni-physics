@@ -1,11 +1,15 @@
-from numpy import arcsin, array, inf
-from tools.statistics.uncertainty_calculation import GetResultAndUncertainty, MeanAndStd
+from numpy import arcsin, array, exp, inf
+from scipy.optimize import root_scalar
+from tools.statistics.linear_regression import PlotLinregWithError
+from tools.statistics.uncertainty_calculation import GetResultAndUncertainty, MeanAndStd, VertexUncertainty
+
+from matplotlib.pyplot import close, show, subplots, tight_layout
 
 waage_uncertainty = 1e-5
 ruler_uncertainty = 2e-3
 caliper_uncertainty = 1e-4
 
-### 3.1 Vorbereitung
+### 3.1 Preparations
 d_magnet = 0.02
 h_magnet = 0.004
 m_magnet = 0.02805/3
@@ -22,8 +26,19 @@ hypothenuse = 0.7 # m
 B_max_2 = 0.34
 B_max_3 = 0.4
 
-### 3.3.1
+def tau(m: float, beta: float, sigma: float, B_0: float, V: float) -> float:
+    return m/(beta*sigma*B_0**2*V)
+
+def implicit_tau_from_t(tau: float, *times: float) -> float:
+    t1, t2 = times
+    return .5*t1**2. - tau*(t2 - tau*(1. - exp(-t2/tau)))
+
+def explicit_tau_from_t(t1: float, t2: float) -> float:
+    tau_result = root_scalar(implicit_tau_from_t, args=(t1, t2), bracket=[1e-10, 1])
+    return tau_result.root
+
 def Ex_3_3_1():
+    print("=== 3.3.1 Independence from angles ===")
     def AngleFromHeight(h, hypothenuse):
         return arcsin(h/(hypothenuse+1e-10))
 
@@ -51,20 +66,31 @@ def Ex_3_3_1():
     t_ungebremst = array([0.352, 0.358, 0.352, 0.361, 0.35, 0.351])  # Ausgleichsgew für 3 Magn
     t_gebremst = array([1.914, 1.897, 1.899, 1.892, 1.904, 1.9])    # 3 Magneten
 
-### 3.3.2 Abhängigkeit von der Blechdicke
-
 def Ex_3_3_2():
+    print("\n=== 3.3.2 Dependency on thickness ===")
     d_duenn = 0.001
     d_mittel = 0.002
     d_dick = 0.003
+    t_ungebremst_mid = array([0.441, 0.438, 0.440, 0.438, 0.441, 0.440])
+    t1_mean, t1_uncertainty = MeanAndStd(t_ungebremst_mid)
     t_gebremst_thin = array([2.941, 2.897, 2.943, 2.939, 2.940, 2.903])
     t_gebremst_mid = array([4.519, 4.481, 4.48, 4.493, 4.492, 4.490])
     t_gebremst_thicc = array([5.8, 5.762, 5.755, 5.755, 5.781, 5.779])
 
-    for t, thickness in zip([t_gebremst_thin, t_gebremst_mid, t_gebremst_thicc], ["thin", "medium", "thicc"]):
-        t_mean, t__uncertainty = MeanAndStd(t)
-        print(f"Thickness: {thickness}, t = {t_mean:.3f} +/- {t__uncertainty:.3f}")
-
+    tau_mean, tau_uncertainty = [], []
+    for t, thickness_name in zip([t_gebremst_thin, t_gebremst_mid, t_gebremst_thicc], ["thin", "medium", "thicc"]):
+        t2_mean, t2_uncertainty = MeanAndStd(t)
+        print(f"Thickness: {thickness_name}, t = {t2_mean:.3f} +/- {t2_uncertainty:.3f}")
+        
+        tau_mean.append(explicit_tau_from_t(t1_mean, t2_mean))
+        tau_uncertainty.append(VertexUncertainty(explicit_tau_from_t, [t1_mean, t2_mean], [t1_uncertainty, t2_uncertainty], tau_mean[-1]))
+        print(f"Tau for {thickness_name}: {tau_mean[-1]:.6f} +/- {tau_uncertainty[-1]:.3e}")
+    
+    fig, ax = subplots()
+    PlotLinregWithError([1/d_duenn, 1/d_mittel, 1/d_dick], tau_mean, ax, r'$\tau$ über der inversen Plattendicke $1/d$', r'$1/d$', r'$\tau$')
+    tight_layout()
+    show()
+    #close(fig)
 
 ### 3.3.3 Abhängigkeicht von der Feldstärke
 
@@ -90,7 +116,7 @@ t_Stahl = array([0.479, 0.481, 0.482, 0.486, 0.477, 0.482])
 d_lichtschranken = 0.12
 t = array([0.757, 0.75, 0.75, 0.755, 0.751, 0.75])
 
-###
+### Execution
 
-Ex_3_3_1()
+#Ex_3_3_1()
 Ex_3_3_2()
