@@ -24,7 +24,9 @@ def partial_derivative(func, var=0, point=[]):
             args[var] = x
             return func(*args)
 
-        return derivative(wraps, point[var]).df
+        # Adjust initial_step in case your function is limited to a certain interval
+        # TODO: Wrap derivative to handle such cases automatically
+        return derivative(wraps, point[var], initial_step=0.5).df
 
 
 def GaussianErrorPropagationMultivariate(fun, point, uncertainties):
