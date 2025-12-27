@@ -1,11 +1,12 @@
-import numpy as np
-from numpy import abs, ndarray
+from itertools import product
+from numpy import abs, empty, max, mean as npmean, ndarray, sqrt, std as npstd
 from scipy.differentiate import derivative
+from tools.python.checks import CheckLengths
 
 
 def partial_derivative(func, var=0, point=[]):
-    if isinstance(point[var], np.ndarray):
-        derivatives = np.empty(point[var].size)
+    if isinstance(point[var], ndarray):
+        derivatives = empty(point[var].size)
         for ii, _ in enumerate(point[var]):
             subpoint = [subl[ii] for subl in point]
             args = subpoint[:]
@@ -43,13 +44,13 @@ def GaussianErrorPropagationMultivariate(fun, point, uncertainties):
         part_dev = partial_derivative(fun, ii, point)
         quadratic_error_sum += (part_dev * uncertainty) ** 2
 
-    return np.sqrt(quadratic_error_sum)
+    return sqrt(quadratic_error_sum)
 
 
 def GaussianErrorPropagation(fun, point, uncertainty):
     quadratic_error_sum = abs(derivative(fun, point).df * uncertainty)
 
-    return np.sqrt(quadratic_error_sum)
+    return sqrt(quadratic_error_sum)
 
 
 def GetResultAndUncertainty(fun, point, uncertainty=False, uncertainty_params=0):
@@ -69,6 +70,19 @@ def GetResultAndUncertainty(fun, point, uncertainty=False, uncertainty_params=0)
 
 
 def MeanAndStd(arr: ndarray, axis=0):
-    mean = np.mean(arr, axis=axis)
-    std = np.std(arr, axis=axis, ddof=1)
+    mean = npmean(arr, axis=axis)
+    std = npstd(arr, axis=axis, ddof=1)
     return mean, std
+
+def VertexUncertainty(fun, point, uncertainties, nominal_value: float):
+    CheckLengths(point, uncertainties)
+    param_variations = []
+    for param, uncertainty in zip(point, uncertainties):
+        param_variations.append([param + delta*uncertainty for delta in [-1, 0, 1]])
+
+    param_combinations = product(*param_variations)
+    deviations = []
+    for combination in param_combinations:
+        deviations.append(abs(fun(*combination) - nominal_value))
+
+    return max(deviations)
