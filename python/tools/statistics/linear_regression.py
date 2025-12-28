@@ -34,7 +34,7 @@ def ScatterWithErrorBars(ax: Axes, x: NDArray, y: NDArray, x_uncertainty: float=
     ax.grid(visible=grid)
 
 
-def PlotLinregWithError(ax: Axes, x: NDArray, y: NDArray, x_uncertainty, y_uncertainty,title: str, xlabel="", ylabel=""):
+def PlotLinregWithErrorAndScatterErrorbars(ax: Axes, x: NDArray, y: NDArray, x_uncertainty, y_uncertainty,title: str, xlabel="", ylabel=""):
     CheckLengths(x, y)
     ScatterWithErrorBars(ax, x, y, x_uncertainty=x_uncertainty, y_uncertainty=y_uncertainty, scatter_label="Werte")
     linregFunc, coeff, cov = Linreg(x, y)
