@@ -1,6 +1,6 @@
 from numpy import arcsin, array, exp, inf
 from scipy.optimize import root_scalar
-from tools.statistics.linear_regression import PlotLinregWithError
+from tools.statistics.linear_regression import PlotLinregWithError, PlotLinregWithErrorAndScatterErrorbars, ScatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty, MeanAndStd, VertexUncertainty
 
 from matplotlib.pyplot import close, show, subplots, tight_layout
@@ -101,7 +101,7 @@ def Ex_3_3_2():
     inv_thickness, inv_thickness_uncertainty = GetResultAndUncertainty(invert, [thickness*1000.], True, [caliper_uncertainty*1000.])
     
     fig, ax = subplots()
-    PlotLinregWithError(ax, inv_thickness, tau_mean, inv_thickness_uncertainty, tau_uncertainty, r'$\tau$ über der inversen Plattendicke $1/d$', r'$1/d \left[\frac{1}{\mathrm{mm}}\right]$', r'$\tau \left[s\right]$')
+    PlotLinregWithErrorAndScatterErrorbars(ax, inv_thickness, tau_mean, inv_thickness_uncertainty, tau_uncertainty, r'$\tau$ über der inversen Plattendicke $1/d$', r'$1/d \left[\frac{1}{\mathrm{mm}}\right]$', r'$\tau \left[s\right]$')
     tight_layout()
     close(fig)
 
@@ -124,29 +124,43 @@ def Ex_3_3_3():
     tau_mean, tau_uncertainty = tau([t_gebremst_3mag, t_gebremst_messing_2mag, t_gebremst_sandwich, t_gebremst_2messing_mag], t1_mean, t1_uncertainty, "Configuration", ["3 magnets", "1 brass, 2 magnets", "sandwich", "2 brass 1 magnet"])
     
     fig, ax = subplots()
-    PlotLinregWithError(ax, B_inv_sq_mean, tau_mean, B_inv_sq_uncertainty, tau_uncertainty, r'$\tau$ über dem inversen Magnetfeldquadrat $1/B_0^2$', r'$1/B_0^2 \left[\frac{1}{\mathrm{T}^2}\right]$', r'$\tau \left[s\right]$')
+    PlotLinregWithErrorAndScatterErrorbars(ax, B_inv_sq_mean, tau_mean, B_inv_sq_uncertainty, tau_uncertainty, r'$\tau$ über dem inversen Magnetfeldquadrat $1/B_0^2$', r'$1/B_0^2 \left[\frac{1}{\mathrm{T}^2}\right]$', r'$\tau \left[s\right]$')
     tight_layout()
-    show()
     close(fig)
 
-### 3.3.4
+def Ex_3_3_4():
+    print("\n=== 3.3.4 Dependency on material's conductivity ===")
+    t_ungebremst = array([0.441, 0.438, 0.440, 0.438, 0.441, 0.440])
+    t1_mean, t1_uncertainty = MeanAndStd(t_ungebremst)
+    t_Cu = array([2.941, 2.897, 2.943, 2.939, 2.940, 2.903])
+    t_Al = array([1.194, 1.2, 1.2, 1.206, 1.196, 1.193])
+    t_Messing = array([0.926, 0.911, 0.908, 0.911, 0.912, 0.912])
+    t_Stahl = array([0.479, 0.481, 0.482, 0.486, 0.477, 0.482])
 
-d_Al = 0.001
-t_Al = array([1.194, 1.2, 1.2, 1.206, 1.196, 1.193])
-d_Messing = 0.001
-t_Messing = array([0.926, 0.911, 0.908, 0.911, 0.912, 0.912])
-d_Stahl = 0.001
-t_Stahl = array([0.479, 0.481, 0.482, 0.486, 0.477, 0.482])
+    inv_sigmas = 1/array([5.8e7, 3.77e7, 1.55e7, 1.36e6])  # Cu, Al, Messing, Stahl [Sm]
 
-### 3.3.5
+    tau_means, tau_uncertainties = tau([t_Cu, t_Al, t_Messing, t_Stahl], t1_mean, t1_uncertainty, "Material", ["Cu", "Al", "Messing", "Stahl"])
+    
+    fmts = ['r.', 'g.', 'b.', 'm.']
+    fig, ax = subplots()
+    for tau_mean, tau_uncertainty, inv_sigma, material, fmt in zip(tau_means, tau_uncertainties, inv_sigmas, ["Cu", "Al", "Messing", "Stahl"], fmts):
+        ScatterWithErrorBars(ax, inv_sigma, tau_mean, x_uncertainty=0, y_uncertainty=tau_uncertainty, scatter_label=material, fmt=fmt)
+    PlotLinregWithError(ax, inv_sigmas, tau_means, r'$\tau$ über der inversen Leitfähigkeit $\sigma$', r'$\sigma \left[\frac{\mathrm{S}}{\mathrm{m}}\right]$', r'$\tau \left[s\right]$')
+    tight_layout()
+    close(fig)
 
-d_lichtschranken = 0.12
-t = array([0.757, 0.75, 0.75, 0.755, 0.751, 0.75])
+def Ex_3_3_5():
+    print("\n=== 3.3.5 Dependency on velocity ===")
+    d_lichtschranken = 0.12
+    alphas = array([])
+    t = array([0.757, 0.75, 0.75, 0.755, 0.751, 0.75])
 
 ### Execution
 
 #Ex_3_3_1()
-Ex_3_3_2()
-Ex_3_3_3()
+#Ex_3_3_2()
+#Ex_3_3_3()
+#Ex_3_3_4()
+Ex_3_3_5()
 
 show()
