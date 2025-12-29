@@ -1,4 +1,4 @@
-from numpy import arcsin, array, exp, inf
+from numpy import arcsin, array, exp, inf, ones, sin
 from scipy.optimize import root_scalar
 from tools.statistics.linear_regression import PlotLinregWithError, PlotLinregWithErrorAndScatterErrorbars, ScatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty, MeanAndStd, VertexUncertainty
@@ -25,6 +25,9 @@ hypothenuse = 0.7 # m
 # 3.2 Magnetische Flussdichte
 B_max_2 = 0.34
 B_max_3 = 0.4
+
+def angle_from_height(h, hypothenuse):
+    return arcsin(h/(hypothenuse+1e-10))
 
 def invert(x):
     return 1/x
@@ -60,29 +63,39 @@ def Ex_3_3_1():
     def AngleFromHeight(h, hypothenuse):
         return arcsin(h/(hypothenuse+1e-10))
 
+    heights = []
     h_min = 0.03
+    heights.append(h_min)
     alpha_min_mean, alpha_min_uncertainty = GetResultAndUncertainty(AngleFromHeight, [h_min, hypothenuse], True, [ruler_uncertainty, ruler_uncertainty])
     print(f"Minimalwinkel in Grad: {alpha_min_mean*180/3.1416:.2f} +/- {alpha_min_uncertainty*180/3.1416:.2f}")
     t_ungebremst = array([2.496, 2.179, 1.998, 2.11, 2.157, 2.207])  # Ausgleichsgew für 3 Magn
     t_gebremst = array([inf, inf, inf, inf, inf, inf])    # 3 Magneten
     h = 0.08
+    heights.append(h)
     t_ungebremst = array([1.023, 1.006, 1.011, 1.021, 1.022, 1.013])  # Ausgleichsgew für 3 Magn
     t_gebremst = array([14.36, 14.48, 14.39, 14.52, 14.39, 14.59])    # 3 Magneten
     h = 0.215
+    heights.append(h)
     t_ungebremst = array([0.534, 0.536, 0.537, 0.534, 0.534, 0.537])  # Ausgleichsgew für 3 Magn
     t_gebremst = array([4.153, 4.109, 4.117, 4.096, 4.115, 4.12])    # 3 Magneten
     h_mid = 0.293
+    heights.append(h_mid)
     # Produces nan for default scipy.derivative -> adjust initial_step
     alpha_mid_mean, alpha_mid_uncertainty = GetResultAndUncertainty(AngleFromHeight, [h_mid, hypothenuse], True, [ruler_uncertainty, ruler_uncertainty])
     print(f"Mid angle in degree: {alpha_mid_mean*180/3.1416:.2f} +/- {alpha_mid_uncertainty*180/3.1416:.2f}")
     t_ungebremst_mid = array([0.441, 0.438, 0.440, 0.438, 0.441, 0.440])  # Ausgleichsgew für 3 Magn
     t_gebremst_mid = array([2.941, 2.897, 2.943, 2.939, 2.940, 2.903])    # 3 Magneten
     h = 0.36
+    heights.append(h)
     t_ungebremst = array([0.393, 0.395, 0.397, 0.395, 0.393, 0.392])  # Ausgleichsgew für 3 Magn
     t_gebremst = array([2.316, 2.309, 2.304, 2.29, 2.285, 2.282])    # 3 Magneten
     h = 0.43
+    heights.append(h)
     t_ungebremst = array([0.352, 0.358, 0.352, 0.361, 0.35, 0.351])  # Ausgleichsgew für 3 Magn
     t_gebremst = array([1.914, 1.897, 1.899, 1.892, 1.904, 1.9])    # 3 Magneten
+    angles_and_uncertainty = [GetResultAndUncertainty(AngleFromHeight, [height, hypothenuse], True, [ruler_uncertainty, ruler_uncertainty]) for height in heights]
+    for angle_and_uncertainty in angles_and_uncertainty:
+        print(f"Angle: {angle_and_uncertainty[0]*180/3.1416:.2f} +/- {angle_and_uncertainty[1]*180/3.1416:.2f}")
 
 def Ex_3_3_2():
     print("\n=== 3.3.2 Dependency on thickness ===")
@@ -157,7 +170,7 @@ def Ex_3_3_5():
 
 ### Execution
 
-#Ex_3_3_1()
+Ex_3_3_1()
 #Ex_3_3_2()
 #Ex_3_3_3()
 #Ex_3_3_4()
