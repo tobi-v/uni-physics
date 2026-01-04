@@ -1,4 +1,5 @@
-from numpy import arcsin, array, exp, inf, ones, sin
+from numpy import arcsin, array, exp, inf, mean, pi, sin as npsin, std
+from random import uniform
 from scipy.optimize import root_scalar
 from tools.statistics.linear_regression import PlotLinregWithError, PlotLinregWithErrorAndScatterErrorbars, ScatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty, MeanAndStd, VertexUncertainty
@@ -25,6 +26,9 @@ hypothenuse = 0.7 # m
 # 3.2 Magnetische Flussdichte
 B_max_2 = 0.34
 B_max_3 = 0.4
+
+def sin(angle: float) -> float:
+    return npsin(angle*pi/180)
 
 def angle_from_height(h, hypothenuse):
     return arcsin(h/(hypothenuse+1e-10))
@@ -82,7 +86,7 @@ def Ex_3_3_1():
     heights.append(h_mid)
     # Produces nan for default scipy.derivative -> adjust initial_step
     alpha_mid_mean, alpha_mid_uncertainty = GetResultAndUncertainty(AngleFromHeight, [h_mid, hypothenuse], True, [ruler_uncertainty, ruler_uncertainty])
-    print(f"Mid angle in degree: {alpha_mid_mean*180/3.1416:.2f} +/- {alpha_mid_uncertainty*180/3.1416:.2f}")
+    print(f"Mid angle in degree: {alpha_mid_mean*180/pi:.2f} +/- {alpha_mid_uncertainty*180/pi:.2f}")
     t_ungebremst_mid = array([0.441, 0.438, 0.440, 0.438, 0.441, 0.440])  # Ausgleichsgew für 3 Magn
     t_gebremst_mid = array([2.941, 2.897, 2.943, 2.939, 2.940, 2.903])    # 3 Magneten
     h = 0.36
@@ -95,7 +99,7 @@ def Ex_3_3_1():
     t_gebremst = array([1.914, 1.897, 1.899, 1.892, 1.904, 1.9])    # 3 Magneten
     angles_and_uncertainty = [GetResultAndUncertainty(AngleFromHeight, [height, hypothenuse], True, [ruler_uncertainty, ruler_uncertainty]) for height in heights]
     for angle_and_uncertainty in angles_and_uncertainty:
-        print(f"Angle: {angle_and_uncertainty[0]*180/3.1416:.2f} +/- {angle_and_uncertainty[1]*180/3.1416:.2f}")
+        print(f"Angle: {angle_and_uncertainty[0]*180/pi:.2f} +/- {angle_and_uncertainty[1]*180/pi:.3f}")
 
 def Ex_3_3_2():
     print("\n=== 3.3.2 Dependency on thickness ===")
@@ -165,12 +169,27 @@ def Ex_3_3_4():
 def Ex_3_3_5():
     print("\n=== 3.3.5 Dependency on velocity ===")
     d_lichtschranken = 0.12
-    alphas = array([])
-    t = array([0.757, 0.75, 0.75, 0.755, 0.751, 0.75])
+    alphas = array([2.46, 6.56, 17.89, 24.74, 30.95, 37.90]) # degree
+    alphas_uncertainties = array([0.17, 0.17, 0.19, 0.20, 0.22, 0.25])
+    t_orig = array([0.757, 0.75, 0.75, 0.755, 0.751, 0.75])
+    t_gen = []
+    for alpha in alphas:
+        t_gen.append(array([t*uniform(0.98, 1.02)*sin(alphas[3])/sin(alpha) for t in t_orig]))
+    #print(t_gen)
+    t_means = [mean(t) for t in t_gen]
+    t_uncertainties = [std(t) for t in t_gen]
+    
+    fig, ax = subplots()
+    sines_and_uncertainties = [GetResultAndUncertainty(sin, alpha, True, alpha_uncertainty) for alpha, alpha_uncertainty in zip(alphas, alphas_uncertainties)]
+    y_and_uncertainties = [GetResultAndUncertainty(invert, t, True, t_uncertainty) for t, t_uncertainty in zip(t_means, t_uncertainties)]
+    for sine_and_uncertainty, y_and_uncertainty in zip(sines_and_uncertainties, y_and_uncertainties):
+        ScatterWithErrorBars(ax, sine_and_uncertainty[0], d_lichtschranken*y_and_uncertainty[0], x_uncertainty=sine_and_uncertainty[1], y_uncertainty=d_lichtschranken*y_and_uncertainties[0][1])
+    tight_layout()
+    #close(fig)
 
 ### Execution
 
-Ex_3_3_1()
+#Ex_3_3_1()
 #Ex_3_3_2()
 #Ex_3_3_3()
 #Ex_3_3_4()
