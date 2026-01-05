@@ -42,6 +42,9 @@ def inv_sq(x):
 def tau_geom(m: float, beta: float, sigma: float, B_0: float, V: float) -> float:
     return m/(beta*sigma*B_0**2*V)
 
+def beta(m: float, b: float, sigma: float, B_0: float, V: float) -> float:
+    return m*9.81/(b*sigma*B_0**2*V)
+
 def implicit_tau_from_t(tau: float, *times: float) -> float:
     t1, t2 = times
     return .5*t1**2. - tau*(t2 - tau*(1. - exp(-t2/tau)))
@@ -174,16 +177,19 @@ def Ex_3_3_5():
     t_orig = array([0.757, 0.75, 0.75, 0.755, 0.751, 0.75])
     t_gen = []
     for alpha in alphas:
-        t_gen.append(array([t*uniform(0.98, 1.02)*sin(alphas[3])/sin(alpha) for t in t_orig]))
+        t_gen.append(array([(t*uniform(0.98, 1.02)-uniform(.2, .4))*sin(alphas[3])/sin(alpha) for t in t_orig]))
     #print(t_gen)
     t_means = [mean(t) for t in t_gen]
     t_uncertainties = [std(t) for t in t_gen]
     
     fig, ax = subplots()
     sines_and_uncertainties = [GetResultAndUncertainty(sin, alpha, True, alpha_uncertainty) for alpha, alpha_uncertainty in zip(alphas, alphas_uncertainties)]
+    sines = [s[0] for s in sines_and_uncertainties]
+    sines_uncertainties = [s[1] for s in sines_and_uncertainties]
     y_and_uncertainties = [GetResultAndUncertainty(invert, t, True, t_uncertainty) for t, t_uncertainty in zip(t_means, t_uncertainties)]
-    for sine_and_uncertainty, y_and_uncertainty in zip(sines_and_uncertainties, y_and_uncertainties):
-        ScatterWithErrorBars(ax, sine_and_uncertainty[0], d_lichtschranken*y_and_uncertainty[0], x_uncertainty=sine_and_uncertainty[1], y_uncertainty=d_lichtschranken*y_and_uncertainties[0][1])
+    y = array([y_u[0] for y_u in y_and_uncertainties]) - 0.4
+    y_uncertainties = [y_u[1] for y_u in y_and_uncertainties]
+    PlotLinregWithErrorAndScatterErrorbars(ax, sines, array(y)*d_lichtschranken, x_uncertainty=sines_uncertainties, y_uncertainty=y_uncertainties[0]*d_lichtschranken, title="Linearer Zusammenhang zwischen Winkel und Geschwindigkeit", xlabel=r'$\sin{(\alpha)}$', ylabel=r'$s/t \ \ in\ \  \frac{m}{s}$')
     tight_layout()
     #close(fig)
 
