@@ -48,6 +48,8 @@ def PlotLinregWithErrorAndScatterErrorbars(ax: Axes, x: NDArray, y: NDArray, x_u
     ax.plot(x, lower_bound_fun(x), ':r', label=f"Lower Bound")
     ax.grid(visible=True)
     ax.legend(loc='best')
+
+    return coeff, cov
     
 def PlotLinregWithError(ax: Axes, x: NDArray, y: NDArray, title: str, xlabel="", ylabel=""):
     CheckLengths(x, y)
