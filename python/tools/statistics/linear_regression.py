@@ -23,7 +23,7 @@ def PlotWithErrorBars(ax, x, y, linregFunc,
     ax.legend(loc=legend_loc)
     ax.grid(visible=grid)
 
-
+# TODO: Move all those plotting functions to a separate file
 def ScatterWithErrorBars(ax: Axes, x: NDArray, y: NDArray, x_uncertainty: float=0, y_uncertainty: float=0,
                          title: str="", scatter_label: str="", xlabel: str="", ylabel: str="", fmt: str='k.', legend_loc: str='best', grid: bool=True):
     ax.set_title(title)
