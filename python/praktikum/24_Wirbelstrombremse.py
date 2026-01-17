@@ -43,6 +43,9 @@ def inv_sq(x):
 def tau_geom(m: float, beta: float, sigma: float, B_0: float, V: float) -> float:
     return m/(beta*sigma*B_0**2*V)
 
+def sigma_geom(tau: float,m: float, beta: float, B_0: float, V: float) -> float:
+    return m/(2*beta*tau*B_0**2*V)
+
 def beta_from_inclination(m: float, b: float, sigma: float, B_0: float, V: float) -> float:
     return m*9.81/(b*sigma*B_0**2*V)
 
@@ -170,6 +173,16 @@ def Ex_3_3_4():
     tight_layout()
     close(fig)
 
+    m_gesamt = 3*m_magnet + m_auto + m_magnet_klein
+    B_0 = 0.410
+    V, V_uncertainty = VolumeOfCylinder(0.001, d_magnet/2, True, delL=3*caliper_uncertainty, delR=caliper_uncertainty/2)
+    # Values for beta from Ex_3_3_5
+    beta = 0.2828
+    beta_uncertainty = 0.0169
+    for tau_mean, tau_uncertainty, material in zip(tau_means, tau_uncertainties, ["Cu", "Al", "Messing", "Stahl"]):
+        sigma_geom_mean, sigma_geom_uncertainty = GetResultAndUncertainty(sigma_geom, [tau_mean, m_gesamt, beta, B_0, V], True, [tau_uncertainty, waage_uncertainty, beta_uncertainty, B_uncertainty, V_uncertainty])
+        print(f"Conductivity {material}: {sigma_geom_mean:.3e} +/- {sigma_geom_uncertainty:.3e} S/m")
+
 def Ex_3_3_5():
     print("\n=== 3.3.5 Dependency on velocity ===")
     d_lichtschranken = 0.12
@@ -210,7 +223,7 @@ def Ex_3_3_5():
 #Ex_3_3_1()
 #Ex_3_3_2()
 #Ex_3_3_3()
-#Ex_3_3_4()
-Ex_3_3_5()
+Ex_3_3_4()
+#Ex_3_3_5()
 
 show()
