@@ -88,7 +88,7 @@ def Ex01():
   # UI-Plots
   fig1, axs = plt.subplots(2, 1)
   for ax, U, I, material in zip(axs, [U_tungsten, U_carbon], [I_tungsten, I_carbon], ['Tungsten', 'Carbon']):
-    ScatterWithErrorBars(ax, U, I, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {material}')
+    ScatterWithErrorBars(ax, U, I, x_uncertainty=U_uncertainty, y_uncertainty=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {material}')
     plt.tight_layout()
   plt.close(fig1)
 
@@ -124,7 +124,7 @@ def Ex02():
     U_plot = linspace(0, max(U)*1.1, 100)
     ax.plot(U_plot, PowerLossHyperbola(U_plot, P_max), '--r', label=r'Power Loss Hyperbola for $P_\mathrm{max} = %.2f W$' % P_max)
     ax.plot(U_plot, 0.1*ones(len(U_plot)), '--k', label=r'$I_\mathrm{max} = 100 mA$')
-    ScatterWithErrorBars(ax, U, I, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {direction}')
+    ScatterWithErrorBars(ax, U, I, x_uncertainty=U_uncertainty, y_uncertainty=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {direction}')
     ax.set_ylim(0, max(max(I)*1.1, 0.5))
     plt.tight_layout()
   plt.close(fig1)
@@ -132,7 +132,7 @@ def Ex02():
   # half logarithmich UI-plots
   fig2, axs2 = plt.subplots(2, 1)
   for ax, U, I, direction in zip(axs2, [U_through, U_block], [I_through, I_block], ['Forward Direction', 'Reverse Direction']):
-    ScatterWithErrorBars(ax, U, I, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {direction} (half-log scale)')
+    ScatterWithErrorBars(ax, U, I, x_uncertainty=U_uncertainty, y_uncertainty=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {direction} (half-log scale)')
     ax.set_yscale('log')
   plt.tight_layout()
   plt.close(fig2)
@@ -155,7 +155,7 @@ def Ex03():
   ax.plot(U_e_smooth, stabilized_in_out_fun(U_e_smooth), '--r', label=f'Linear Fit: $U_\\mathrm{{a}} = {coeff[0]:.3f} U_\\mathrm{{e}} + {coeff[1]:.3f}$')
   ax.plot(U_e_smooth, (slope + slope_uncertainty)*U_e_smooth + (y_intercept + y_intercept_uncertainty), ':r', label='Fit Uncertainty')
   ax.plot(U_e_smooth, (slope - slope_uncertainty)*U_e_smooth + (y_intercept - y_intercept_uncertainty), ':r')
-  ScatterWithErrorBars(ax, U_e, U_a, x_absErr=U_uncertainty, y_absErr=I_uncertainty, scatter_label="Measured Values", xlabel=r"Input Voltage $U_\mathrm{e} (V)$", ylabel=r"Output Voltage $U_\mathrm{a} (V)$", title=f"In- and Output Voltage for Voltage Stabilization")
+  ScatterWithErrorBars(ax, U_e, U_a, x_uncertainty=U_uncertainty, y_uncertainty=I_uncertainty, scatter_label="Measured Values", xlabel=r"Input Voltage $U_\mathrm{e} (V)$", ylabel=r"Output Voltage $U_\mathrm{a} (V)$", title=f"In- and Output Voltage for Voltage Stabilization")
   plt.tight_layout()
   plt.close(fig)
 

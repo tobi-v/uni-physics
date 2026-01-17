@@ -14,20 +14,20 @@ X = linspace(1, 10, 1000)
 def PlotInductivitiesAndKappa(loop_ratio, L1, L1_uncertainty, L2, L2_uncertainty, L12, L12_uncertainty, kappa, kappa_uncertainty):
     _, axs = plt.subplots(2, 1)
 
-    ScatterWithErrorBars(axs[0], loop_ratio, L1[0:11], y_absErr=L1_uncertainty[0:11], scatter_label=r'$L_1$', fmt='r.')
-    ScatterWithErrorBars(axs[0], loop_ratio, L2[0:11], y_absErr=L2_uncertainty[0:11], scatter_label=r'$L_2$', fmt='g.')
-    ScatterWithErrorBars(axs[0], loop_ratio, L12[0:11], y_absErr=L12_uncertainty[0:11], scatter_label=r'$L_{12}$', ylabel="L [T]", fmt='b.')
+    ScatterWithErrorBars(axs[0], loop_ratio, L1[0:11], y_uncertainty=L1_uncertainty[0:11], scatter_label=r'$L_1$', fmt='r.')
+    ScatterWithErrorBars(axs[0], loop_ratio, L2[0:11], y_uncertainty=L2_uncertainty[0:11], scatter_label=r'$L_2$', fmt='g.')
+    ScatterWithErrorBars(axs[0], loop_ratio, L12[0:11], y_uncertainty=L12_uncertainty[0:11], scatter_label=r'$L_{12}$', ylabel="L [T]", fmt='b.')
     ax = axs[0].twinx()
     ax.yaxis.set_label_position("right")
-    ScatterWithErrorBars(ax, loop_ratio, kappa[0:11], y_absErr=kappa_uncertainty[0:11], title=wrap(r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $130 Hz$', 40), scatter_label=r'Kopplungsgrad $\kappa$',
+    ScatterWithErrorBars(ax, loop_ratio, kappa[0:11], y_uncertainty=kappa_uncertainty[0:11], title=wrap(r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $130 Hz$', 40), scatter_label=r'Kopplungsgrad $\kappa$',
                          xlabel=r'$N_2 / N_1$', ylabel=r'Kopplungsgrad $\kappa$', fmt='k.', legend_loc='right', grid=False)
     
-    ScatterWithErrorBars(axs[1], loop_ratio, L1[11:22], y_absErr=L1_uncertainty[11:22], scatter_label=r'$L_1$', fmt='r.')
-    ScatterWithErrorBars(axs[1], loop_ratio, L2[11:22], y_absErr=L2_uncertainty[11:22], scatter_label=r'$L_2$', fmt='g.')
-    ScatterWithErrorBars(axs[1], loop_ratio, L12[11:22], y_absErr=L12_uncertainty[11:22], scatter_label=r'$L_{12}$', ylabel="L [T]", fmt='b.')
+    ScatterWithErrorBars(axs[1], loop_ratio, L1[11:22], y_uncertainty=L1_uncertainty[11:22], scatter_label=r'$L_1$', fmt='r.')
+    ScatterWithErrorBars(axs[1], loop_ratio, L2[11:22], y_uncertainty=L2_uncertainty[11:22], scatter_label=r'$L_2$', fmt='g.')
+    ScatterWithErrorBars(axs[1], loop_ratio, L12[11:22], y_uncertainty=L12_uncertainty[11:22], scatter_label=r'$L_{12}$', ylabel="L [T]", fmt='b.')
     ax = axs[1].twinx()
     ax.yaxis.set_label_position("right")
-    ScatterWithErrorBars(ax, loop_ratio, kappa[11:22], y_absErr=kappa_uncertainty[11:22], title=wrap(r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $320 Hz$', 40), scatter_label=r'Kopplungsgrad $\kappa$',
+    ScatterWithErrorBars(ax, loop_ratio, kappa[11:22], y_uncertainty=kappa_uncertainty[11:22], title=wrap(r'Experimentell bestimmte Induktivtäten und Kopplungsgrad bei $320 Hz$', 40), scatter_label=r'Kopplungsgrad $\kappa$',
                          xlabel=r'$N_2 / N_1$', ylabel=r'Kopplungsgrad $\kappa$', fmt='k.', legend_loc='right', grid=False)
     
     plt.tight_layout()

@@ -1,5 +1,5 @@
 from numpy import array, linspace, mean, std
-from tools.statistics.linear_regression import PlotLinregWithError
+from tools.statistics.linear_regression import PlotLinregWithErrorAndScatterErrorbars
 
 import matplotlib.pyplot as plt
 
@@ -25,7 +25,7 @@ def Ex01Poggendorf():
     potentiometer_titles = ["Potentiometer Links", "Potentiometer Rechts", "Potentiometer Oben"]    
     potentiometer_fig, potentiometer_axs = plt.subplots(3, 1)
     for R_potentiometer, title, ax in zip(R_potentiometers, potentiometer_titles, potentiometer_axs):
-        PlotLinregWithError(R_potentiometer_lvl, R_potentiometer, ax, title, "Drehschalterstellung", r"Widerstand $(\Omega)$")
+        PlotLinregWithErrorAndScatterErrorbars(R_potentiometer_lvl, R_potentiometer, ax, title, "Drehschalterstellung", r"Widerstand $(\Omega)$")
         ax.set_xticks(R_potentiometer_lvl)
     potentiometer_fig.tight_layout()
     plt.close(potentiometer_fig)
@@ -33,7 +33,7 @@ def Ex01Poggendorf():
     dekade_titles = ["Dekade Links", "Dekade Mitte"]
     dekade_fig, dekade_axs = plt.subplots(2, 1)
     for R_dekade, title, ax in zip(R_dekades, dekade_titles, dekade_axs):
-        PlotLinregWithError(R_dekade_lvl, R_dekade, ax, title, "Drehschalterstellung", r"Widerstand $(\Omega)$")
+        PlotLinregWithErrorAndScatterErrorbars(R_dekade_lvl, R_dekade, ax, title, "Drehschalterstellung", r"Widerstand $(\Omega)$")
         ax.set_xticks(R_potentiometer_lvl)
     dekade_fig.tight_layout()
     plt.close(dekade_fig)
