@@ -1,6 +1,7 @@
 from numpy import arcsin, array, exp, inf, mean, pi, sin as npsin, std
 from random import uniform
 from scipy.optimize import root_scalar
+from tools.mech.cylinder import VolumeOfCylinder
 from tools.statistics.linear_regression import PlotLinregWithError, PlotLinregWithErrorAndScatterErrorbars, ScatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty, MeanAndStd, VertexUncertainty
 
@@ -16,7 +17,7 @@ h_magnet = 0.004
 m_magnet = 0.02805/3
 m_magnet_klein = 0.00168
 m_ausgleich = 0.02951
-m_Auto = 0.02765
+m_auto = 0.02765
 B_uncertainty = 0.01
 
 s_lichtschranken = 0.51
@@ -42,7 +43,7 @@ def inv_sq(x):
 def tau_geom(m: float, beta: float, sigma: float, B_0: float, V: float) -> float:
     return m/(beta*sigma*B_0**2*V)
 
-def beta(m: float, b: float, sigma: float, B_0: float, V: float) -> float:
+def beta_from_inclination(m: float, b: float, sigma: float, B_0: float, V: float) -> float:
     return m*9.81/(b*sigma*B_0**2*V)
 
 def implicit_tau_from_t(tau: float, *times: float) -> float:
@@ -173,12 +174,13 @@ def Ex_3_3_5():
     print("\n=== 3.3.5 Dependency on velocity ===")
     d_lichtschranken = 0.12
     alphas = array([2.46, 6.56, 17.89, 24.74, 30.95, 37.90]) # degree
+    #print("alphas = ", alphas)
     alphas_uncertainties = array([0.17, 0.17, 0.19, 0.20, 0.22, 0.25])
     t_orig = array([0.757, 0.75, 0.75, 0.755, 0.751, 0.75])
     t_gen = []
     for alpha in alphas:
         t_gen.append(array([(t*uniform(0.98, 1.02)-uniform(.2, .4))*sin(alphas[3])/sin(alpha) for t in t_orig]))
-    #print(t_gen)
+    #print("times: ", t_gen)
     t_means = [mean(t) for t in t_gen]
     t_uncertainties = [std(t) for t in t_gen]
     
@@ -189,9 +191,19 @@ def Ex_3_3_5():
     y_and_uncertainties = [GetResultAndUncertainty(invert, t, True, t_uncertainty) for t, t_uncertainty in zip(t_means, t_uncertainties)]
     y = array([y_u[0] for y_u in y_and_uncertainties]) - 0.4
     y_uncertainties = [y_u[1] for y_u in y_and_uncertainties]
-    PlotLinregWithErrorAndScatterErrorbars(ax, sines, array(y)*d_lichtschranken, x_uncertainty=sines_uncertainties, y_uncertainty=y_uncertainties[0]*d_lichtschranken, title="Linearer Zusammenhang zwischen Winkel und Geschwindigkeit", xlabel=r'$\sin{(\alpha)}$', ylabel=r'$s/t \ \ in\ \  \frac{m}{s}$')
+    coff, cov = PlotLinregWithErrorAndScatterErrorbars(ax, sines, array(y)*d_lichtschranken, x_uncertainty=sines_uncertainties, y_uncertainty=y_uncertainties[0]*d_lichtschranken, title="Linearer Zusammenhang zwischen Winkel und Geschwindigkeit", xlabel=r'$\sin{(\alpha)}$', ylabel=r'$s/t \ \ in\ \  \frac{m}{s}$')
+    #print(f"Steigung: {coff[0]:.4f} +/- {cov[0][0]**0.5:.3f}")
     tight_layout()
-    #close(fig)
+    close(fig)
+
+    m_gesamt = 3*m_magnet + m_auto + m_magnet_klein
+    #print("Gesamtmasse: ", m_gesamt)
+    sigma_cu = 5.8e7
+    B_0 = 0.410
+    V, V_uncertainty = VolumeOfCylinder(0.001, d_magnet/2, True, delL=3*caliper_uncertainty, delR=caliper_uncertainty/2)
+    #print("Volumen: ", V)
+    beta, beta_uncertainty = GetResultAndUncertainty(beta_from_inclination, [m_gesamt, coff[0], sigma_cu, B_0, V], True, [waage_uncertainty, cov[0][0]**0.5, 0, B_uncertainty, V_uncertainty])
+    #print(f"Beta: {beta:.3e} +/- {beta_uncertainty:.3e}")
 
 ### Execution
 
