@@ -20,6 +20,12 @@ def Ex01():
   def Power(U: NDArray, I: NDArray) -> NDArray:
     return U*I
   
+  def Resistance(U: NDArray, I: NDArray) -> NDArray:
+    return U/I
+  
+  def ResistanceFromTemperature(c: float, T: NDArray) -> NDArray:
+    return c*T
+  
   def RelativeResistance(R: NDArray, R_0: float) -> NDArray:
     return R/R_0 - 1
   
@@ -82,6 +88,11 @@ def Ex01():
   I_carbon_filtered = array([1.1, 2.1, 4.2, 5.4, 7.6, 8.7, 11.0, 12.2, 13.4, 14.6, 15.8, 17.0, 18.2, 19.5, 20.7, 22.0, 23.3])*10**-3 #A
   R_carbon_filtered = U_carbon_filtered/I_carbon_filtered
   # Pyrometer: 750°C  bei 54.2 V, 28.6 mA
+  r_from_current, r_from_current_uncertainty = GetResultAndUncertainty(Resistance, [54.2, 28.6e-3], True, [U_uncertainty, I_uncertainty])
+  r_from_pyrometer,  r_from_pyrometer_uncertainty= GetResultAndUncertainty(ResistanceFromTemperature, [2.780e-3, 750 - 25], True, [0.08e-3, 0])
+  R = r_from_pyrometer * (0.57/(pi*(4.24e-6)**2)) # Something must be wrong because the value gets unreasonably big
+  print(f"\nResistance from current: {r_from_current} +/- {r_from_current_uncertainty} Ohm")
+  print(f"Resistance from pyrometer: {r_from_pyrometer} +/- {r_from_pyrometer_uncertainty} Ohm")
   CheckLengths(V, U_tungsten, U_carbon, I_tungsten, I_carbon)
   CheckLengths(U_carbon_filtered, I_carbon_filtered, R_carbon_filtered)
 
@@ -120,22 +131,22 @@ def Ex02():
   # UI-Plots and power loss hyperbola
   P_max = .25 # W
   fig1, axs1 = plt.subplots(2, 1)
-  for ax, U, I, direction in zip(axs1, [U_through, U_block], [I_through, I_block], ['Forward Direction', 'Reverse Direction']):
+  for ax, U, I, direction in zip(axs1, [U_through, U_block], [I_through, I_block], ['Reverse Direction', 'Forward Direction']):
     U_plot = linspace(0, max(U)*1.1, 100)
     ax.plot(U_plot, PowerLossHyperbola(U_plot, P_max), '--r', label=r'Power Loss Hyperbola for $P_\mathrm{max} = %.2f W$' % P_max)
     ax.plot(U_plot, 0.1*ones(len(U_plot)), '--k', label=r'$I_\mathrm{max} = 100 mA$')
     ScatterWithErrorBars(ax, U, I, x_uncertainty=U_uncertainty, y_uncertainty=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {direction}')
     ax.set_ylim(0, max(max(I)*1.1, 0.5))
     plt.tight_layout()
-  plt.close(fig1)
+  #plt.close(fig1)
 
   # half logarithmich UI-plots
   fig2, axs2 = plt.subplots(2, 1)
-  for ax, U, I, direction in zip(axs2, [U_through, U_block], [I_through, I_block], ['Forward Direction', 'Reverse Direction']):
+  for ax, U, I, direction in zip(axs2, [U_through, U_block], [I_through, I_block], ['Reverse Direction', 'Forward Direction']):
     ScatterWithErrorBars(ax, U, I, x_uncertainty=U_uncertainty, y_uncertainty=I_uncertainty, scatter_label="Measured Values", xlabel="Voltage (V)", ylabel="Current (A)", title=f'Voltage and Current for {direction} (half-log scale)')
     ax.set_yscale('log')
   plt.tight_layout()
-  plt.close(fig2)
+  #plt.close(fig2)
 
 def Ex03():
   R_V = 330  # Ohm
@@ -189,8 +200,8 @@ def Ex04():
   print(f"\nLarge-Signal amplification B = {mean([B_20, B_40]):.2f} +/- {abs(B_20 - B_40)/2:.2f}")
 
 #Ex01()
-#Ex02()
+Ex02()
 #Ex03()
-Ex04()
+#Ex04()
 
 plt.show()
