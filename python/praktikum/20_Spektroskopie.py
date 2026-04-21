@@ -5,6 +5,7 @@ from pandas import read_csv
 from tools.maths.angles import dms_to_rad
 from tools.optics.prism import n_from_δmin
 from tools.python.plot import ScatterWithErrorBars
+from tools.statistics.linear_regression import Polyreg
 
 delta_angle = 0.1
 delta_angle = dms_to_rad(delta_angle)
@@ -17,8 +18,12 @@ def Hg(α_0: float, hg_λ: NDArray[float64], hg_δmin_III: NDArray[float64], hg_
     plt.tight_layout()
     plt.close(fig)
 
-def He():
-    pass
+    return Polyreg(hg_δmin_III, 1/hg_λ, order=3)
+
+def He(mapping, he_δmin: NDArray[float64]):
+    δmin_to_f, _, δmin_to_f_cov = mapping
+    he_λ = 1/δmin_to_f(he_δmin)
+    print(f"{he_λ} +/- {1/(δmin_to_f_cov[0][0]**0.5) * he_δmin} nm")
 
 def Unbekannt():
     pass
@@ -34,12 +39,12 @@ hg_δmin_II = data['II'].to_numpy()
 hg_δmin_II = array([dms_to_rad(angle) for angle in hg_δmin_II])
 hg_δmin_I = data['I'].to_numpy()
 hg_δmin_I = array([dms_to_rad(angle) for angle in hg_δmin_I])
-Hg(α_0, hg_λ, hg_δmin_III, hg_δmin_II, hg_δmin_I)
+mapping = Hg(α_0, hg_λ, hg_δmin_III, hg_δmin_II, hg_δmin_I)
 
 he_color = data['He III'].iloc[0:6].to_numpy()
 he_δmin = data['Winkel_He'].iloc[0:6].to_numpy()
 he_δmin = array([dms_to_rad(angle) for angle in he_δmin])
-He()
+He(mapping, he_δmin)
 
 unb_color = data['Unbekannt III'].iloc[0:6].to_numpy()
 unb_δmin = data['Winkel_Unb'].iloc[0:6].to_numpy()
