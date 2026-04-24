@@ -7,23 +7,26 @@ from tools.optics.prism import n_from_δmin
 from tools.python.plot import ScatterWithErrorBars
 from tools.statistics.linear_regression import Polyreg
 
-delta_angle = 0.1
-delta_angle = dms_to_rad(delta_angle)
+angle_uncertainty = 0.1
+angle_uncertainty = dms_to_rad(angle_uncertainty)
 
 def Hg(α_0: float, hg_λ: NDArray[float64], hg_δmin_III: NDArray[float64], hg_δmin_II: NDArray[float64], hg_δmin_I: NDArray[float64]):
     fig, axs = plt.subplots(3, 1)
     for prism_no, ax, δ_min in zip(["III", "II", "I"], axs, [hg_δmin_III, hg_δmin_II, hg_δmin_I]):
-        n, delN = n_from_δmin(α_0 - δ_min, uncertainty=True, delδ=delta_angle)
+        n, delN = n_from_δmin(α_0 - δ_min, uncertainty=True, delδ=angle_uncertainty)
         ScatterWithErrorBars(ax, hg_λ, n, y_absErr=delN, title=f"Prisma {prism_no}", xlabel="λ / nm", ylabel="n", label="Messwerte")
     plt.tight_layout()
     plt.close(fig)
 
-    return Polyreg(hg_δmin_III, 1/hg_λ, order=3)
+    return Polyreg(α_0 - hg_δmin_III, 1/hg_λ, order=3)
 
 def He(mapping, he_δmin: NDArray[float64]):
     δmin_to_f, _, δmin_to_f_cov = mapping
-    he_λ = 1/δmin_to_f(he_δmin)
-    print(f"{he_λ} +/- {1/(δmin_to_f_cov[0][0]**0.5) * he_δmin} nm")
+    δmin = α_0 - he_δmin
+    print(f"δmin: {δmin} +/- {angle_uncertainty:.3f}")
+
+    he_λ = 1/δmin_to_f(δmin)
+    print(f"λ: {he_λ} +/- {(1/(δmin_to_f_cov[0][0]**0.5) * he_δmin)} nm")
 
 def Unbekannt():
     pass
