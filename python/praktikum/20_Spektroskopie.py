@@ -54,6 +54,9 @@ hg_δmin_I = data['I'].to_numpy()
 hg_δmin_I = array([dms_to_rad(angle) for angle in hg_δmin_I])
 mapping_fun = Hg(α_0, hg_λ, hg_δmin_III, hg_δmin_II, hg_δmin_I)
 
+_, coeffs, _ = mapping_fun
+print(f"Mapping function: {coeffs[0]:.2f}x^3 + {coeffs[1]:.2f}x^2 + {coeffs[2]:.2f}x + {coeffs[3]:.2f}")
+
 he_color = data['He III'].iloc[0:6].to_numpy()
 he_δmin = data['Winkel_He'].iloc[0:6].to_numpy()
 he_δmin = array([dms_to_rad(angle) for angle in he_δmin])
