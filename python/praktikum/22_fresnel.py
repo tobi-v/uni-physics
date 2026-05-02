@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 from numpy import abs, pi
 from os.path import dirname, join
 from pandas import read_csv
-from tools.optics.refraction import airy_trans_p, airy_trans_s, fresnel_rho_p, fresnel_rho_s
+from tools.optics.refraction import airy_trans_p, airy_trans_s, brewster, fresnel_rho_p, fresnel_rho_s
 from tools.statistics.linear_regression import Polyreg
 from tools.python.plot import ScatterWithErrorBars
 
@@ -15,6 +15,8 @@ angle_uncertainty = 0.5
 d = 4e-3
 n = 1.515
 λ = 532e-9
+
+print(f"Brewster angle: {brewster(1, n)*180/pi:.2f}")
 
 def get_data():
     script_dir = dirname(__file__)
@@ -100,13 +102,5 @@ cal_data, refl_data, trans_data = get_data()
 cal_offset, _, _ = generate_cal_offset(cal_data)
 
 reflection_and_transmission(refl_data, trans_data, cal_offset)
-
-
-
-
-
-
-
-
 
 plt.show()

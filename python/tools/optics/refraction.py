@@ -1,4 +1,4 @@
-from numpy import arcsin, float64, ones_like, pi, sin, sqrt, tan
+from numpy import arcsin, arctan2, float64, ones_like, pi, sin, sqrt, tan
 from numpy.typing import NDArray
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
@@ -55,3 +55,9 @@ def airy_trans_p(α: NDArray[float64], d: float, λ: float, n:float=1, δφ=0, u
 
 def airy_trans_s(α: NDArray[float64], d: float, λ: float, n:float=1, δφ=0, uncertainty=False, delα=0, deld=0, delλ=0, deln=0, delδφ=0):
     return airy_trans(fresnel_rho_s, α, d, λ, n, δφ, uncertainty, delα, deld, delλ, deln, delδφ)
+
+def brewster(n1, n2, uncertainty=False, deln1=0, deln2=0):
+    def brewster_inner(n1, n2):
+        return arctan2(n2, n1)
+    
+    return GetResultAndUncertainty(brewster_inner, [n1, n2], uncertainty, [deln1, deln2])
