@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 from numpy import array, float64
 from numpy.typing import NDArray
+from os.path import dirname, join
 from pandas import read_csv
 from tools.maths.angles import dms_to_rad
 from tools.optics.prism import n_from_δmin
@@ -40,7 +41,9 @@ def Unknown(mapping, x_δmin: NDArray[float64]):
 
 α_0 = 259.4
 α_0 = dms_to_rad(α_0)
-data = read_csv('20_data.csv')
+script_dir = dirname(__file__)
+csv_path = join(script_dir, '20_data.csv')
+data = read_csv(csv_path)
 
 hg_λ = data['Lambda'].to_numpy()
 hg_δmin_III = data['III'].to_numpy()
@@ -50,6 +53,9 @@ hg_δmin_II = array([dms_to_rad(angle) for angle in hg_δmin_II])
 hg_δmin_I = data['I'].to_numpy()
 hg_δmin_I = array([dms_to_rad(angle) for angle in hg_δmin_I])
 mapping_fun = Hg(α_0, hg_λ, hg_δmin_III, hg_δmin_II, hg_δmin_I)
+
+_, coeffs, _ = mapping_fun
+print(f"Mapping function: {coeffs[0]:.2f}x^3 + {coeffs[1]:.2f}x^2 + {coeffs[2]:.2f}x + {coeffs[3]:.2f}")
 
 he_color = data['He III'].iloc[0:6].to_numpy()
 he_δmin = data['Winkel_He'].iloc[0:6].to_numpy()
