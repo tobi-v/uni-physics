@@ -21,7 +21,7 @@ N_σ = 10
 Δx_σ = std(Δx)
 λ_laser = 532 # [nm]
 
-print(f"Δs: {Δx_μ:.3f} ± {Δx_σ:.3f} mm")
+print(f"Δx: {Δx_μ:.3f} ± {Δx_σ:.3f} mm")
 
 κ, κ_σ = κ_fun(N, λ_laser, Δx_μ, uncertainty=True, delN=N_σ, delλ=0, delΔx=Δx_σ)
 
