@@ -32,4 +32,5 @@ print(f"κ: {κ:.4f} ± {κ_σ:.4f}")
 Δx_dampflampe_σ = std(Δx_dampflampe)
 λ_dampflampe, λ_dampflampe_σ = λ_fun(N, κ, Δx_dampflampe_μ, uncertainty=True, delN=N_σ, delκ=κ_σ, delΔx=Δx_dampflampe_σ)
 
+print(f"Δx_dampflampe: {Δx_dampflampe_μ:.4f} ± {Δx_dampflampe_σ:.4f} mm")
 print(f"λ_dampflampe: {λ_dampflampe:.4f} ± {λ_dampflampe_σ:.4f} nm")
