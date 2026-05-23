@@ -19,6 +19,7 @@ def ScatterWithErrorBars(ax, x, y,
     ax.set_title(title, fontsize = 20)
     ax.set_xlabel(xlabel, fontsize = 18)
     ax.set_ylabel(ylabel, fontsize = 18)
+    ax.tick_params(labelsize=14)
     ax.errorbar(x, y, fmt=data_color, xerr=x_absErr, yerr=y_absErr, label=label, ecolor=error_color, capsize=1.5)
-    ax.legend(loc=legend_loc)
+    ax.legend(loc=legend_loc, fontsize=14)
     ax.grid(visible=grid)
