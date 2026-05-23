@@ -2,8 +2,9 @@ from matplotlib import pyplot as plt
 from numpy import abs, pi
 from os.path import dirname, join
 from pandas import read_csv
-from tools.optics.refraction import airy_trans_p, airy_trans_s, brewster, fresnel_rho_p, fresnel_rho_s
+from tools.optics.refraction import brewster, simple_refl_p, simple_refl_s, simple_trans_p, simple_trans_s
 from tools.statistics.linear_regression import Polyreg
+from tools.python.checks import CheckLengths
 from tools.python.plot import ScatterWithErrorBars
 
 s_through_mv = 285
@@ -22,7 +23,6 @@ def get_data():
     script_dir = dirname(__file__)
     csv_path = join(script_dir, '22_data.csv')
     data = read_csv(csv_path)
-    calibration_data = data[['cal_angle', 'cal_mv']].dropna()
     reflection_data = data[['refl_angle',
                             's_pol_refl_mv',
                             's_refl_dmm_limit',
@@ -31,30 +31,36 @@ def get_data():
                             'p_refl_amp']].dropna()
     transmission_data = data[['trans_angle', 's_pol_trans_mv', 'p_pol_trans_mv']].dropna()
 
-    return calibration_data, reflection_data, transmission_data
+    return reflection_data, transmission_data
 
-def generate_cal_offset(cal_data):
-    cal_amp = 100
-    cal_angle = cal_data['cal_angle'].to_numpy()
-    cal_mv = cal_data['cal_mv'].to_numpy()/cal_amp
-    return Polyreg(cal_angle, cal_mv, 3)
-
-def reflection_and_transmission(refl_data, trans_data, cal_offset):
+def reflection_and_transmission(refl_data, trans_data):
     refl_fig, refl_axs = plt.subplots(2, 1)
 
-    def plot_it(ax, angles, mv, amp, dmm_limit, mv_through, mode, polarity, cal_offset, theorectic_vals):
+    def plot_it(ax, angles, mv, amp, dmm_limit, mv_through, mode, polarity, theoretic_vals, theoretic_uncertainty):
+        CheckLengths(theoretic_vals, theoretic_uncertainty)
         mv = mv / amp
         mv_static_uncertainty = dmm_limit/1000.
         mv_relative_uncertainty_dmm = abs(mv*0.005)
         mv_relative_uncertainty_amp = amp*0.03
         mv_uncertainty = mv_static_uncertainty + mv_relative_uncertainty_dmm + mv_relative_uncertainty_amp
-        ax.plot(angles, theorectic_vals, label="Theoretisch via Airy")
-        ScatterWithErrorBars(ax, angles, (mv-cal_offset(angles))/mv_through, angle_uncertainty, mv_uncertainty/mv_through,
+        clipped_upper_end = [min(1, x) for x in theoretic_vals+theoretic_uncertainty]
+        clipped_lower_end = [max(0, x) for x in theoretic_vals-theoretic_uncertainty]
+        ax.plot(angles, clipped_upper_end, label="Theoretische Obergrenze", linestyle='--', color='blue')
+        ax.plot(angles, theoretic_vals, label="Theoretisch via Airy", color='blue')
+        ax.plot(angles, clipped_lower_end, label="Theoretische Untergrenze", linestyle='--', color='blue')
+        ax.fill_between(angles,
+                        clipped_lower_end,
+                        clipped_upper_end,
+                        alpha=0.1,
+                        color='blue',
+                        label="Unsicherheitsbereich")
+        ScatterWithErrorBars(ax, angles, mv/mv_through, angle_uncertainty, mv_uncertainty/mv_through,
                              title=f"{mode} bei {polarity}-Polarisierung",
                              label="Experimentell", xlabel="Einfallswinkel in °", ylabel="Reflexionskoeffizient")
         plt.tight_layout()
 
-    
+    s_pol_refl_theo, Δs_pol_refl_theo = simple_refl_s(refl_data['refl_angle'].to_numpy()*pi/180, n2=n,
+                                                      uncertainty=True, Δα=angle_uncertainty*pi/180)
     plot_it(refl_axs[0],
          refl_data['refl_angle'].to_numpy(),
          refl_data['s_pol_refl_mv'].to_numpy(),
@@ -63,8 +69,11 @@ def reflection_and_transmission(refl_data, trans_data, cal_offset):
          s_through_mv,
          "Reflexion",
          "s",
-         cal_offset,
-         fresnel_rho_s(refl_data['refl_angle'].to_numpy()*pi/180, n2=n)**2)    
+         s_pol_refl_theo,
+         Δs_pol_refl_theo)
+    
+    p_pol_refl_theo, Δp_pol_refl_theo = simple_refl_p(refl_data['refl_angle'].to_numpy()*pi/180, n2=n,
+                                                      uncertainty=True, Δα=angle_uncertainty*pi/180)
     plot_it(refl_axs[1],
          refl_data['refl_angle'].to_numpy(),
          refl_data['p_pol_refl_mv'].to_numpy(),
@@ -73,10 +82,12 @@ def reflection_and_transmission(refl_data, trans_data, cal_offset):
          p_through_mv,
          "Reflexion",
          "p",
-         cal_offset,
-         fresnel_rho_p(refl_data['refl_angle'].to_numpy()*pi/180, n2=n)**2)
+         p_pol_refl_theo,
+         Δp_pol_refl_theo)
     
     trans_fig, trans_axs = plt.subplots(2, 1)
+    s_pol_trans_theo, Δs_pol_trans_theo = simple_trans_s(trans_data['trans_angle'].to_numpy()*pi/180, n2=n,
+                                                      uncertainty=True, Δα=angle_uncertainty*pi/180)
     plot_it(trans_axs[0],
          trans_data['trans_angle'].to_numpy(),
          trans_data['s_pol_trans_mv'].to_numpy(),
@@ -85,8 +96,10 @@ def reflection_and_transmission(refl_data, trans_data, cal_offset):
          s_through_mv,
          "Transmission",
          "s",
-         cal_offset,
-         airy_trans_s(trans_data['trans_angle'].to_numpy()*pi/180, d, λ, n))
+         s_pol_trans_theo,
+         Δs_pol_trans_theo)
+    p_pol_trans_theo, Δp_pol_trans_theo = simple_trans_p(trans_data['trans_angle'].to_numpy()*pi/180, n2=n,
+                                                      uncertainty=True, Δα=angle_uncertainty*pi/180)
     plot_it(trans_axs[1],
          trans_data['trans_angle'].to_numpy(),
          trans_data['p_pol_trans_mv'].to_numpy(),
@@ -95,12 +108,11 @@ def reflection_and_transmission(refl_data, trans_data, cal_offset):
          p_through_mv,
          "Transmission",
          "p",
-         cal_offset,
-         airy_trans_p(trans_data['trans_angle'].to_numpy()*pi/180, d, λ, n))
+         p_pol_trans_theo,
+         Δp_pol_trans_theo)
 
-cal_data, refl_data, trans_data = get_data()
-cal_offset, _, _ = generate_cal_offset(cal_data)
+refl_data, trans_data = get_data()
 
-reflection_and_transmission(refl_data, trans_data, cal_offset)
+reflection_and_transmission(refl_data, trans_data)
 
 plt.show()
