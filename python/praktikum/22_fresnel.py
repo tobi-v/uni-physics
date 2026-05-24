@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from numpy import abs, pi
+from numpy import abs, array2string, pi, sqrt
 from os.path import dirname, join
 from pandas import read_csv
 from tools.optics.refraction import brewster, simple_refl_p, simple_refl_s, simple_trans_p, simple_trans_s
@@ -39,14 +39,14 @@ def reflection_and_transmission(refl_data, trans_data):
     def plot_it(ax, angles, mv, amp, dmm_limit, mv_through, mode, polarity, theoretic_vals, theoretic_uncertainty):
         CheckLengths(theoretic_vals, theoretic_uncertainty)
         mv = mv / amp
-        mv_static_uncertainty = dmm_limit/1000.
-        mv_relative_uncertainty_dmm = abs(mv*0.005)
-        mv_relative_uncertainty_amp = amp*0.03
-        mv_uncertainty = mv_static_uncertainty + mv_relative_uncertainty_dmm + mv_relative_uncertainty_amp
+        mv_static_uncertainty = (dmm_limit/amp)**2
+        mv_relative_uncertainty_dmm = abs(mv*0.005)**2
+        mv_relative_uncertainty_amp = (mv*0.03)**2
+        mv_uncertainty = sqrt(mv_static_uncertainty + mv_relative_uncertainty_dmm + mv_relative_uncertainty_amp)
         clipped_upper_end = [min(1, x) for x in theoretic_vals+theoretic_uncertainty]
         clipped_lower_end = [max(0, x) for x in theoretic_vals-theoretic_uncertainty]
         ax.plot(angles, clipped_upper_end, label="Theoretische Obergrenze", linestyle='--', color='blue')
-        ax.plot(angles, theoretic_vals, label="Theoretisch via Airy", color='blue')
+        ax.plot(angles, theoretic_vals, label="Theoretisch", color='blue')
         ax.plot(angles, clipped_lower_end, label="Theoretische Untergrenze", linestyle='--', color='blue')
         ax.fill_between(angles,
                         clipped_lower_end,
@@ -61,6 +61,8 @@ def reflection_and_transmission(refl_data, trans_data):
 
     s_pol_refl_theo, Δs_pol_refl_theo = simple_refl_s(refl_data['refl_angle'].to_numpy()*pi/180, n2=n,
                                                       uncertainty=True, Δα=angle_uncertainty*pi/180)
+    formatted = array2string(s_pol_refl_theo, precision=3, separator='\n', floatmode='fixed', suppress_small=True)
+    print(formatted)
     plot_it(refl_axs[0],
          refl_data['refl_angle'].to_numpy(),
          refl_data['s_pol_refl_mv'].to_numpy(),
@@ -74,6 +76,8 @@ def reflection_and_transmission(refl_data, trans_data):
     
     p_pol_refl_theo, Δp_pol_refl_theo = simple_refl_p(refl_data['refl_angle'].to_numpy()*pi/180, n2=n,
                                                       uncertainty=True, Δα=angle_uncertainty*pi/180)
+    formatted = array2string(p_pol_refl_theo, precision=3, separator='\n', floatmode='fixed', suppress_small=True)
+    print(formatted)
     plot_it(refl_axs[1],
          refl_data['refl_angle'].to_numpy(),
          refl_data['p_pol_refl_mv'].to_numpy(),
@@ -88,6 +92,8 @@ def reflection_and_transmission(refl_data, trans_data):
     trans_fig, trans_axs = plt.subplots(2, 1)
     s_pol_trans_theo, Δs_pol_trans_theo = simple_trans_s(trans_data['trans_angle'].to_numpy()*pi/180, n2=n,
                                                       uncertainty=True, Δα=angle_uncertainty*pi/180)
+    formatted = array2string(s_pol_trans_theo, precision=3, separator='\n', floatmode='fixed', suppress_small=True)
+    print(formatted)
     plot_it(trans_axs[0],
          trans_data['trans_angle'].to_numpy(),
          trans_data['s_pol_trans_mv'].to_numpy(),
@@ -100,6 +106,8 @@ def reflection_and_transmission(refl_data, trans_data):
          Δs_pol_trans_theo)
     p_pol_trans_theo, Δp_pol_trans_theo = simple_trans_p(trans_data['trans_angle'].to_numpy()*pi/180, n2=n,
                                                       uncertainty=True, Δα=angle_uncertainty*pi/180)
+    formatted = array2string(p_pol_trans_theo, precision=3, separator='\n', floatmode='fixed', suppress_small=True)
+    print(formatted)
     plot_it(trans_axs[1],
          trans_data['trans_angle'].to_numpy(),
          trans_data['p_pol_trans_mv'].to_numpy(),
@@ -115,4 +123,4 @@ refl_data, trans_data = get_data()
 
 reflection_and_transmission(refl_data, trans_data)
 
-plt.show()
+# plt.show()
