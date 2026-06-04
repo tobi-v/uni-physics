@@ -1,6 +1,8 @@
 from matplotlib import pyplot as plt
+from numpy import argmax, max, pi
 from os.path import dirname, join
 from pandas import read_csv
+from tools.electricity.RLC_circuit import SeriesAmplitudeAtR
 from tools.signals.fourier import fft
 
 def load_data(file):
@@ -12,14 +14,17 @@ def load_data(file):
 def plot_signals():
     capacitances = [100, 150, 220]  # [μF]
     frequencies = [500, 1000, 2000] # [Hz]
+    resistors = 10 # [Ohm]
+    L = 15e-3 # [H]
+    R = resistors/2 + 0.12
 
     _, t_axs = plt.subplots(6, 3)
     plt.subplots_adjust(hspace=0.9)
     _, ft_axs = plt.subplots(6,3)
     plt.subplots_adjust(hspace=0.9)
 
-    def plot(ax, channel, C, f, x, y, x_label):
-        ax.plot(x, y)
+    def plot(ax, channel, C, f, x, y, x_label, label="Messwerte"):
+        ax.plot(x, y, label=label)
         ax.set_xlabel(x_label)
         ax.set_ylabel('Amplitude [V]')
         ax.set_title(f'C = {C} μF, f = {f} Hz, Channel {channel}')
@@ -35,10 +40,18 @@ def plot_signals():
             plot(t_axs[2*ii][jj], 1, C, f, t, ch1, x_label="Zeit [s]")
             plot(t_axs[2*ii+1][jj], 2, C, f, t, ch2, x_label="Zeit [s]")
             
-            _, ch1_ft = fft(t, ch1)
-            freqs, ch2_ft = fft(t, ch2)
+            freqs, ch1_ft = fft(t, ch1)
+            max_f = freqs[argmax(ch1_ft)]
+            _, ch2_ft = fft(t, ch2)
+
+            theo = SeriesAmplitudeAtR(freqs*2*pi, R, L, C*1e-6)
+            theo_max_f = freqs[argmax(theo)]
             
-            plot(ft_axs[2*ii][jj], 1, C, f, freqs, ch1_ft, x_label="Frequenz [Hz]")
+            plot(ft_axs[2*ii][jj], 1, C, f, freqs, ch1_ft/max(ch1_ft), x_label="Frequenz [Hz]")
+            ft_axs[2*ii][jj].axvline(max_f, color='b', linestyle='--', label=f"Maximum bei {max_f:.1f} Hz")
+            ft_axs[2*ii][jj].plot(freqs, theo, "k-", label="Theoriekurve")
+            ft_axs[2*ii][jj].axvline(theo_max_f, color='k', linestyle='--', label=f"Maximum bei {theo_max_f:.1f} Hz")
+            ft_axs[2*ii][jj].legend(loc='right')
             plot(ft_axs[2*ii+1][jj], 2, C, f, freqs, ch2_ft, x_label="Frequenz [Hz]")
 
 plot_signals()
