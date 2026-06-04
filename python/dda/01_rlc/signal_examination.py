@@ -10,17 +10,19 @@ def load_data(file):
     return data['Time (s)'].to_numpy(), data['Ch.1 (V)'].to_numpy(), data['Ch.2 (V)'].to_numpy()
 
 def plot_signals():
-    capacitances = [100, 150, 220]  # [mF]
+    capacitances = [100, 150, 220]  # [μF]
     frequencies = [500, 1000, 2000] # [Hz]
 
     _, t_axs = plt.subplots(6, 3)
+    plt.subplots_adjust(hspace=0.9)
     _, ft_axs = plt.subplots(6,3)
+    plt.subplots_adjust(hspace=0.9)
 
     def plot(ax, channel, C, f, x, y, x_label):
         ax.plot(x, y)
         ax.set_xlabel(x_label)
         ax.set_ylabel('Amplitude [V]')
-        ax.set_title(f'C = {C} mF, f = {f} Hz, Channel {channel}')
+        ax.set_title(f'C = {C} μF, f = {f} Hz, Channel {channel}')
 
     for ii, C in enumerate(capacitances):
         for jj, f in enumerate(frequencies):
@@ -32,14 +34,12 @@ def plot_signals():
 
             plot(t_axs[2*ii][jj], 1, C, f, t, ch1, x_label="Zeit [s]")
             plot(t_axs[2*ii+1][jj], 2, C, f, t, ch2, x_label="Zeit [s]")
-            plt.subplots_adjust(hspace=0.9)
-
+            
             _, ch1_ft = fft(t, ch1)
             freqs, ch2_ft = fft(t, ch2)
             
-            plot(ft_axs[2*ii][jj], 1, C, f, freqs, ch1_ft, x_label="Frequenz [s]")
-            plot(ft_axs[2*ii+1][jj], 2, C, f, freqs, ch2_ft, x_label="Frequenz [s]")
-            plt.subplots_adjust(hspace=0.9)
+            plot(ft_axs[2*ii][jj], 1, C, f, freqs, ch1_ft, x_label="Frequenz [Hz]")
+            plot(ft_axs[2*ii+1][jj], 2, C, f, freqs, ch2_ft, x_label="Frequenz [Hz]")
 
 plot_signals()
 plt.show()
