@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from numpy import argmax, max, pi
+from numpy import argmax, max, mean, pi, var
 from os.path import dirname, join
 from pandas import read_csv
 from tools.electricity.RLC_circuit import SeriesAmplitudeAtR
@@ -18,9 +18,9 @@ def plot_signals():
     L = 15e-3 # [H]
     R = resistors/2 + 0.12
 
-    _, t_axs = plt.subplots(6, 3)
+    t_fig, t_axs = plt.subplots(6, 3)
     plt.subplots_adjust(hspace=0.9)
-    _, ft_axs = plt.subplots(6,3)
+    ft_fig, ft_axs = plt.subplots(6,3)
     plt.subplots_adjust(hspace=0.9)
 
     def plot(ax, channel, C, f, x, y, x_label, label="Messwerte"):
@@ -30,6 +30,7 @@ def plot_signals():
         ax.set_title(f'C = {C} μF, f = {f} Hz, Channel {channel}')
 
     for ii, C in enumerate(capacitances):
+        max_fs = []
         for jj, f in enumerate(frequencies):
             t, ch1, ch2 = load_data(f'{C}_mf_{f}Hz.csv')
             mask = t <= 10
@@ -42,6 +43,7 @@ def plot_signals():
             
             freqs, ch1_ft = fft(t, ch1)
             max_f = freqs[argmax(ch1_ft)]
+            max_fs.append(max_f)
             _, ch2_ft = fft(t, ch2)
 
             theo = SeriesAmplitudeAtR(freqs*2*pi, R, L, C*1e-6)
@@ -53,6 +55,11 @@ def plot_signals():
             ft_axs[2*ii][jj].axvline(theo_max_f, color='k', linestyle='--', label=f"Maximum bei {theo_max_f:.1f} Hz")
             ft_axs[2*ii][jj].legend(loc='right')
             plot(ft_axs[2*ii+1][jj], 2, C, f, freqs, ch2_ft, x_label="Frequenz [Hz]")
+
+        print(f"Maximum frequency for C = {C}: f = {mean(max_fs):.2f} ± {var(max_fs):.2f}")
+
+    # plt.close(t_fig)
+    # plt.close(ft_fig)
 
 plot_signals()
 plt.show()
