@@ -265,3 +265,6 @@ nb-configuration.xml
 ##############################
 *.log
 sandbox.*
+
+temp/
+tmp/
