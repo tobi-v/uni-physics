@@ -1,5 +1,7 @@
+from matplotlib import pyplot as plt
 from os.path import dirname, join
 from pandas import read_csv
+from tools.statistics.linear_regression import PlotLinregWithErrorAndScatterErrorbars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 Δs = 0.1 # [cm]
