@@ -5,6 +5,7 @@ from pandas import read_csv
 from tools.maths.functions import inverse
 from tools.statistics.linear_regression import PlotLinregWithErrorAndScatterErrorbars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
+from tools.waves.standing_waves import λ_caseA, λ_caseB
 
 Δs = 0.1 # [cm]
 
@@ -39,8 +40,11 @@ def sound_in_metals():
     L = 115e-2 # [m]
     ΔL = 0.5e-2
     
+    fig, axs = plt.subplots(2, 1)
+
     # Locked in the middle
     peaks01 = array([2, 4.1, 6.2, 8.3, 10.4, 12.5])*1e3    # Hz
+    λ01 = λ_caseA(L, linspace(1, 6, 6), uncertainty=True, ΔLength=ΔL)
 
     # Locked at 1/4 and 3/4
     peaks02 = array([1.25, 4.125, 8.25])
