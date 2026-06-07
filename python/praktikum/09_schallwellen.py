@@ -37,7 +37,7 @@ def sound_in_gases(file, medium, ax):
 
 fig, axs = plt.subplots(2, 1)
 sound_in_gases('air_data.csv', "Luft", axs[0])
-sound_in_gases('co2_data.csv', "CO_2", axs[1])
+sound_in_gases('co2_data.csv', r"$\text{CO}_\text{2}$", axs[1])
 plt.tight_layout()
 
 plt.show()
