@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from numpy import pi, zeros_like
+from numpy import array, linspace, zeros_like
 from os.path import dirname, join
 from pandas import read_csv
 from tools.maths.functions import inverse
@@ -35,9 +35,21 @@ def sound_in_gases(file, medium, ax):
                                            xlabel=r'$\frac{1}{\lambda}$', ylabel=r'$f$')
     print(f'In {medium}: c={coeff[0]:.2f} ± {cov[0][0]**.5:.2f} m/s')
 
+def sound_in_metals():
+    L = 115e-2 # [m]
+    ΔL = 0.5e-2
+    
+    # Locked in the middle
+    peaks01 = array([2, 4.1, 6.2, 8.3, 10.4, 12.5])*1e3    # Hz
+
+    # Locked at 1/4 and 3/4
+    peaks02 = array([1.25, 4.125, 8.25])
+
 fig, axs = plt.subplots(2, 1)
 sound_in_gases('air_data.csv', "Luft", axs[0])
 sound_in_gases('co2_data.csv', r"$\text{CO}_\text{2}$", axs[1])
 plt.tight_layout()
+
+sound_in_metals()
 
 plt.show()
