@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from numpy import array, linspace, zeros_like
+from numpy import array, ones_like, zeros_like
 from os.path import dirname, join
 from pandas import read_csv
 from tools.maths.functions import inverse
@@ -43,11 +43,19 @@ def sound_in_metals():
     fig, axs = plt.subplots(2, 1)
 
     # Locked in the middle
-    peaks01 = array([2, 4.1, 6.2, 8.3, 10.4, 12.5])*1e3    # Hz
-    λ01 = λ_caseA(L, linspace(1, 6, 6), uncertainty=True, ΔLength=ΔL)
+    peaks01 = array([2, 6.2, 10.4])*1e3    # Hz TODO: SET UNCERTAINTY FOR FREQUENCY
+    modes01 = array([1, 2, 3])
+    λ01, Δλ01 = λ_caseA(L*ones_like(modes01), modes01, uncertainty=True, Δlength=ΔL)
+
+    coeff, cov = PlotLinregWithErrorAndScatterErrorbars(axs[0], λ01, peaks01, Δλ01, zeros_like(peaks01),
+                                                        f"Maul halten bitte")
 
     # Locked at 1/4 and 3/4
     peaks02 = array([1.25, 4.125, 8.25])
+    modes02 = array([1, 2, 4])
+    λ02, Δλ02 = λ_caseB(L, modes02, uncertainty=True, Δlength=ΔL)
+
+    plt.tight_layout()
 
 fig, axs = plt.subplots(2, 1)
 sound_in_gases('air_data.csv', "Luft", axs[0])
