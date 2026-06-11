@@ -1,5 +1,6 @@
 from os.path import dirname, join
 from pandas import read_csv
+from tools.mech.impulse import impulse2D, total_impulse2D
 
 m_green = 18.42e-3  # [kg]
 m_red = 18.46e-3
