@@ -3,7 +3,7 @@ from numpy.typing import NDArray
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 # TODO: Enable multi argument norm with uncertainty calculation
-def norm(x, y, uncertainty=False, Δx=0, Δy=0):
+def norm2D(x, y, uncertainty=False, Δx=0, Δy=0):
     def normInner(x, y):
         return sqrt(x**2 + y**2)
     
