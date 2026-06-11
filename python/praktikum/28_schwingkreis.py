@@ -1,7 +1,7 @@
 from numpy import array, diff, floating, linspace, log, log10, logspace, mean, ones, std
 from numpy.typing import NDArray
 from tools.electricity.RLC_circuit import SeriesAmplitude, SeriesPhase
-from tools.maths.functions import Ratio
+from tools.maths.functions import ratio
 from tools.statistics.linear_regression import Linreg, Polyreg
 from tools.python.checks import CheckLengths
 from tools.python.plot import ScatterWithErrorBars
@@ -41,7 +41,7 @@ def Z_plot(omega: NDArray[floating],
                            suptitle: str = "Bode Plot"):
     """Compact Bode plot: data + polynomial mag-fit and unwrap+MA phase smoothing."""
     voltage_ratio, voltage_ratio_uncertainty = GetResultAndUncertainty(
-        Ratio, [U_den, U_num], uncertainty=True,
+        ratio, [U_den, U_num], uncertainty=True,
         uncertainty_params=[U_num_uncertainty, U_den_uncertainty]
     )
 
@@ -95,7 +95,7 @@ def plot_bode_measurements(omega: NDArray[floating],
                            suptitle: str = "Bode Plot"):
     """Compact Bode plot: data + polynomial mag-fit and unwrap+MA phase smoothing."""
     voltage_ratio, voltage_ratio_uncertainty = GetResultAndUncertainty(
-        Ratio, [U_den, U_num], uncertainty=True,
+        ratio, [U_den, U_num], uncertainty=True,
         uncertainty_params=[U_num_uncertainty, U_den_uncertainty]
     )
 
@@ -132,7 +132,7 @@ def Z_plot_mag(ax: plt.Axes,
                            inv = False):
     """Compact Bode plot: data + polynomial mag-fit and unwrap+MA phase smoothing."""
     voltage_ratio, voltage_ratio_uncertainty = GetResultAndUncertainty(
-        Ratio, [U_den, U_num], uncertainty=True,
+        ratio, [U_den, U_num], uncertainty=True,
         uncertainty_params=[U_num_uncertainty, U_den_uncertainty]
     )
 

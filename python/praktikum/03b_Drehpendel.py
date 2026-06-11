@@ -3,7 +3,7 @@ from numpy import arange, array, exp, linspace, log, mean, pi, sqrt, std
 from scipy.optimize import curve_fit
 from scipy.stats import linregress
 from tools.dynamics.harmonic_osci import estimate_damping_constant, find_resonance_frequency
-from tools.maths.functions import Gaussian
+from tools.maths.functions import gaussian
 from tools.python.sort import sort_by_x_and_filter_unique
 from tools.statistics.linear_regression import Linreg, Polyreg
 
@@ -127,11 +127,11 @@ for label, omega, ampl, phi, color in [
     ax2.plot(omega_fit, cubic_fit(omega_fit), '-', label=f"{label} cubic fit", color=color)
 
     initial_guess = [max(omega), mean(omega), std(omega)]
-    popt, pcov = curve_fit(Gaussian, omega, ampl, p0=initial_guess)
+    popt, pcov = curve_fit(gaussian, omega, ampl, p0=initial_guess)
     _, gaussmean, stddev = popt
     halbwertsbreite = 2 * sqrt(2 * log(2)) * stddev
     ax3.scatter(omega, ampl, label=f"{label} data")
-    ax3.plot(omega_fit, Gaussian(omega_fit, *popt), label=f"{label} Gaussian fit", color=color)
+    ax3.plot(omega_fit, gaussian(omega_fit, *popt), label=f"{label} Gaussian fit", color=color)
     plt.axvline(gaussmean - halbwertsbreite/2, color=color, linestyle='--', label=f"{label} Halbwertsbreite")
     plt.axvline(gaussmean + halbwertsbreite/2, color=color, linestyle='--')
     print(f"Halbwertsbreite bei {label}: {halbwertsbreite} [Hz]")
