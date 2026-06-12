@@ -54,6 +54,8 @@ def GaussianErrorPropagation(fun, point, uncertainty):
 
 
 def GetResultAndUncertainty(fun, point, uncertainty=False, uncertainty_params=0):
+    if isinstance(point, (list, ndarray)):
+        CheckLengths(*point)
     if uncertainty:
         if isinstance(point, list) or isinstance(point, ndarray):
             propagated_uncertainty = GaussianErrorPropagationMultivariate(
