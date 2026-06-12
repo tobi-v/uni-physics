@@ -39,21 +39,31 @@ def sound_in_gases(file, medium, ax):
 def sound_in_metals():
     L = 115e-2 # [m]
     ΔL = 0.5e-2
+    Δf = 0.2e3
     
-    fig, axs = plt.subplots(2, 1)
+    _, axs = plt.subplots(2, 1)
 
     # Locked in the middle
-    peaks01 = array([2, 6.2, 10.4])*1e3    # Hz TODO: SET UNCERTAINTY FOR FREQUENCY
+    peaks01 = array([2, 6.2, 10.4])*1e3
     modes01 = array([1, 2, 3])
     λ01, Δλ01 = λ_caseA(L*ones_like(modes01), modes01, uncertainty=True, Δlength=ΔL)
+    λ01_inv, Δλ01_inv = inverse(λ01, True, Δλ01)
 
-    coeff, cov = PlotLinregWithErrorAndScatterErrorbars(axs[0], λ01, peaks01, Δλ01, zeros_like(peaks01),
-                                                        f"Maul halten bitte")
+    coeff01, cov01 = PlotLinregWithErrorAndScatterErrorbars(axs[0], λ01_inv, peaks01, Δλ01_inv, Δf,
+                                                        f"Frequenz und inverse Wellenlänge bei Einspannung in der Mitte",
+                                                        xlabel=r'$\frac{1}{\lambda}$', ylabel=r'$f$')
+    print(f'Einspannung in der Mitte:: c={coeff01[0]:.8f} ± {cov01[0][0]**.5:.8f} m/s')
 
     # Locked at 1/4 and 3/4
-    peaks02 = array([1.25, 4.125, 8.25])
+    peaks02 = array([1.25, 4.125, 8.25])*1e3
     modes02 = array([1, 2, 4])
-    λ02, Δλ02 = λ_caseB(L, modes02, uncertainty=True, Δlength=ΔL)
+    λ02, Δλ02 = λ_caseB(L*ones_like(modes02), modes02, uncertainty=True, Δlength=ΔL)
+    λ02_inv, Δλ02_inv = inverse(λ02, True, Δλ02)
+
+    coeff02, cov02 = PlotLinregWithErrorAndScatterErrorbars(axs[1], λ02_inv, peaks02, Δλ02_inv, Δf,
+                                                        fr"Frequenz und inverse Wellenlänge bei Einspannung bei $L/4$ und $3L/4$",
+                                                        xlabel=r'$\frac{1}{\lambda}$', ylabel=r'$f$')
+    print(f'Einspannung in der Mitte:: c={coeff02[0]:.2f} ± {cov02[0][0]**.5:.2f} m/s')
 
     plt.tight_layout()
 
@@ -64,4 +74,4 @@ plt.tight_layout()
 
 sound_in_metals()
 
-plt.show()
+# plt.show()
