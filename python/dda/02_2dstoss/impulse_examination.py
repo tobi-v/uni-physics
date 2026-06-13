@@ -48,6 +48,7 @@ def Ex_32_01_01():
     print('Combined sample:')
     print(combined[['t', 'p_x_total', 'p_y_total', 'p_total']].head())
 
+    # TODO: Clean up a bit, output impulses in gram times velocity and round after two decimals
     tex_file = join(dirname(__file__), 'combined_impulse_table.txt')
     columns = ['t', 'p_x_green', 'p_y_green', 'p_x_red', 'p_y_red', 'p_x_total', 'p_y_total', 'p_total']
     header = [
