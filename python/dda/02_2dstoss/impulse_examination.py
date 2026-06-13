@@ -26,7 +26,7 @@ def read(file):
     data = read_csv(csv_path)
     return data
 
-def Impulses(experiment):
+def Impulses(experiment, red_smol=False):
     data_green = read(experiment + '_massGreen.csv')
     data_red = read(experiment + '_massRed.csv')
 
@@ -40,7 +40,10 @@ def Impulses(experiment):
         return df
 
     dg = compute_impulses(data_green, m_green)
-    dr = compute_impulses(data_red, m_red)
+    if red_smol:
+        dr = compute_impulses(data_red, m_red_smol)
+    else:
+        dr = compute_impulses(data_red, m_red)
 
     # combine impulses for each shared timestamp
     combined = dg[['t', 'p_x', 'p_y']].copy()
@@ -65,5 +68,9 @@ def Impulses(experiment):
 
 Impulses('32_01_01')
 Impulses('32_01_02')
-Impulses('33_02_01')# TODO: Consider that the red mass is smaller here
-Impulses('33_02_02')
+Impulses('32_02_01')
+Impulses('32_02_02')
+Impulses('33_01_01', red_smol=True)
+Impulses('33_01_02', red_smol=True)
+Impulses('33_02_01', red_smol=True)
+Impulses('33_02_02', red_smol=True)
