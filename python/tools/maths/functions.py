@@ -4,17 +4,17 @@ from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 # TODO: Enable multi argument norm with uncertainty calculation
 def norm2D(x, y, uncertainty=False, Δx=0, Δy=0):
-    def normInner(x, y):
+    def norm2DInner(x, y):
         return sqrt(x**2 + y**2)
     
-    GetResultAndUncertainty(normInner, [x, y], uncertainty, [Δx, Δy])
+    return GetResultAndUncertainty(norm2DInner, [x, y], uncertainty, [Δx, Δy])
 
 # TODO: Enable multi argument product with uncertainty calculation
 def product(a, b, uncertainty=False, Δa=0, Δb=0):
     def productInner(a, b):
         return a*b
     
-    GetResultAndUncertainty(productInner, [a, b], uncertainty, [Δa, Δb])
+    return GetResultAndUncertainty(productInner, [a, b], uncertainty, [Δa, Δb])
 
 def gaussian(x: NDArray[floating], amplitude: float, mean: float, stddev: float) -> NDArray[floating]:
     if stddev == 0:
@@ -28,7 +28,7 @@ def inverse(x, uncertainty=False, Δx=0):
     return GetResultAndUncertainty(inverseInner, [x], uncertainty, [Δx])
 
 def ratio(denominator: NDArray[floating], numerator: NDArray[floating], uncertainty=False, Δnumerator=0, Δdenominator=0) -> NDArray[floating]:
-    def normInner(numerator, denominator):
+    def ratioInner(numerator, denominator):
         return numerator/denominator
     
-    GetResultAndUncertainty(normInner, [numerator, denominator], uncertainty, [Δnumerator, Δdenominator])
+    return GetResultAndUncertainty(ratioInner, [numerator, denominator], uncertainty, [Δnumerator, Δdenominator])
