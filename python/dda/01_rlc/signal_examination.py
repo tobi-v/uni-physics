@@ -30,13 +30,32 @@ def plot_signals():
         ax.set_title(f'C = {C} μF, f = {f} Hz, Channel {channel}')
 
     for ii, C in enumerate(capacitances):
+        if ii > 0:
+            return
         max_fs = []
+        start_time = 0
+        end_time = 100
+        bounds = [[1.7, 11.5],
+                  [6.6, 16.4],
+                  [8.9, 18.7]]
         for jj, f in enumerate(frequencies):
             t, ch1, ch2 = load_data(f'{C}_mf_{f}Hz.csv')
-            mask = t <= 10
+            mask = (t >= start_time) & (t <= end_time)
+            if jj == 2:
+                spax = plt.subplot()
+                spax.plot(t, ch1)
+                spax.set_title(f"spax {jj}")
+                plt.show()
+            if jj < 2:
+                mask = (t >= bounds[jj][0]) & (t <= bounds[jj][1])
             t = t[mask]
             ch1 = ch1[mask]
             ch2 = ch2[mask]
+            # if jj == 1:
+            #     spox = plt.subplot()
+            #     spox.plot(t, ch1)
+            #     spox.set_title(f"spox {jj}")
+            #     plt.show()
 
             plot(t_axs[2*ii][jj], 1, C, f, t, ch1, x_label="Zeit [s]")
             plot(t_axs[2*ii+1][jj], 2, C, f, t, ch2, x_label="Zeit [s]")
