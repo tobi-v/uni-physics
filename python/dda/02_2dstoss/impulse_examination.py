@@ -59,8 +59,11 @@ def Impulses(experiment):
     save_pandas_to_latex_table(combined,
                                join(dirname(__file__), experiment + '_out_table.txt'),
                                r'Impulse des grünen und des roten Pucks, sowie der gesamte Impuls. Alle Impulsangaben in $\si{\gram\meter\per\second}$.',
-                               'tab:'+experiment)
+                               'tab:'+experiment,
+                               header)
     return
 
-Impulses('32_02_01')
-Impulses('32_02_02')
+Impulses('32_01_01')
+Impulses('32_01_02')
+Impulses('33_02_01')# TODO: Consider that the red mass is smaller here
+Impulses('33_02_02')
