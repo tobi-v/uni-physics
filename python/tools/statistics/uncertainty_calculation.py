@@ -55,7 +55,11 @@ def GaussianErrorPropagation(fun, point, uncertainty):
 
 def GetResultAndUncertainty(fun, point, uncertainty=False, uncertainty_params=0):
     if isinstance(point, (list, ndarray)):
-        CheckLengths(*point)
+        # TODO: Have this return two bool: First tells if length are the same,
+        # second tells if lengths are adjustable
+        # (e.g. one array has length 10 and the others are length 10 or scalars,
+        # then you can just multiply the scalars by 10)
+        CheckLengths(*point) 
     if uncertainty:
         if isinstance(point, list) or isinstance(point, ndarray):
             propagated_uncertainty = GaussianErrorPropagationMultivariate(
