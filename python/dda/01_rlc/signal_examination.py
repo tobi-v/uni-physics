@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from numpy import argmax, max, mean, pi, var
+from numpy import argmax, max, mean, ones_like, pi, var
 from os.path import dirname, join
 from pandas import read_csv
 from tools.electricity.RLC_circuit import SeriesAmplitudeAtR
@@ -46,7 +46,7 @@ def plot_signals():
             max_fs.append(max_f)
             _, ch2_ft = fft(t, ch2)
 
-            theo = SeriesAmplitudeAtR(freqs*2*pi, R, L, C*1e-6)
+            theo = SeriesAmplitudeAtR(freqs*2*pi, R*ones_like(freqs), L*ones_like(freqs), C*1e-6*ones_like(freqs))
             theo_max_f = freqs[argmax(theo)]
             
             plot(ft_axs[2*ii][jj], 1, C, f, freqs, ch1_ft/max(ch1_ft), x_label="Frequenz [Hz]")
