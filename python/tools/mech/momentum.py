@@ -2,10 +2,10 @@ from tools.maths.functions import norm2D, product
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 # TODO: Make flexible n-dimensional
-def impulse1D(m, v, uncertainty=False, Δm=0, Δv=0):
+def momentum1D(m, v, uncertainty=False, Δm=0, Δv=0):
     return product(m, v, uncertainty, Δm, Δv)
 
-def impulse2D(m, v_x, v_y, uncertainty=False, Δm=0, Δv_x=0, Δv_y=0):
+def momentum2D(m, v_x, v_y, uncertainty=False, Δm=0, Δv_x=0, Δv_y=0):
     p_x = product(m, v_x, uncertainty, Δm, Δv_x)
     p_y = product(m, v_y, uncertainty, Δm, Δv_y)
 
@@ -14,11 +14,11 @@ def impulse2D(m, v_x, v_y, uncertainty=False, Δm=0, Δv_x=0, Δv_y=0):
     else:
         return p_x, p_y
 
-def total_impulse2D(p_x, p_y, uncertainty=False, Δp_x=0, Δp_y=0):
+def total_momentum2D(p_x, p_y, uncertainty=False, Δp_x=0, Δp_y=0):
     return norm2D(p_x, p_y, uncertainty, Δp_x, Δp_y)
 
-def energy_from_impulse(p, m, uncertainty=False, Δp=0, Δm=0):
-    def energy_from_impulseInner(p, m):
+def energy_from_momentum(p, m, uncertainty=False, Δp=0, Δm=0):
+    def energy_from_momentumInner(p, m):
         return p**2 / (2*m)
     
-    return GetResultAndUncertainty(energy_from_impulseInner, [p, m], uncertainty, [Δp, Δm])
+    return GetResultAndUncertainty(energy_from_momentumInner, [p, m], uncertainty, [Δp, Δm])
