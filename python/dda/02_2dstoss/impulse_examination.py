@@ -84,7 +84,7 @@ def Impulses(experiment, red_smol=False):
                                join(dirname(__file__), experiment + '_out_table.txt'),
                                r'Impulse des grünen und des roten Pucks, sowie der gesamte Impuls. Alle Impulsangaben in $\si{\gram\meter\per\second}$, die Energie in $\si{\milli\joule}$.',
                                'tab:'+experiment,
-                               header01)
+                               header01, max_rows=40)
     
     plotxy(data_green, data_red, experiment)
 
@@ -115,7 +115,7 @@ def SingleImpulse(experiment):# Uses the green puck
                                join(dirname(__file__), experiment + '_out_table.txt'),
                                r'Impulse des an der Bande reflektierten Pucks. Alle Impulsangaben in $\si{\gram\meter\per\second}$, die Energie in $\si{\milli\joule}$.',
                                'tab:'+experiment,
-                               header02)
+                               header02, max_rows=40)
     
     plotxy(data, experiment)
 
