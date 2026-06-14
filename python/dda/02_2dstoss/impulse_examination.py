@@ -70,7 +70,7 @@ def compute_impulses(data, mass):
     return data
 
 
-def plot_positions(series, experiment, title):
+def plot_positions(series, title):
     _, ax = plt.subplots()
     for item in series:
         ax.scatter(item['data'].x*100,
@@ -188,7 +188,7 @@ def Impulses(experiment, red_smol=False):
     plot_positions([
         {'data': data_green, 'color': 'g', 'label': 'Mittelpunkt Grüner Puck'},
         {'data': data_red, 'color': 'r', 'label': 'Mittelpunkt Roter Puck'},
-    ], experiment, f"Positionen der Pucks für Versuch {experiment}")
+    ], f"Positionen der Pucks für Versuch {experiment}")
 
 def SingleImpulse(experiment):# Uses the green puck
     data = read(experiment + ".csv")
@@ -212,7 +212,7 @@ def SingleImpulse(experiment):# Uses the green puck
     
     plot_positions([
         {'data': data, 'color': 'r', 'label': 'Mittelpunkt Puck'},
-    ], experiment, f"Positionen des Pucks für Versuch {experiment}")
+    ], f"Positionen des Pucks für Versuch {experiment}")
 
 def Bridge01(experiment):
     data_red = read(experiment + '_massRed.csv')
@@ -237,7 +237,7 @@ def Bridge01(experiment):
         {'data': data_yellow, 'color': 'y', 'label': 'Mittelpunkt Gelber Puck'},
         {'data': data_red, 'color': 'r', 'label': 'Mittelpunkt Roter Puck'},
         {'data': bridge_com, 'color': 'k', 'marker': 'o', 'label': 'Schwerpunkt'},
-    ], experiment, f"Positionen der Pucks für Versuch {experiment}")
+    ], f"Positionen der Pucks für Versuch {experiment}")
 
 def Bridge02(experiment):  # Bridge consists of red and yellow, single puck is green
     data_green = read(experiment + '_massGreen.csv')
@@ -275,7 +275,7 @@ def Bridge02(experiment):  # Bridge consists of red and yellow, single puck is g
         {'data': data_red, 'color': 'r', 'label': 'Mittelpunkt Roter Puck', 'alpha': 0.5},
         {'data': bridge_com, 'color': 'k', 'marker': 'o', 'label': 'Schwerpunkt Hantel'},
         {'data': data_green, 'color': 'g', 'label': 'Mittelpunkt Grüner Puck'},
-    ], experiment, f"Positionen für Versuch {experiment}")
+    ], f"Positionen für Versuch {experiment}")
 
 Impulses('32_01_01')
 Impulses('32_01_02')
