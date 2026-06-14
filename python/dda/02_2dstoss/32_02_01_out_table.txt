@@ -3,7 +3,7 @@
 \label{tab:32_02_01}
 \begin{tabular}{rrrrrrrrr}
 \toprule
-$t / \si{\second}$ & $p_{x}^{\text{green}}$ & $p_{y}^{\text{green}}$ & $p_{x}^{\text{red}}$ & $p_{y}^{\text{red}}$ & $p_{x}^{\text{tot}}$ & $p_{y}^{\text{tot}}$ & $|p|$ & $E_\mathrm{kin} \\
+$t / \si{\second}$ & $p_{x}^{\text{green}}$ & $p_{y}^{\text{green}}$ & $p_{x}^{\text{red}}$ & $p_{y}^{\text{red}}$ & $p_{x}^{\text{tot}}$ & $p_{y}^{\text{tot}}$ & $|p|$ & $E_\mathrm{kin}$ \\
 \midrule
 0.017 & -4.568 & 0.458 & 3.341 & 0.222 & -1.227 & 0.681 & 1.403 & 0.027 \\
 0.033 & -6.926 & 0.775 & 5.021 & 0.560 & -1.905 & 1.335 & 2.326 & 0.073 \\

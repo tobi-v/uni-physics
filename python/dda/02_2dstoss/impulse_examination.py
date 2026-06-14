@@ -19,14 +19,14 @@ header01 = [
     r'$p_{x}^{\text{tot}}$',
     r'$p_{y}^{\text{tot}}$',
     r'$|p|$',
-    r'$E_\mathrm{kin}'
+    r'$E_\mathrm{kin}$'
 ]
 header02 = [
     r'$t / \si{\second}$',
     r'$p_x$',
     r'$p_y$',
     r'$|p|$',
-    r'$E_\mathrm{kin}',
+    r'$E_\mathrm{kin}$',
     r'$\theta / \degree$',
 ]
 

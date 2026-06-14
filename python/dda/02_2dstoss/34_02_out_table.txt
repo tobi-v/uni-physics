@@ -3,7 +3,7 @@
 \label{tab:34_02}
 \begin{tabular}{rrrrrr}
 \toprule
-$t / \si{\second}$ & $p_x$ & $p_y$ & $|p|$ & $E_\mathrm{kin} & $\theta / \degree$ \\
+$t / \si{\second}$ & $p_x$ & $p_y$ & $|p|$ & $E_\mathrm{kin}$ & $\theta / \degree$ \\
 \midrule
 0.017 & -17.278 & 8.602 & 19.301 & 10.112 & -25500.000 \\
 0.033 & -17.278 & 8.436 & 19.228 & 10.035 & -25400.000 \\
