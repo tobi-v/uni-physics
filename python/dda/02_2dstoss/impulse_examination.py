@@ -119,6 +119,12 @@ def SingleImpulse(experiment):# Uses the green puck
     
     plotxy(data, experiment)
 
+def Bridge01():
+    pass
+
+def Bridge02(): # Bridge consists of red and yellow, single puck is green
+    pass
+
 Impulses('32_01_01')
 Impulses('32_01_02')
 Impulses('32_02_01')
