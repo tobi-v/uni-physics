@@ -1,4 +1,5 @@
 from tools.maths.functions import norm2D, product
+from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 # TODO: Make flexible n-dimensional
 def impulse1D(m, v, uncertainty=False, Δm=0, Δv=0):
@@ -15,3 +16,9 @@ def impulse2D(m, v_x, v_y, uncertainty=False, Δm=0, Δv_x=0, Δv_y=0):
 
 def total_impulse2D(p_x, p_y, uncertainty=False, Δp_x=0, Δp_y=0):
     return norm2D(p_x, p_y, uncertainty, Δp_x, Δp_y)
+
+def energy_from_impulse(p, m, uncertainty=False, Δp=0, Δm=0):
+    def energy_from_impulseInner(p, m):
+        return p**2 / (2*m)
+    
+    return GetResultAndUncertainty(energy_from_impulseInner, [p, m], uncertainty, [Δp, Δm])
