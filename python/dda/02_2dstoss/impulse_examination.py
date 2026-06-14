@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 from os.path import dirname, join
 from pandas import read_csv
 from tools.files.conversion import save_pandas_to_latex_table
-from tools.mech.impulse import impulse2D, total_impulse2D
+from tools.mech.impulse import energy_from_impulse, impulse2D, total_impulse2D
 
 m_green = 18.42e-3  # [kg]
 m_red = 18.46e-3
@@ -18,14 +18,16 @@ header01 = [
     r'$p_{y}^{\text{red}}$',
     r'$p_{x}^{\text{tot}}$',
     r'$p_{y}^{\text{tot}}$',
-    r'$|p|$'
+    r'$|p|$',
+    r'$E_\mathrm{kin}'
 ]
 header02 = [
     r'$t / \si{\second}$',
     r'$p_x$',
     r'$p_y$',
     r'$|p|$',
-    r'$\theta / \degree$'
+    r'$E_\mathrm{kin}',
+    r'$\theta / \degree$',
 ]
 
 def read(file):
@@ -73,13 +75,14 @@ def Impulses(experiment, red_smol=False):
     combined['p_x_total'] = combined['p_x_green'] + combined['p_x_red']
     combined['p_y_total'] = combined['p_y_green'] + combined['p_y_red']
     combined['p_total'] = combined.apply(lambda r: total_impulse2D(r.p_x_total, r.p_y_total), axis=1)
+    combined['E_kin'] = combined.apply(lambda r: energy_from_impulse(r.p_total, m_total), axis=1)
 
     # multiply all impulse columns by 1000 (convert from kg·m/s to g·m/s) for nicer display
     combined.iloc[:, 1:] *= 1000
 
     save_pandas_to_latex_table(combined,
                                join(dirname(__file__), experiment + '_out_table.txt'),
-                               r'Impulse des grünen und des roten Pucks, sowie der gesamte Impuls. Alle Impulsangaben in $\si{\gram\meter\per\second}$.',
+                               r'Impulse des grünen und des roten Pucks, sowie der gesamte Impuls. Alle Impulsangaben in $\si{\gram\meter\per\second}$, die Energie in $\si{\milli\joule}$.',
                                'tab:'+experiment,
                                header01)
     
@@ -102,6 +105,7 @@ def SingleImpulse(experiment):# Uses the green puck
     # combine impulses for each shared timestamp
     combined = impulses[['t', 'p_x', 'p_y']].copy()
     combined['p_total'] = combined.apply(lambda r: total_impulse2D(r.p_x, r.p_y), axis=1)
+    combined['E_kin'] = combined.apply(lambda r: energy_from_impulse(r.p_total, m_green), axis=1)
     combined['θr'] = data['θr'].values
 
     # multiply all impulse columns by 1000 (convert from kg·m/s to g·m/s) for nicer display
@@ -109,22 +113,22 @@ def SingleImpulse(experiment):# Uses the green puck
 
     save_pandas_to_latex_table(combined,
                                join(dirname(__file__), experiment + '_out_table.txt'),
-                               r'Impulse des an der Bande reflektierten Pucks. Alle Impulsangaben in $\si{\gram\meter\per\second}$.',
+                               r'Impulse des an der Bande reflektierten Pucks. Alle Impulsangaben in $\si{\gram\meter\per\second}$, die Energie in $\si{\milli\joule}$.',
                                'tab:'+experiment,
                                header02)
     
     plotxy(data, experiment)
 
-# Impulses('32_01_01')
-# Impulses('32_01_02')
-# Impulses('32_02_01')
+Impulses('32_01_01')
+Impulses('32_01_02')
+Impulses('32_02_01')
 Impulses('32_02_02')
-# Impulses('33_01_01', red_smol=True)
-# Impulses('33_01_02', red_smol=True)
-# Impulses('33_02_01', red_smol=True)
-# Impulses('33_02_02', red_smol=True)
+Impulses('33_01_01', red_smol=True)
+Impulses('33_01_02', red_smol=True)
+Impulses('33_02_01', red_smol=True)
+Impulses('33_02_02', red_smol=True)
 
 SingleImpulse('34_01')
 SingleImpulse('34_02')
 
-plt.show()
+# plt.show()
