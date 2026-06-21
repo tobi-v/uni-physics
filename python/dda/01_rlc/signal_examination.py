@@ -36,8 +36,6 @@ def plot_signals():
 
     for ii, C in enumerate(capacitances):
         max_fs = []
-        start_time = 0
-        end_time = 100
         for jj, f in enumerate(frequencies):
             t, ch1, ch2 = load_data(f'{C}_mf_{f}Hz.csv')
             t_mask = (t >= bounds[ii][jj][0]) & (t <= bounds[ii][jj][1])
