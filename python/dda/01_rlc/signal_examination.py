@@ -40,11 +40,10 @@ def plot_signals():
         end_time = 100
         for jj, f in enumerate(frequencies):
             t, ch1, ch2 = load_data(f'{C}_mf_{f}Hz.csv')
-            mask = (t >= start_time) & (t <= end_time)
-            mask = (t >= bounds[ii][jj][0]) & (t <= bounds[ii][jj][1])
-            t = t[mask]
-            ch1 = ch1[mask]
-            ch2 = ch2[mask]
+            t_mask = (t >= bounds[ii][jj][0]) & (t <= bounds[ii][jj][1])
+            t = t[t_mask]
+            ch1 = ch1[t_mask]
+            ch2 = ch2[t_mask]
 
             plot(t_axs[2*ii][jj], 1, C, f, t, ch1, x_label="Zeit [s]")
             plot(t_axs[2*ii+1][jj], 2, C, f, t, ch2, x_label="Zeit [s]")
@@ -53,6 +52,11 @@ def plot_signals():
             max_f = freqs[argmax(ch1_ft)]
             max_fs.append(max_f)
             _, ch2_ft = fft(t, ch2)
+
+            f_mask = freqs < 300
+            freqs = freqs[f_mask]
+            ch1_ft = ch1_ft[f_mask]
+            ch2_ft = ch2_ft[f_mask]
 
             theo = SeriesAmplitudeAtR(freqs*2*pi, R*ones_like(freqs), L*ones_like(freqs), C*1e-6*ones_like(freqs))
             theo_max_f = freqs[argmax(theo)]
