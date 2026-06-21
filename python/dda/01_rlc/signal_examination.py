@@ -11,6 +11,12 @@ def load_data(file):
     data = read_csv(csv_path, delimiter="\t", skiprows=3)
     return data['Time (s)'].to_numpy(), data['Ch.1 (V)'].to_numpy(), data['Ch.2 (V)'].to_numpy()
 
+def plot(ax, channel, C, f, x, y, x_label, label="Messwerte"):
+    ax.plot(x, y, label=label)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel('Amplitude [V]')
+    ax.set_title(f'C = {C} μF, f = {f} Hz, Channel {channel}')
+
 def plot_signals():
     capacitances = [100, 150, 220]  # [μF]
     frequencies = [500, 1000, 2000] # [Hz]
@@ -22,12 +28,6 @@ def plot_signals():
     plt.subplots_adjust(hspace=0.9)
     ft_fig, ft_axs = plt.subplots(6,3)
     plt.subplots_adjust(hspace=0.9)
-
-    def plot(ax, channel, C, f, x, y, x_label, label="Messwerte"):
-        ax.plot(x, y, label=label)
-        ax.set_xlabel(x_label)
-        ax.set_ylabel('Amplitude [V]')
-        ax.set_title(f'C = {C} μF, f = {f} Hz, Channel {channel}')
         
     bounds_100muF = [[1.7, 11.5], [6.6, 16.4], [8.9, 18.7]]
     bounds_150muF = [[8.4, 18.1], [8.6, 18.3], [2.6, 12.3]]
@@ -68,8 +68,24 @@ def plot_signals():
 
         print(f"Maximum frequency for C = {C}: f = {mean(max_fs):.2f} ± {var(max_fs):.2f}")
 
-    # plt.close(t_fig)
-    # plt.close(ft_fig)
+    plt.close(t_fig)
+    plt.close(ft_fig)
+
+def plot_rectangle_signal():
+    t, ch1, ch2 = load_data('100_mf_2000Hz_Rechteck.csv')
+    fig, axs = plt.subplots(2,1)
+
+    mask = t < .3
+    t = t[mask]
+    ch1 = ch1[mask]
+    ch2 = ch2[mask]
+
+    plot(axs[0], "output", 100, 2000, t, ch1, x_label="Zeit [s]")
+    plot(axs[1], "input", 100, 2000, t, ch2, x_label="Zeit [s]")
+    fig.suptitle("Rechtecksignal", fontsize=22)
+
+    # plt.close(fig)
 
 plot_signals()
+plot_rectangle_signal()
 plt.show()
