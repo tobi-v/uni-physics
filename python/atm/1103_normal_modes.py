@@ -4,8 +4,8 @@ m1, m2, m3, k = symbols('m1 m2 m3 k')
 
 M = k*Matrix([
     [1/m1,           -1/sqrt(m1*m2), 0],
-    [-1/sqrt(m1*m2), 2/m2,           -1/sqrt(m2*m3)],
-    [0,              -1/sqrt(m2*m3), 1/m3]
+    [-1/sqrt(m1*m2), 2/m2,           -1/sqrt(m2*m1)],
+    [0,              -1/sqrt(m2*m1), 1/m1]
 ])
 
 eigenvectors = M.eigenvects()
