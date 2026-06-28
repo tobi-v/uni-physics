@@ -1,5 +1,5 @@
 from matplotlib import pyplot as plt
-from numpy import argmax, max, mean, pi, var
+from numpy import argmax, max, mean, ones_like, pi, var
 from os.path import dirname, join
 from pandas import read_csv
 from tools.electricity.RLC_circuit import SeriesAmplitudeAtR
@@ -10,6 +10,12 @@ def load_data(file):
     csv_path = join(script_dir, file)
     data = read_csv(csv_path, delimiter="\t", skiprows=3)
     return data['Time (s)'].to_numpy(), data['Ch.1 (V)'].to_numpy(), data['Ch.2 (V)'].to_numpy()
+
+def plot(ax, channel, C, f, x, y, x_label, label="Messwerte"):
+    ax.plot(x, y, label=label)
+    ax.set_xlabel(x_label)
+    ax.set_ylabel('Amplitude [V]')
+    ax.set_title(f'C = {C} μF, f = {f} Hz, Channel {channel}')
 
 def plot_signals():
     capacitances = [100, 150, 220]  # [μF]
@@ -22,21 +28,20 @@ def plot_signals():
     plt.subplots_adjust(hspace=0.9)
     ft_fig, ft_axs = plt.subplots(6,3)
     plt.subplots_adjust(hspace=0.9)
-
-    def plot(ax, channel, C, f, x, y, x_label, label="Messwerte"):
-        ax.plot(x, y, label=label)
-        ax.set_xlabel(x_label)
-        ax.set_ylabel('Amplitude [V]')
-        ax.set_title(f'C = {C} μF, f = {f} Hz, Channel {channel}')
+        
+    bounds_100muF = [[1.7, 11.5], [6.6, 16.4], [8.9, 18.7]]
+    bounds_150muF = [[8.4, 18.1], [8.6, 18.3], [2.6, 12.3]]
+    bounds_220muF = [[14.0, 23.5], [5.4, 15.1], [3.9, 13.7]]
+    bounds = [bounds_100muF, bounds_150muF, bounds_220muF]
 
     for ii, C in enumerate(capacitances):
         max_fs = []
         for jj, f in enumerate(frequencies):
             t, ch1, ch2 = load_data(f'{C}_mf_{f}Hz.csv')
-            mask = t <= 10
-            t = t[mask]
-            ch1 = ch1[mask]
-            ch2 = ch2[mask]
+            t_mask = (t >= bounds[ii][jj][0]) & (t <= bounds[ii][jj][1])
+            t = t[t_mask]
+            ch1 = ch1[t_mask]
+            ch2 = ch2[t_mask]
 
             plot(t_axs[2*ii][jj], 1, C, f, t, ch1, x_label="Zeit [s]")
             plot(t_axs[2*ii+1][jj], 2, C, f, t, ch2, x_label="Zeit [s]")
@@ -46,7 +51,12 @@ def plot_signals():
             max_fs.append(max_f)
             _, ch2_ft = fft(t, ch2)
 
-            theo = SeriesAmplitudeAtR(freqs*2*pi, R, L, C*1e-6)
+            f_mask = freqs < 300
+            freqs = freqs[f_mask]
+            ch1_ft = ch1_ft[f_mask]
+            ch2_ft = ch2_ft[f_mask]
+
+            theo = SeriesAmplitudeAtR(freqs*2*pi, R*ones_like(freqs), L*ones_like(freqs), C*1e-6*ones_like(freqs))
             theo_max_f = freqs[argmax(theo)]
             
             plot(ft_axs[2*ii][jj], 1, C, f, freqs, ch1_ft/max(ch1_ft), x_label="Frequenz [Hz]")
@@ -58,8 +68,24 @@ def plot_signals():
 
         print(f"Maximum frequency for C = {C}: f = {mean(max_fs):.2f} ± {var(max_fs):.2f}")
 
-    # plt.close(t_fig)
-    # plt.close(ft_fig)
+    plt.close(t_fig)
+    plt.close(ft_fig)
+
+def plot_rectangle_signal():
+    t, ch1, ch2 = load_data('100_mf_2000Hz_Rechteck.csv')
+    fig, axs = plt.subplots(2,1)
+
+    mask = t < .3
+    t = t[mask]
+    ch1 = ch1[mask]
+    ch2 = ch2[mask]
+
+    plot(axs[0], "output", 100, 2000, t, ch1, x_label="Zeit [s]")
+    plot(axs[1], "input", 100, 2000, t, ch2, x_label="Zeit [s]")
+    fig.suptitle("Rechtecksignal", fontsize=22)
+
+    # plt.close(fig)
 
 plot_signals()
+plot_rectangle_signal()
 plt.show()
