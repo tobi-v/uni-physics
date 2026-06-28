@@ -1,6 +1,8 @@
-from numpy import append, array
+from matplotlib import pyplot as plt
+from numpy import append, argmax, array, sqrt
 from os.path import dirname, join
 from pandas import read_csv
+from tools.signals.fourier import fft
 from tools.statistics.linear_regression import Linreg
 
 g = 9.81
@@ -21,17 +23,39 @@ def calibration():
         V_mean = electric_signal['Voltage (V)'].mean()
         V_std = electric_signal['Voltage (V)'].std()
 
-        print(f"Masse m={m} kg, Spannung U={V_mean:.4f} pm {V_std:.4f}")
+        #print(f"Masse m={m} kg, Spannung U={V_mean:.4f} ± {V_std:.4f}")
 
         V_means = append(V_means, V_mean)
         V_stds = append(V_stds, V_std)
 
-
-    print(f"Die Mittelwerte für die Spannung zu den Massen {masses} sind {V_means}.")
-
-    fun, coeff, cov = Linreg(masses * g, V_means)
-    print(f"Die Kennlinie des Messgerätes für Kraft auf Spannung ist {fun}")
+    fun, coeff, cov = Linreg(V_means, masses * g)
+    #print(f"Die Kennlinie des Messgerätes für Spannung auf Kraft ist ({coeff[0]:.2f} ± {sqrt(cov[0][0]):.2f})x + ({coeff[1]:.2f} ± {sqrt(cov[1][1]):.2f})")
 
     return fun, coeff, cov
 
+def ω_to_force():
+    filenames = [f'{name}_{ii}' for name in ('Petros', 'Tobi') for ii in range(1, 5)]
+
+    fig, axs = plt.subplots(4, 2)
+    for file, ax in zip(filenames, axs.flatten()):
+        data = load_data(f'{file}.csv')
+        t = data['Time (s)'].to_numpy()
+        F = data['Ch.1 (V)'].to_numpy()
+        ω = data['Ch.2 (V)'].to_numpy()
+
+        freqs, ω_ft = fft(t, ω)
+        freqs = freqs/8 # 8 magnets on the wheel
+        mask = freqs < 5; freqs = freqs[mask]; ω_ft = ω_ft[mask]
+        max_f = freqs[argmax(ω_ft)]
+        ax.plot(freqs, ω_ft)
+        ax.axvline(max_f, color='r', linestyle='--', label=f"Maximum bei {max_f:.1f} Hz")
+        ax.set_title(file)
+        ax.set_xlabel('ω / Hz')
+        ax.set_ylabel('amplitude')
+        ax.legend()
+
 fun, coeff, cov = calibration()
+ω_to_force()
+
+plt.tight_layout()
+plt.show()
