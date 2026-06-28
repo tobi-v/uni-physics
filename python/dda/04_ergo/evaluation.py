@@ -4,6 +4,7 @@ from os.path import dirname, join
 from pandas import read_csv
 from tools.signals.fourier import fft
 from tools.statistics.linear_regression import Linreg
+from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 g = 9.81
 
@@ -33,29 +34,40 @@ def calibration():
 
     return fun, coeff, cov
 
-def ω_to_force():
+def ω_to_force(fun):
     filenames = [f'{name}_{ii}' for name in ('Petros', 'Tobi') for ii in range(1, 5)]
 
     fig, axs = plt.subplots(4, 2)
     for file, ax in zip(filenames, axs.flatten()):
         data = load_data(f'{file}.csv')
         t = data['Time (s)'].to_numpy()
-        F = data['Ch.1 (V)'].to_numpy()
+        U = data['Ch.1 (V)']
         ω = data['Ch.2 (V)'].to_numpy()
 
         freqs, ω_ft = fft(t, ω)
         freqs = freqs/8 # 8 magnets on the wheel
         mask = freqs < 5; freqs = freqs[mask]; ω_ft = ω_ft[mask]
         max_f = freqs[argmax(ω_ft)]
-        ax.plot(freqs, ω_ft)
+        ax.plot(freqs, ω_ft, color='k')
         ax.axvline(max_f, color='r', linestyle='--', label=f"Maximum bei {max_f:.1f} Hz")
         ax.set_title(file)
         ax.set_xlabel('ω / Hz')
         ax.set_ylabel('amplitude')
         ax.legend()
 
+        U_mean = U.mean()
+        ΔU = U.std()
+
+        F, ΔF = GetResultAndUncertainty(fun, [U_mean], uncertainty=True, uncertainty_params=[ΔU])
+        ax.text(0.74, 0.45, f"F = {F:.1f} ± {ΔF:.1f} N", transform=ax.transAxes,
+                bbox=dict(facecolor='white', alpha=0.7, edgecolor='k'))
+        print(f"{file}: F = {F:.1f} ± {ΔF:.1f} N")
+
+
+    plt.subplots_adjust(hspace=0.75)
+
 fun, coeff, cov = calibration()
-ω_to_force()
+ω_to_force(fun)
 
 plt.tight_layout()
 plt.show()
