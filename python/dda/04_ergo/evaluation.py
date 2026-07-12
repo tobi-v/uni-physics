@@ -90,7 +90,8 @@ def ω_to_force(fun):
         ΔFs.append(ΔF)
 
     Ff_fig, Ff_ax = plt.subplots()
-    PlotLinregWithErrorAndScatterErrorbars(Ff_ax, f_means, F_means, Δfs, ΔFs, "Frequenz und Kraft", "Frequenz [Hz]", "Kraft [N]")
+    coeff, cov = PlotLinregWithErrorAndScatterErrorbars(Ff_ax, f_means, F_means, Δfs, ΔFs, "Frequenz und Kraft", "Frequenz [Hz]", "Kraft [N]")
+    print(f"Übertragungsfunktion: F(ω) = ({coeff[0]:.1f} ± {cov[0][0]:.1f}) ω + ({coeff[1]:.1f} ± {cov[1][1]:.1f})")
 
     plt.subplots_adjust(hspace=0.75)
 
@@ -98,4 +99,4 @@ fun, coeff, cov = calibration()
 ω_to_force(fun)
 
 plt.tight_layout()
-plt.show()
+# plt.show()
