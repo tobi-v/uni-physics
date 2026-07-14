@@ -33,25 +33,27 @@ header02 = [
 ]
 header03 = [
     r'$t / \si{\second}$',
-    r'$p_x$',
-    r'$p_y$',
+    # r'$p_x$',
+    # r'$p_y$',
     r'$|p|$',
     r'$L$',
-    r'$E_\mathrm{kin}$',
-    r'$E_\mathrm{rot}$',
+    # r'$E_\mathrm{kin}$',
+    # r'$E_\mathrm{rot}$',
+    r'$E_\mathrm{full, tot}$'
 ]
 header04 = [
     r'$t / \si{\second}$',
-    r'$p_\mathrm{Hantel}$',
-    r'$L_\mathrm{Hantel}$',
-    r'$E_\mathrm{kin,Hantel}$',
-    r'$E_\mathrm{rot,Hantel}$',
-    r'$p_\mathrm{Puck}$',
-    r'$E_\mathrm{kin,Puck}$',
+    # r'$p_\mathrm{Hantel}$',
+    # r'$L_\mathrm{Hantel}$',
+    # r'$E_\mathrm{kin,Hantel}$',
+    # r'$E_\mathrm{rot,Hantel}$',
+    # r'$p_\mathrm{Puck}$',
+    # r'$E_\mathrm{kin,Puck}$',
     r'$p_\mathrm{tot}$',
     r'$L_\mathrm{tot}$',
-    r'$E_\mathrm{kin, tot}$',
-    r'$E_\mathrm{rot, tot}$'
+    # r'$E_\mathrm{kin, tot}$',
+    # r'$E_\mathrm{rot, tot}$',
+    r'$E_\mathrm{full, tot}$'
 ]
 
 def read(file):
@@ -113,6 +115,7 @@ def compute_bridge_state(data_red, data_yellow):
                        + m_br_yellow * (rel_yellow_x**2 + rel_yellow_y**2))
     bridge_com['E_kin'] = bridge_com.apply(lambda r: energy_from_momentum(r.p_total, m_bridge), axis=1)
     bridge_com['E_rot'] = bridge_com['L_total']**2 / (2 * bridge_com['I'])
+    bridge_com['E_full'] = bridge_com['E_kin'] + bridge_com['E_rot']
 
     return bridge_com, impulses_red, impulses_yellow
 
@@ -150,6 +153,7 @@ def compute_system_state(bridge_com, data_green, green_state):
                          + m_green * (rel_green_x**2 + rel_green_y**2))
     system['E_rot'] = system['L_total']**2 / (2 * system['I_total'])
     system['E_kin'] = system.apply(lambda r: energy_from_momentum(r.p_total, total_mass), axis=1)
+    system['E_full'] = system['E_kin'] + system['E_rot']
 
     return system
 
@@ -220,10 +224,12 @@ def Bridge01(experiment):
 
     bridge_com, _, _ = compute_bridge_state(data_red, data_yellow)
 
-    to_latex = bridge_com[['p_x', 'p_y', 'p_total', 'L_total']].copy()
+    # to_latex = bridge_com[['p_x', 'p_y', 'p_total', 'L_total']].copy()
+    to_latex = bridge_com[['p_total', 'L_total']].copy()
     to_latex.insert(0, 't', data_red['t'].values)
-    to_latex['E_kin'] = bridge_com['E_kin']
-    to_latex['E_rot'] = bridge_com['E_rot']
+    # to_latex['E_kin'] = bridge_com['E_kin']
+    # to_latex['E_rot'] = bridge_com['E_rot']
+    to_latex['E_full'] = bridge_com['E_full']
 
     to_latex.iloc[:, 1:] *= 1000
 
@@ -251,16 +257,17 @@ def Bridge02(experiment):  # Bridge consists of red and yellow, single puck is g
 
     combined = DataFrame()
     combined['t'] = data_green['t'].values
-    combined['p_tot_bridge'] = bridge_com['p_total'].values
-    combined['L_bridge'] = bridge_com['L_total'].values
-    combined['E_kin_bridge'] = bridge_com['E_kin'].values
-    combined['E_rot_bridge'] = bridge_com['E_rot'].values
-    combined['p_tot_green'] = green_state['p_total'].values
-    combined['E_kin_green'] = green_state['E_kin'].values
+    # combined['p_tot_bridge'] = bridge_com['p_total'].values
+    # combined['L_bridge'] = bridge_com['L_total'].values
+    # combined['E_kin_bridge'] = bridge_com['E_kin'].values
+    # combined['E_rot_bridge'] = bridge_com['E_rot'].values
+    # combined['p_tot_green'] = green_state['p_total'].values
+    # combined['E_kin_green'] = green_state['E_kin'].values
     combined['p_tot_system'] = system_state['p_total'].values
     combined['L_system'] = system_state['L_total'].values
-    combined['E_kin_system'] = system_state['E_kin'].values
-    combined['E_rot_system'] = system_state['E_rot'].values
+    # combined['E_kin_system'] = system_state['E_kin'].values
+    # combined['E_rot_system'] = system_state['E_rot'].values
+    combined['E_full_system'] = system_state['E_full'].values
 
     combined.iloc[:, 1:] *= 1000
 
@@ -295,4 +302,4 @@ Bridge01('35_01_02')
 Bridge02('35_02_01')
 Bridge02('35_02_02')
 
-plt.show()
+#plt.show()
