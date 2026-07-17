@@ -1,4 +1,6 @@
+from matplotlib import pyplot as plt
 from numpy import array
+from tools.statistics.linear_regression import ScatterWithErrorBars
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 from tools.maths.functions import Ratio
 
@@ -11,8 +13,16 @@ def Ex31_leslie():
     white = array([.335, .33, .325])
     dull = array([.105, .105, .077])
 
-    for b, m, w, d in zip(black, mirror, white, dull):
-        pass
+    black_ratio = array([1, 1, 1])
+    mirror_ratio, Δmirror_ratio = Ratio(black, mirror, uncertainty=True, Δdenominator=black*ΔU_rel, Δnumerator=mirror*ΔU_rel)
+    white_ratio, Δwhite_ratio = Ratio(black, white, uncertainty=True, Δdenominator=black*ΔU_rel, Δnumerator=white*ΔU_rel)
+    dull_ratio, Δdull_ratio = Ratio(black, dull, uncertainty=True, Δdenominator=black*ΔU_rel, Δnumerator=dull*ΔU_rel)
+    ax = plt.subplot()
+
+    ScatterWithErrorBars(ax, T, black_ratio, ΔT, black_ratio*ΔU_rel, scatter_label="Schwarze Fläche")
+    ScatterWithErrorBars(ax, T, mirror_ratio, ΔT, Δmirror_ratio, scatter_label="Verspigelte Fläche", fmt="b.")
+    ScatterWithErrorBars(ax, T, white_ratio, ΔT, Δwhite_ratio, scatter_label="Weiße Fläche", fmt="g.")
+    ScatterWithErrorBars(ax, T, dull_ratio, ΔT, Δdull_ratio, scatter_label="Matte Fläche", fmt="c.", title="Verhältnisse der Strahlungsleistung zur schwarzen Fläche", xlabel="Temperatur / [K]", ylabel="Verhältnis")
 
 def Ex32_r2_dependency():
     d = array([25, 30, 35, 40, 45, 50])*1e-2
@@ -28,3 +38,8 @@ def Ex33_coolingBoltzmann():
 
 def Ex34_pyroBoltzmann():
     pass
+
+Ex31_leslie()
+
+plt.tight_layout()
+plt.show()
