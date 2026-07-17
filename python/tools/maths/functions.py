@@ -8,9 +8,12 @@ def Gaussian(x: NDArray[floating], amplitude: float, mean: float, stddev: float)
         raise ZeroDivisionError("Standard deviation must be non-zero.")
     return amplitude * exp(-0.5 * ((x - mean) / stddev) ** 2)
 
-def Ratio(denominator: NDArray[floating], numerator: NDArray[floating]) -> NDArray[floating]:
+def Ratio(denominator: NDArray[floating], numerator: NDArray[floating], uncertainty=False, Δdenominator=0, Δnumerator=0) -> NDArray[floating]:
     '''Berechnet das Verhältnis zweier Variablen var2/var1.'''
-    return numerator/denominator
+    def RatioInner(denominator, numerator):
+        return numerator/(denominator + 1e-10)
+    
+    return GetResultAndUncertainty(RatioInner, [denominator, numerator], uncertainty, [Δdenominator, Δnumerator])
 
 def inverse(x, uncertainty=False, Δx=0):
     def inverseInner(x):
