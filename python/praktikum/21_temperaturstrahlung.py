@@ -19,10 +19,10 @@ def Ex31_leslie():
     dull_ratio, Δdull_ratio = Ratio(black, dull, uncertainty=True, Δdenominator=black*ΔU_rel, Δnumerator=dull*ΔU_rel)
     ax = plt.subplot()
 
-    ScatterWithErrorBars(ax, T, black_ratio, ΔT, black_ratio*ΔU_rel, scatter_label="Schwarze Fläche")
-    ScatterWithErrorBars(ax, T, mirror_ratio, ΔT, Δmirror_ratio, scatter_label="Verspigelte Fläche", fmt="b.")
-    ScatterWithErrorBars(ax, T, white_ratio, ΔT, Δwhite_ratio, scatter_label="Weiße Fläche", fmt="g.")
-    ScatterWithErrorBars(ax, T, dull_ratio, ΔT, Δdull_ratio, scatter_label="Matte Fläche", fmt="c.", title="Verhältnisse der Strahlungsleistung zur schwarzen Fläche", xlabel="Temperatur / [K]", ylabel="Verhältnis")
+    ScatterWithErrorBars(ax, T, black_ratio, ΔT, black_ratio*ΔU_rel, scatter_label="Schwarze Fläche", fmt="k.")
+    ScatterWithErrorBars(ax, T, mirror_ratio, ΔT, Δmirror_ratio, scatter_label="Verspigelte Fläche", fmt="c.")
+    ScatterWithErrorBars(ax, T, white_ratio, ΔT, Δwhite_ratio, scatter_label="Weiße Fläche", fmt="w.")
+    ScatterWithErrorBars(ax, T, dull_ratio, ΔT, Δdull_ratio, scatter_label="Matte Fläche", fmt="b.", title="Verhältnisse der Strahlungsleistung zur schwarzen Fläche", xlabel="Temperatur / [K]", ylabel="Verhältnis")
 
 def Ex32_r2_dependency():
     d = array([25, 30, 35, 40, 45, 50])*1e-2
