@@ -20,3 +20,15 @@ def inverse(x, uncertainty=False, Δx=0):
         return 1 / (x + 1e-10)
     
     return GetResultAndUncertainty(inverseInner, [x], uncertainty, [Δx])
+
+def Sum(arr, uncertainty=False, Δarr=0):
+    def SumInner(*arr):
+        return sum(arr)
+
+    return GetResultAndUncertainty(SumInner, [arr], uncertainty, [Δarr])
+
+def Mean(arr, uncertainty=False, Δarr=0):
+    def MeanInner(*arr):
+        return sum(arr)/len(arr)   # Need to be done like that for correct application of uncertainty calculation
+
+    return GetResultAndUncertainty(MeanInner, [*arr], uncertainty, [*Δarr])
