@@ -1,8 +1,7 @@
 from matplotlib import pyplot as plt
 from numpy import array
-from tools.statistics.linear_regression import ScatterWithErrorBars
-from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
-from tools.maths.functions import Ratio
+from tools.statistics.linear_regression import ScatterWithErrorBars, PlotLinregWithErrorAndScatterErrorbarsLogarithmic
+from tools.maths.functions import Mean, Ratio
 
 def Ex31_leslie():
     ΔT = 0.1
@@ -28,10 +27,21 @@ def Ex32_r2_dependency():
     d = array([25, 30, 35, 40, 45, 50])*1e-2
     Δd = 0.5e-2
     ΔU_rel = .1
-    PT100_1 = 128.9
-    U1 = array([1.11, 0.81, 0.635, 0.51, 0.415, 0.35])
-    PT100_2 = 129.1
-    U2 = array([1.120, .815, .635, .505 ,.415, .345])
+    PT100 = array([128.9, 129.1])
+    T = array([347.7, 348.3]) # Mapped from PT100 values with a table
+    U = array([[1.11, 0.81, 0.635, 0.51, 0.415, 0.35],
+                [1.120, .815, .635, .505 ,.415, .345]])
+
+    _, axs = plt.subplots(2, 1)
+    coeffs = []
+    covs = []
+    for u, t, ax in zip(U, T, axs):
+        coeff, cov = PlotLinregWithErrorAndScatterErrorbarsLogarithmic(ax, d, u, Δd, ΔU_rel*u, rf'Gemessen bei ${t}°C$', xlabel=r'$ln(d)$', ylabel=r'$ln(u)$')
+        coeffs.append(coeff[0])
+        covs.append(cov[0][0])
+
+    inclination, Δinclination = Mean(coeffs, uncertainty=True, Δarr=covs)
+    print(f"Inclination: {inclination} +/- {Δinclination}")
 
 def Ex33_coolingBoltzmann():
     pass
@@ -39,7 +49,8 @@ def Ex33_coolingBoltzmann():
 def Ex34_pyroBoltzmann():
     pass
 
-Ex31_leslie()
+# Ex31_leslie()
+Ex32_r2_dependency()
 
 plt.tight_layout()
 plt.show()
