@@ -1,4 +1,5 @@
-from numpy import exp, floating
+from functools import reduce
+from numpy import exp, floating, multiply, prod
 from numpy.typing import NDArray
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
@@ -26,6 +27,18 @@ def Sum(arr, uncertainty=False, Δarr=0):
         return sum(arr)
 
     return GetResultAndUncertainty(SumInner, [arr], uncertainty, [Δarr])
+
+def Product(*arr, uncertainty=False, Δarr=0):
+    def ProductInner(*arr):
+        return prod(arr)
+
+    return GetResultAndUncertainty(ProductInner, [*arr], uncertainty, [Δarr])
+
+def ElementwiseProduct(*arr, uncertainty=False, Δarr=0):
+    def ElementwiseProductInner(*arr):
+        return reduce(multiply, arr)
+
+    return GetResultAndUncertainty(ElementwiseProductInner, [*arr], uncertainty, [*Δarr] if isinstance(Δarr, (list, tuple)) else [Δarr] * len(arr))
 
 def Mean(arr, uncertainty=False, Δarr=0):
     def MeanInner(*arr):
