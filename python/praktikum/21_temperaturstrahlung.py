@@ -6,7 +6,7 @@ from tools.maths.functions import Mean, ElementwiseProduct, Ratio
 
 def Ex31_leslie():
     ΔT = 0.1
-    T = array([86.1, 84.9, 84]) + 273.15
+    T = array([86.1, 84.9, 84])
     ΔU_rel = .1
     black = array([.337, .335, .33])   # V
     mirror = array([.1, .1, .099])
