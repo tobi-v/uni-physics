@@ -1,6 +1,7 @@
 from matplotlib import pyplot as plt
 from numpy import array
-from tools.statistics.linear_regression import ScatterWithErrorBars, PlotLinregWithErrorAndScatterErrorbarsLogarithmic
+from tools.files.loading import load_csv
+from tools.statistics.linear_regression import ScatterWithErrorBars, PlotLinregWithErrorAndScatterErrorbars, PlotLinregWithErrorAndScatterErrorbarsLogarithmic
 from tools.maths.functions import Mean, Ratio
 
 def Ex31_leslie():
@@ -44,13 +45,24 @@ def Ex32_r2_dependency():
     print(f"Inclination: {inclination} +/- {Δinclination}")
 
 def Ex33_coolingBoltzmann():
-    pass
+    ΔT = 0.1
+    ΔU_rel = .1
+    T, R, U = load_csv('21_data_teil3.csv', columns=['Temp/°C', 'Widerstand', 'Spannung'])
+    T = T + 273.15
+
+    # Uncertainty for T^4 using error propagation: Δ(T^4) = 4*T^3*ΔT
+    ΔT_4 = 4 * T**3 * ΔT
+    ax = plt.subplot()
+    coeff, cov = PlotLinregWithErrorAndScatterErrorbars(ax, T**4, U, ΔT_4, ΔU_rel, title=r'Zusammenhang zwischen $U$ und $T^4$', xlabel=r'$T^4 / [K^4]$', ylabel=r'U / [V]')
+    
+    print(f"Inclination: {coeff[0]} +/- {cov[0][0]}")
 
 def Ex34_pyroBoltzmann():
     pass
 
 # Ex31_leslie()
-Ex32_r2_dependency()
+# Ex32_r2_dependency()
+Ex33_coolingBoltzmann()
 
 plt.tight_layout()
 plt.show()
