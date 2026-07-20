@@ -1,8 +1,8 @@
 from matplotlib import pyplot as plt
-from numpy import array
+from numpy import array, max, maximum, min, where
 from tools.files.loading import load_csv
 from tools.statistics.linear_regression import ScatterWithErrorBars, PlotLinregWithErrorAndScatterErrorbars, PlotLinregWithErrorAndScatterErrorbarsLogarithmic
-from tools.maths.functions import Mean, Ratio
+from tools.maths.functions import Mean, ElementwiseProduct, Ratio
 
 def Ex31_leslie():
     ΔT = 0.1
@@ -58,11 +58,21 @@ def Ex33_coolingBoltzmann():
     print(f"Inclination: {coeff[0]} +/- {cov[0][0]}")
 
 def Ex34_pyroBoltzmann():
-    pass
+    ΔT = 0.1
+    ΔU_rel = .1
+    T, U, I = load_csv('21_data_teil4.csv', columns=['PyroTemp(C)', 'U', 'I'])
+    T = T + 273.15
+    ΔT = where(T > 1500, maximum(4, 0.5e-2 * T), 0.75e-2 * T)
+    P, ΔP = ElementwiseProduct(U, I, uncertainty=True, Δarr=[ΔU_rel*U, ΔU_rel*I])
+
+    ax = plt.subplot()
+    coeff, cov = PlotLinregWithErrorAndScatterErrorbarsLogarithmic(ax, T, P, ΔT, ΔP, 'Zusammenhang zwischen Leistung und Temperatur', xlabel=r'$ln(T)$', ylabel=r'$ln(P)$')
+    ax.set_xlim([0.9*min(T), 1.1*max(T)])
 
 # Ex31_leslie()
 # Ex32_r2_dependency()
-Ex33_coolingBoltzmann()
+# Ex33_coolingBoltzmann()
+Ex34_pyroBoltzmann()
 
 plt.tight_layout()
 plt.show()
