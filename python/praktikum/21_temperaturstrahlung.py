@@ -1,0 +1,105 @@
+from matplotlib import pyplot as plt
+from numpy import array, max, maximum, min, pi, where
+from tools.files.loading import load_csv
+from tools.geometry.shapes_2d import CircleArea
+from tools.maths.functions import Mean, ElementwiseProduct, Ratio
+from tools.statistics.linear_regression import ScatterWithErrorBars, PlotLinregWithErrorAndScatterErrorbars, PlotLinregWithErrorAndScatterErrorbarsLogarithmic
+from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
+
+def Ex31_leslie():
+    ΔT = 0.1
+    T = array([86.1, 84.9, 84])
+    ΔU_rel = .1
+    black = array([.337, .335, .33])   # V
+    mirror = array([.1, .1, .099])
+    white = array([.335, .33, .325])
+    dull = array([.105, .105, .077])
+
+    black_ratio = array([1, 1, 1])
+    mirror_ratio, Δmirror_ratio = Ratio(black, mirror, uncertainty=True, Δdenominator=black*ΔU_rel, Δnumerator=mirror*ΔU_rel)
+    white_ratio, Δwhite_ratio = Ratio(black, white, uncertainty=True, Δdenominator=black*ΔU_rel, Δnumerator=white*ΔU_rel)
+    dull_ratio, Δdull_ratio = Ratio(black, dull, uncertainty=True, Δdenominator=black*ΔU_rel, Δnumerator=dull*ΔU_rel)
+    ax = plt.subplot()
+
+    ScatterWithErrorBars(ax, T, black_ratio, ΔT, black_ratio*ΔU_rel, scatter_label="Schwarze Fläche", fmt="k.")
+    ScatterWithErrorBars(ax, T, mirror_ratio, ΔT, Δmirror_ratio, scatter_label="Verspigelte Fläche", fmt="c.")
+    ScatterWithErrorBars(ax, T, white_ratio, ΔT, Δwhite_ratio, scatter_label="Weiße Fläche", fmt="w.")
+    ScatterWithErrorBars(ax, T, dull_ratio, ΔT, Δdull_ratio, scatter_label="Matte Fläche", fmt="b.", title="Verhältnisse der Strahlungsleistung zur schwarzen Fläche", xlabel="Temperatur / [K]", ylabel="Verhältnis")
+
+def Ex32_r2_dependency():
+    d = array([25, 30, 35, 40, 45, 50])*1e-2
+    Δd = 0.5e-2
+    ΔU_rel = .1
+    PT100 = array([128.9, 129.1])
+    T = array([347.7, 348.3]) # Mapped from PT100 values with a table
+    U = array([[1.11, 0.81, 0.635, 0.51, 0.415, 0.35],
+                [1.120, .815, .635, .505 ,.415, .345]])
+
+    _, axs = plt.subplots(2, 1)
+    coeffs = []
+    covs = []
+    for u, t, ax in zip(U, T, axs):
+        coeff, cov = PlotLinregWithErrorAndScatterErrorbarsLogarithmic(ax, d, u, Δd, ΔU_rel*u, rf'Gemessen bei ${t}°C$', xlabel=r'$ln(d)$', ylabel=r'$ln(u)$')
+        coeffs.append(coeff[0])
+        covs.append(cov[0][0])
+
+    inclination, Δinclination = Mean(coeffs, uncertainty=True, Δarr=covs)
+    print(f"Inclination: {inclination} +/- {Δinclination}")
+
+def Ex33_coolingBoltzmann():
+    def σ_from_K(K, d, A_B, A_S, uncertainty=False, ΔK=0, Δd=0, ΔA_B=0, ΔA_S=0):
+        def σ_from_KInner(K, d, A_B, A_S):
+            return K*pi*d**2 / (160*A_B*A_S)
+        
+        return GetResultAndUncertainty(σ_from_KInner, [K, d, A_B, A_S], uncertainty, [ΔK, Δd, ΔA_B, ΔA_S])
+    
+    d = 0.5
+    Δd = 0.5e-2
+    d_Blende = 0.0199
+    Δd_Blende = 1e-4
+    d_Schwarzkörper = 0.0194
+    Δd_Schwarzkörper = 1e-4
+    A_B, ΔA_B = CircleArea(d_Blende/2, uncertainty=True, Δr=Δd_Blende)
+    A_S, ΔA_S = CircleArea(d_Schwarzkörper/2, uncertainty=True, Δr=Δd_Schwarzkörper)
+    T_0 = 23 + 273.15
+    ΔT = 0.1
+    ΔU_rel = .1
+    T, U = load_csv('21_data_teil3.csv', columns=['Temp/°C', 'Spannung'])
+    T = T + 273.15
+
+    # Uncertainty for T^4 using error propagation: Δ(T^4) = 4*T^3*ΔT
+    ΔT_4 = 4 * T**3 * ΔT
+
+    # ax1 = plt.subplot()
+    # PlotLinregWithErrorAndScatterErrorbars(ax1, T**4, U, ΔT_4, ΔU_rel, title=r'Zusammenhang zwischen $U$ und $T^4$', xlabel=r'$T^4 / [K^4]$', ylabel=r'U / [V]')
+    ax2 = plt.subplot()
+    coeff, cov = PlotLinregWithErrorAndScatterErrorbars(ax2, T**4 - T_0**4, U, ΔT_4, ΔU_rel*U, title=r'Zusammenhang zwischen $U$ und $T^4$', xlabel=r'$(T^4 - T_0^4) / [K^4]$', ylabel=r'U / [V]')
+    
+    K = coeff[0]
+    ΔK = cov[0][0]
+    print(f"Inclination: {K} +/- {ΔK}")
+
+    σ, Δσ = σ_from_K(K, d, A_B, A_S, True, ΔK, Δd, ΔA_B, ΔA_S)
+    print(f"σ = {σ} +/- {Δσ}")
+
+def Ex34_pyroBoltzmann():
+    ΔT = 0.1
+    ΔU_rel = .1
+    T, U, I = load_csv('21_data_teil4.csv', columns=['PyroTemp(C)', 'U', 'I'])
+    T = T + 273.15
+    ΔT = where(T > 1500, maximum(4, 0.5e-2 * T), 0.75e-2 * T) + 2
+    P, ΔP = ElementwiseProduct(U, I, uncertainty=True, Δarr=[ΔU_rel*U, ΔU_rel*I])
+
+    ax = plt.subplot()
+    coeff, cov = PlotLinregWithErrorAndScatterErrorbarsLogarithmic(ax, T, P, ΔT, ΔP, 'Zusammenhang zwischen Leistung und Temperatur', xlabel=r'$ln(T)$', ylabel=r'$ln(P)$')
+    ax.set_xlim([0.9*min(T), 1.1*max(T)])
+
+    print(f"Steigung = {coeff[0]} +/- {cov[0][0]}")
+
+# Ex31_leslie()
+# Ex32_r2_dependency()
+# Ex33_coolingBoltzmann()
+Ex34_pyroBoltzmann()
+
+plt.tight_layout()
+plt.show()

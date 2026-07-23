@@ -1,5 +1,5 @@
 from matplotlib.axes import Axes
-from numpy import float64, polyfit, poly1d
+from numpy import abs, exp, float64, log, polyfit, poly1d
 from numpy.typing import NDArray
 from tools.python.checks import CheckLengths
 from typing import Tuple
@@ -33,6 +33,22 @@ def ScatterWithErrorBars(ax: Axes, x: NDArray, y: NDArray, x_uncertainty: float=
     ax.legend(loc=legend_loc)
     ax.grid(visible=grid)
 
+def ScatterWithErrorBarsLogarithmic(ax: Axes, x: NDArray, y: NDArray, x_uncertainty: float=0, y_uncertainty: float=0,
+                         title: str="", scatter_label: str="", xlabel: str="", ylabel: str="", fmt: str='k.', legend_loc: str='best', grid: bool=True):
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_xscale('log')
+    ax.set_ylabel(ylabel)
+    ax.set_yscale('log')
+    x_uncertainty_lower = abs(log(x) - log(x - x_uncertainty))
+    x_uncertainty_upper = abs(log(x) - log(x + x_uncertainty))
+    x_uncertainty = [x_uncertainty_lower, x_uncertainty_upper]
+    y_uncertainty_lower = abs(log(y) - log(y - y_uncertainty))
+    y_uncertainty_upper = abs(log(y) - log(y + y_uncertainty))
+    y_uncertainty = [y_uncertainty_lower, y_uncertainty_upper]
+    ax.errorbar(x, y, fmt=fmt, xerr=x_uncertainty, yerr=y_uncertainty, label=scatter_label, ecolor='r', capsize=1.5)
+    ax.legend(loc=legend_loc)
+    ax.grid(visible=grid)
 
 def PlotLinregWithErrorAndScatterErrorbars(ax: Axes, x: NDArray, y: NDArray, x_uncertainty, y_uncertainty, title: str, xlabel="", ylabel=""):
     CheckLengths(x, y)
@@ -46,6 +62,23 @@ def PlotLinregWithErrorAndScatterErrorbars(ax: Axes, x: NDArray, y: NDArray, x_u
     ax.plot(x, linregFunc(x), '--k', label=f"Linear Regression y={coeff[0]:.2f}x + {coeff[1]:.2f}")
     ax.plot(x, upper_bound_fun(x), ':r', label=f"Upper Bound")
     ax.plot(x, lower_bound_fun(x), ':r', label=f"Lower Bound")
+    ax.grid(visible=True)
+    ax.legend(loc='best')
+
+    return coeff, cov
+
+def PlotLinregWithErrorAndScatterErrorbarsLogarithmic(ax: Axes, x: NDArray, y: NDArray, x_uncertainty, y_uncertainty, title: str, xlabel="", ylabel=""):
+    CheckLengths(x, y)
+    ScatterWithErrorBarsLogarithmic(ax, x, y, x_uncertainty=x_uncertainty, y_uncertainty=y_uncertainty, scatter_label="Werte")
+    linregFunc, coeff, cov = Linreg(log(x), log(y))
+    ax.set_title(title)
+    ax.set_xlabel(xlabel, size='18')
+    ax.set_ylabel(ylabel, size='18')
+    upper_bound_fun = poly1d([coeff[0] + cov[0][0]**0.5, coeff[1] + cov[1][1]**0.5])
+    lower_bound_fun = poly1d([coeff[0] - cov[0][0]**0.5, coeff[1] - cov[1][1]**0.5])
+    ax.plot(x, exp(linregFunc(log(x))), '--k', label=f"Logarithmic Linear Regression log(y)={coeff[0]:.2f} log(x) + {coeff[1]:.2f}")
+    ax.plot(x, exp(upper_bound_fun(log(x))), ':r', label=f"Upper Bound")
+    ax.plot(x, exp(lower_bound_fun(log(x))), ':r', label=f"Lower Bound")
     ax.grid(visible=True)
     ax.legend(loc='best')
 

@@ -1,6 +1,6 @@
-from numpy import allclose, array, linspace, pi, sqrt
+from numpy import allclose, array, array_equal, linspace, pi, sqrt
 from pytest import raises
-from tools.maths.functions import Gaussian
+from tools.maths.functions import ElementwiseProduct, Gaussian, Product
 
 
 def test_peak_at_mean():
@@ -44,3 +44,39 @@ def test_normalized_peak_value():
     assert allclose(result, expected), (
         "Peak of normalized Gaussian should match amplitude"
     )
+
+def test_product():
+    x = linspace(1, 5, 5)
+    result = Product(x)
+    assert result == 120
+
+def test_multi_product_exact():
+    a = array([2, 3])
+    b = array([2, 3])
+    expected = array([4, 9])
+    result = ElementwiseProduct(a, b)
+    assert array_equal(result, expected)
+    
+def test_multi_product_multi_uncertainties():
+    a = array([2, 3])
+    b = array([1, 1])
+    Δa = array([0.1, 0.1])
+    Δb = array([0.2, 0.2])
+    expected = array([2, 3])
+    Δexpected = array([0.41, 0.61])
+    result, Δresult = ElementwiseProduct(a, b, uncertainty=True, Δarr=[Δa, Δb])
+    print(result)
+    assert array_equal(result, expected)
+    assert allclose(Δresult, Δexpected, atol=1e-2)
+    
+def test_multi_product_single_uncertainties():
+    a = array([2, 3])
+    b = array([1, 1])
+    Δa = 0.1
+    Δb = 0.2
+    expected = array([2, 3])
+    Δexpected = array([0.41, 0.61])
+    result, Δresult = ElementwiseProduct(a, b, uncertainty=True, Δarr=[Δa, Δb])
+    print(result)
+    assert array_equal(result, expected)
+    assert allclose(Δresult, Δexpected, atol=1e-2)
