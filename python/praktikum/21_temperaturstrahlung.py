@@ -1,8 +1,10 @@
 from matplotlib import pyplot as plt
-from numpy import array, max, maximum, min, where
+from numpy import array, max, maximum, min, pi, where
 from tools.files.loading import load_csv
-from tools.statistics.linear_regression import ScatterWithErrorBars, PlotLinregWithErrorAndScatterErrorbars, PlotLinregWithErrorAndScatterErrorbarsLogarithmic
+from tools.geometry.shapes_2d import CircleArea
 from tools.maths.functions import Mean, ElementwiseProduct, Ratio
+from tools.statistics.linear_regression import ScatterWithErrorBars, PlotLinregWithErrorAndScatterErrorbars, PlotLinregWithErrorAndScatterErrorbarsLogarithmic
+from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
 def Ex31_leslie():
     ΔT = 0.1
@@ -45,29 +47,54 @@ def Ex32_r2_dependency():
     print(f"Inclination: {inclination} +/- {Δinclination}")
 
 def Ex33_coolingBoltzmann():
+    def σ_from_K(K, d, A_B, A_S, uncertainty=False, ΔK=0, Δd=0, ΔA_B=0, ΔA_S=0):
+        def σ_from_KInner(K, d, A_B, A_S):
+            return K*pi*d**2 / (160*A_B*A_S)
+        
+        return GetResultAndUncertainty(σ_from_KInner, [K, d, A_B, A_S], uncertainty, [ΔK, Δd, ΔA_B, ΔA_S])
+    
+    d = 0.5
+    Δd = 0.5e-2
+    d_Blende = 0.0199
+    Δd_Blende = 1e-4
+    d_Schwarzkörper = 0.0194
+    Δd_Schwarzkörper = 1e-4
+    A_B, ΔA_B = CircleArea(d_Blende/2, uncertainty=True, Δr=Δd_Blende)
+    A_S, ΔA_S = CircleArea(d_Schwarzkörper/2, uncertainty=True, Δr=Δd_Schwarzkörper)
+    T_0 = 23 + 273.15
     ΔT = 0.1
     ΔU_rel = .1
-    T, R, U = load_csv('21_data_teil3.csv', columns=['Temp/°C', 'Widerstand', 'Spannung'])
+    T, U = load_csv('21_data_teil3.csv', columns=['Temp/°C', 'Spannung'])
     T = T + 273.15
 
     # Uncertainty for T^4 using error propagation: Δ(T^4) = 4*T^3*ΔT
     ΔT_4 = 4 * T**3 * ΔT
-    ax = plt.subplot()
-    coeff, cov = PlotLinregWithErrorAndScatterErrorbars(ax, T**4, U, ΔT_4, ΔU_rel, title=r'Zusammenhang zwischen $U$ und $T^4$', xlabel=r'$T^4 / [K^4]$', ylabel=r'U / [V]')
+
+    # ax1 = plt.subplot()
+    # PlotLinregWithErrorAndScatterErrorbars(ax1, T**4, U, ΔT_4, ΔU_rel, title=r'Zusammenhang zwischen $U$ und $T^4$', xlabel=r'$T^4 / [K^4]$', ylabel=r'U / [V]')
+    ax2 = plt.subplot()
+    coeff, cov = PlotLinregWithErrorAndScatterErrorbars(ax2, T**4 - T_0**4, U, ΔT_4, ΔU_rel*U, title=r'Zusammenhang zwischen $U$ und $T^4$', xlabel=r'$(T^4 - T_0^4) / [K^4]$', ylabel=r'U / [V]')
     
-    print(f"Inclination: {coeff[0]} +/- {cov[0][0]}")
+    K = coeff[0]
+    ΔK = cov[0][0]
+    print(f"Inclination: {K} +/- {ΔK}")
+
+    σ, Δσ = σ_from_K(K, d, A_B, A_S, True, ΔK, Δd, ΔA_B, ΔA_S)
+    print(f"σ = {σ} +/- {Δσ}")
 
 def Ex34_pyroBoltzmann():
     ΔT = 0.1
     ΔU_rel = .1
     T, U, I = load_csv('21_data_teil4.csv', columns=['PyroTemp(C)', 'U', 'I'])
     T = T + 273.15
-    ΔT = where(T > 1500, maximum(4, 0.5e-2 * T), 0.75e-2 * T)
+    ΔT = where(T > 1500, maximum(4, 0.5e-2 * T), 0.75e-2 * T) + 2
     P, ΔP = ElementwiseProduct(U, I, uncertainty=True, Δarr=[ΔU_rel*U, ΔU_rel*I])
 
     ax = plt.subplot()
     coeff, cov = PlotLinregWithErrorAndScatterErrorbarsLogarithmic(ax, T, P, ΔT, ΔP, 'Zusammenhang zwischen Leistung und Temperatur', xlabel=r'$ln(T)$', ylabel=r'$ln(P)$')
     ax.set_xlim([0.9*min(T), 1.1*max(T)])
+
+    print(f"Steigung = {coeff[0]} +/- {cov[0][0]}")
 
 # Ex31_leslie()
 # Ex32_r2_dependency()
