@@ -2,7 +2,7 @@ from matplotlib import pyplot as plt
 from numpy import argmax, max, mean, ones_like, pi, var
 from os.path import dirname, join
 from pandas import read_csv
-from tools.electricity.RLC_circuit import SeriesAmplitudeAtR
+from tools.electricity.RLC_circuit import SeriesAmplitudeAtR, SeriesAmplitudeDecayAtR
 from tools.signals.fourier import fft
 
 def load_data(file):
@@ -72,20 +72,31 @@ def plot_signals():
     plt.close(ft_fig)
 
 def plot_rectangle_signal():
+    C = 100e-6  # [F]
+    resistors = 10 # [Ohm]
+    L1 = 15e-3 # [H]
+    L2 = 25e-3 # [H]
+    R = resistors/2 + 0.12
+
     t, ch1, ch2 = load_data('100_mf_2000Hz_Rechteck.csv')
     fig, axs = plt.subplots(2,1)
 
-    mask = t < .3
+    mask = (t < .18) & (t > 0.082)
     t = t[mask]
     ch1 = ch1[mask]
     ch2 = ch2[mask]
 
     plot(axs[0], "output", 100, 2000, t, ch1, x_label="Zeit [s]")
+    plot(axs[0], "theoretisch", 100, 2000, t, SeriesAmplitudeDecayAtR(t - t[0], 1, R, L1, C)+2, x_label="Zeit [s]", label=rf'Theoriekurve für L={L1}H')
+    plot(axs[0], "theoretisch", 100, 2000, t, SeriesAmplitudeDecayAtR(t - t[0], 1, R, L2, C)+2, x_label="Zeit [s]", label=rf'Theoriekurve für L={L2}H')
     plot(axs[1], "input", 100, 2000, t, ch2, x_label="Zeit [s]")
     fig.suptitle("Rechtecksignal", fontsize=22)
+    axs[0].legend()
 
     # plt.close(fig)
 
-plot_signals()
+# plot_signals()
 plot_rectangle_signal()
+
+plt.tight_layout()
 plt.show()
