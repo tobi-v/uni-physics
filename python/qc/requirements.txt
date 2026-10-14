@@ -1,0 +1,4 @@
+qiskit[visualization]
+qiskit-aer
+qiskit-nature
+pyscf
