@@ -1,5 +1,5 @@
 from functools import reduce
-from numpy import array, exp, floating, multiply, ndarray
+from numpy import array, exp, floating, multiply, ndarray, prod
 from numpy.typing import NDArray
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
@@ -30,17 +30,9 @@ def Sum(arr, uncertainty=False, Δarr=0):
 
 def Product(arr, uncertainty=False, Δarr=0):
     def ProductInner(*arr):
-        prod = 1
-        for val in arr:
-            if isinstance(val, (list, tuple)):
-                val = array(val)
-            prod *= val
+        return prod(arr)
 
-        if isinstance(prod, ndarray):
-            return prod.tolist()
-        return prod
-
-    return GetResultAndUncertainty(ProductInner, [*arr], uncertainty, [*Δarr])
+    return GetResultAndUncertainty(ProductInner, [*arr], uncertainty, [Δarr])
 
 def ElementwiseProduct(*arr, uncertainty=False, Δarr=0):
     def ElementwiseProductInner(*arr):
