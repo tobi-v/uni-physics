@@ -68,8 +68,8 @@ def plot_signals():
 
         print(f"Maximum frequency for C = {C}: f = {mean(max_fs):.2f} ± {var(max_fs):.2f}")
 
-    plt.close(t_fig)
-    plt.close(ft_fig)
+    # plt.close(t_fig)
+    # plt.close(ft_fig)
 
 def plot_rectangle_signal():
     C = 100e-6  # [F]
@@ -95,8 +95,8 @@ def plot_rectangle_signal():
 
     # plt.close(fig)
 
-# plot_signals()
-plot_rectangle_signal()
+plot_signals()
+# plot_rectangle_signal()
 
 plt.tight_layout()
 plt.show()
