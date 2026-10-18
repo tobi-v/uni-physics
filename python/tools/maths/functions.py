@@ -1,5 +1,5 @@
 from functools import reduce
-from numpy import exp, floating, multiply, prod
+from numpy import array, exp, floating, multiply, ndarray, prod
 from numpy.typing import NDArray
 from tools.statistics.uncertainty_calculation import GetResultAndUncertainty
 
@@ -28,7 +28,7 @@ def Sum(arr, uncertainty=False, Δarr=0):
 
     return GetResultAndUncertainty(SumInner, [arr], uncertainty, [Δarr])
 
-def Product(*arr, uncertainty=False, Δarr=0):
+def Product(arr, uncertainty=False, Δarr=0):
     def ProductInner(*arr):
         return prod(arr)
 
